@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#1C171D">
 <title>Wellbeing — Axis Check-in</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <style>
   /* ── Mirrors the Android draft: com.gw.gamerswellbeing.emotions.axis ──
-     6x6 basic-emotions grid, 5 levels per axis. Self-contained: no fonts,
-     images or scripts are fetched, so this file can be dropped anywhere. */
+     6x6 basic-emotions grid, 5 levels per axis. Fetches emotions.json and
+     ../assets/logo.png; falls back to built-in data if either is unreachable. */
 
   :root {
     --bg: #1C171D;
@@ -51,23 +54,18 @@
   }
 
   /* ── top block ─────────────────────────────────────────────────── */
-  .top { padding-top: 40px; text-align: center; flex: none; }
+  .top { padding-top: 18px; text-align: center; flex: none; }
 
-  .logo { width: 88px; height: 88px; margin: 0 auto; display: block; }
-  .logo .wing { transform-origin: center; animation: flap 2s ease-in-out infinite alternate; }
-  .logo .wing.right { animation-name: flap-right; }
-  @keyframes flap       { from { transform: scaleX(1); } to { transform: scaleX(.72); } }
-  @keyframes flap-right { from { transform: scaleX(1); } to { transform: scaleX(.72); } }
-  @media (prefers-reduced-motion: reduce) { .logo .wing { animation: none; } }
+  .logo { width: 88px; height: 88px; margin: 0 auto; display: block; object-fit: contain; }
 
   .header {
-    margin-top: 10px;
+    margin-top: 4px;
     font-size: 13px;
     color: rgba(255,255,255,.55);
   }
 
   .title {
-    margin-top: 28px;
+    margin-top: 12px;
     font-size: 22px;
     font-weight: 700;
     line-height: 1.25;
@@ -146,7 +144,7 @@
     flex: none;
     width: 100%;
     height: 96px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
   }
@@ -228,17 +226,7 @@
 
 <div class="app" id="app">
   <div class="top">
-    <svg class="logo" viewBox="0 0 100 100" aria-hidden="true">
-      <g class="wing left">
-        <path d="M48 50 C30 18, 4 20, 8 44 C10 62, 30 66, 48 50 Z" fill="#6f7ad8" opacity=".95"/>
-        <path d="M48 50 C32 74, 12 78, 12 62 C12 50, 30 46, 48 50 Z" fill="#4d5ac0" opacity=".95"/>
-      </g>
-      <g class="wing right">
-        <path d="M52 50 C70 18, 96 20, 92 44 C90 62, 70 66, 52 50 Z" fill="#6f7ad8" opacity=".95"/>
-        <path d="M52 50 C68 74, 88 78, 88 62 C88 50, 70 46, 52 50 Z" fill="#4d5ac0" opacity=".95"/>
-      </g>
-      <ellipse cx="50" cy="52" rx="3.2" ry="17" fill="#cfd4f5"/>
-    </svg>
+    <img class="logo" src="../assets/logo.png" alt="" aria-hidden="true">
     <div class="header">How do you feel?</div>
     <h1 class="title" id="title">How's your energy?</h1>
   </div>
@@ -266,8 +254,12 @@
 (function () {
   "use strict";
 
-  // ── the 36 isBasic emotions, straight from EmotionRepository ─────────
-  var EMOTIONS = [
+  // ── emotions ─────────────────────────────────────────────────────────
+  // Loaded from emotions.json (pulled from Firestore by
+  // scripts/pull-emotions/pull-emotions.js — it has the real descriptions).
+  // This list is the fallback for when the fetch cannot run, e.g. the file
+  // opened straight off disk. Same 36, but no descriptions.
+  var FALLBACK_EMOTIONS = [
     { n: "Enraged",      e: "☠️", x: -6, y:  6, c: "red" },
     { n: "Stressed",     e: "😣", x: -3, y:  5, c: "red" },
     { n: "Annoyed",      e: "😠", x: -2, y:  5, c: "red" },
@@ -321,11 +313,11 @@
 
   function compress(g) { return g > 0 ? g - 0.5 : (g < 0 ? g + 0.5 : 0); }
 
-  function buildPlacements() {
+  function buildPlacements(emotions) {
     var out = [];
     [false, true].forEach(function (rightHalf) {
       [true, false].forEach(function (topHalf) {
-        var quadrant = EMOTIONS.filter(function (em) {
+        var quadrant = emotions.filter(function (em) {
           return (em.x > 0) === rightHalf && (em.y > 0) === topHalf;
         }).sort(function (a, b) { return b.y - a.y; });
 
@@ -346,11 +338,8 @@
     return out;
   }
 
-  var PLACEMENTS = buildPlacements();
-  var MIN_X = Math.min.apply(null, PLACEMENTS.map(function (p) { return p.x; }));
-  var MAX_X = Math.max.apply(null, PLACEMENTS.map(function (p) { return p.x; }));
-  var MIN_Y = Math.min.apply(null, PLACEMENTS.map(function (p) { return p.y; }));
-  var MAX_Y = Math.max.apply(null, PLACEMENTS.map(function (p) { return p.y; }));
+  // Filled in by start(), once the emotions are in hand.
+  var PLACEMENTS = [], MIN_X = 0, MAX_X = 0, MIN_Y = 0, MAX_Y = 0, chipEls = [];
 
   // ── the 5-level scale ────────────────────────────────────────────────
   // No grid has a 0 row or column — the cells straddle the middle, at +-0.5
@@ -431,17 +420,19 @@
   var confirmBtn = document.getElementById("confirmBtn");
   var confirmDesc = document.getElementById("confirmDesc");
 
-  var chipEls = PLACEMENTS.map(function (placed) {
-    var el = document.createElement("div");
-    el.className = "chip";
-    el.style.background = CHIP_COLORS[placed.em.c];
-    el.innerHTML = '<span class="emoji"></span><span class="name"></span>';
-    el.querySelector(".emoji").textContent = placed.em.e;
-    el.querySelector(".name").textContent = placed.em.n;
-    el.__placed = placed;
-    field.appendChild(el);
-    return el;
-  });
+  function buildChips() {
+    chipEls = PLACEMENTS.map(function (placed) {
+      var el = document.createElement("div");
+      el.className = "chip";
+      el.style.background = CHIP_COLORS[placed.em.c] || CHIP_COLORS.blue;
+      el.innerHTML = '<span class="emoji"></span><span class="name"></span>';
+      el.querySelector(".emoji").textContent = placed.em.e;
+      el.querySelector(".name").textContent = placed.em.n;
+      el.__placed = placed;
+      field.appendChild(el);
+      return el;
+    });
+  }
 
   // ── helpers ──────────────────────────────────────────────────────────
   function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
@@ -692,8 +683,11 @@
     if (selected) {
       skipBtn.classList.add("hidden");
       confirmBtn.classList.remove("hidden");
-      confirmDesc.textContent = "You feel " + MOOD_LABELS[moodLabelIndex(moodLevel)].toLowerCase() +
-        ", with " + ENERGY_LABELS[energyLabelIndex(energyLevel)].toLowerCase() + " energy.";
+      // The emotion's own words when Firestore has them, otherwise spell the
+      // two readings back to the user.
+      confirmDesc.textContent = selected.d ||
+        ("You feel " + MOOD_LABELS[moodLabelIndex(moodLevel)].toLowerCase() +
+         ", with " + ENERGY_LABELS[energyLabelIndex(energyLevel)].toLowerCase() + " energy.");
     } else {
       skipBtn.classList.remove("hidden");
       confirmBtn.classList.add("hidden");
@@ -844,10 +838,36 @@
   skipBtn.addEventListener("click", function () { finish(null); });
 
   // ── go ───────────────────────────────────────────────────────────────
-  window.addEventListener("resize", measure);
-  window.addEventListener("orientationchange", function () { setTimeout(measure, 150); });
-  measure();
-  requestAnimationFrame(frame);
+  function start(emotions) {
+    PLACEMENTS = buildPlacements(emotions);
+    MIN_X = Math.min.apply(null, PLACEMENTS.map(function (p) { return p.x; }));
+    MAX_X = Math.max.apply(null, PLACEMENTS.map(function (p) { return p.x; }));
+    MIN_Y = Math.min.apply(null, PLACEMENTS.map(function (p) { return p.y; }));
+    MAX_Y = Math.max.apply(null, PLACEMENTS.map(function (p) { return p.y; }));
+
+    buildChips();
+    window.addEventListener("resize", measure);
+    window.addEventListener("orientationchange", function () { setTimeout(measure, 150); });
+    measure();
+    requestAnimationFrame(frame);
+  }
+
+  // emotions.json carries the real descriptions. Opened straight off disk the
+  // fetch is blocked, so fall back to the built-in list and keep working.
+  if (window.fetch) {
+    fetch("emotions.json", { cache: "no-cache" })
+      .then(function (response) {
+        if (!response.ok) throw new Error(response.status);
+        return response.json();
+      })
+      .then(function (data) {
+        var list = data && data.emotions;
+        start(list && list.length ? list : FALLBACK_EMOTIONS);
+      })
+      .catch(function () { start(FALLBACK_EMOTIONS); });
+  } else {
+    start(FALLBACK_EMOTIONS);
+  }
 })();
 </script>
 </body>
