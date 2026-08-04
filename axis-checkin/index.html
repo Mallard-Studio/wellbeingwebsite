@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#1C171D">
+<title>Wellbeing — Axis Check-in</title>
+<style>
+  /* ── Mirrors the Android draft: com.gw.gamerswellbeing.emotions.axis ──
+     6x6 basic-emotions grid, 5 levels per axis. Self-contained: no fonts,
+     images or scripts are fetched, so this file can be dropped anywhere. */
+
+  :root {
+    --bg: #1C171D;
+    --primary: #384CAE;
+    --mood-red: #ff0606;
+    --mood-yellow: #ffca29;
+    --mood-blue: #384CAE;
+    --mood-green: #81d05f;
+
+    --gutter: 28px;
+    --chip: 70px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    overscroll-behavior: none;
+  }
+
+  body {
+    background: var(--bg);
+    color: #fff;
+    font-family: Comfortaa, ui-rounded, "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    height: 100dvh;
+    padding: 0 28px env(safe-area-inset-bottom) 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  /* ── top block ─────────────────────────────────────────────────── */
+  .top { padding-top: 40px; text-align: center; flex: none; }
+
+  .logo { width: 88px; height: 88px; margin: 0 auto; display: block; }
+  .logo .wing { transform-origin: center; animation: flap 2s ease-in-out infinite alternate; }
+  .logo .wing.right { animation-name: flap-right; }
+  @keyframes flap       { from { transform: scaleX(1); } to { transform: scaleX(.72); } }
+  @keyframes flap-right { from { transform: scaleX(1); } to { transform: scaleX(.72); } }
+  @media (prefers-reduced-motion: reduce) { .logo .wing { animation: none; } }
+
+  .header {
+    margin-top: 10px;
+    font-size: 13px;
+    color: rgba(255,255,255,.55);
+  }
+
+  .title {
+    margin-top: 28px;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  /* ── the plot ──────────────────────────────────────────────────── */
+  .middle {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+  }
+
+  .plot {
+    position: relative;
+    touch-action: none;
+  }
+
+  .plot canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .field {
+    position: absolute;
+    top: 0;
+    left: var(--gutter);
+    overflow: hidden;
+  }
+
+  .chip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--chip);
+    height: var(--chip);
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    text-align: center;
+    border: 3px solid transparent;
+    transition: opacity .35s ease, border-color .15s ease;
+    will-change: transform, opacity;
+  }
+  .chip.selected { border-color: #fff; }
+  .chip .emoji { font-size: 22px; line-height: 1.1; }
+  .chip .name { font-size: 11px; font-weight: 700; line-height: 1.1; padding: 0 3px; }
+
+  .lvl {
+    position: absolute;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 3px 8px;
+    pointer-events: none;
+  }
+
+  .drag-me {
+    position: absolute;
+    font-size: 16px;
+    font-weight: 700;
+    white-space: nowrap;
+    pointer-events: none;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+
+  .hidden { display: none !important; }
+
+  /* ── action slot — one control at a time, fixed height ─────────── */
+  .actions {
+    flex: none;
+    width: 100%;
+    height: 96px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+  }
+
+  .secondary {
+    width: 100%;
+    height: 50px;
+    border: 0;
+    border-radius: 25px;
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 28px;
+    background: var(--primary);
+    color: #fff;
+    font: inherit;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .card .desc { font-size: 14px; line-height: 1.3; }
+  .card .tick {
+    flex: none;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--primary);
+    font-size: 26px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── done screen ───────────────────────────────────────────────── */
+  .done {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 28px;
+    text-align: center;
+  }
+  .done .big { font-size: 64px; }
+  .done h2 { font-size: 22px; font-weight: 700; }
+  .done p { font-size: 15px; color: rgba(255,255,255,.7); }
+  .done button {
+    margin-top: 12px;
+    height: 50px;
+    padding: 0 32px;
+    border: 0;
+    border-radius: 25px;
+    background: var(--primary);
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="top">
+    <svg class="logo" viewBox="0 0 100 100" aria-hidden="true">
+      <g class="wing left">
+        <path d="M48 50 C30 18, 4 20, 8 44 C10 62, 30 66, 48 50 Z" fill="#6f7ad8" opacity=".95"/>
+        <path d="M48 50 C32 74, 12 78, 12 62 C12 50, 30 46, 48 50 Z" fill="#4d5ac0" opacity=".95"/>
+      </g>
+      <g class="wing right">
+        <path d="M52 50 C70 18, 96 20, 92 44 C90 62, 70 66, 52 50 Z" fill="#6f7ad8" opacity=".95"/>
+        <path d="M52 50 C68 74, 88 78, 88 62 C88 50, 70 46, 52 50 Z" fill="#4d5ac0" opacity=".95"/>
+      </g>
+      <ellipse cx="50" cy="52" rx="3.2" ry="17" fill="#cfd4f5"/>
+    </svg>
+    <div class="header">How do you feel?</div>
+    <h1 class="title" id="title">How's your energy?</h1>
+  </div>
+
+  <div class="middle">
+    <div class="plot" id="plot">
+      <canvas id="axes"></canvas>
+      <div class="field" id="field"></div>
+      <div class="lvl hidden" id="energyLabel"></div>
+      <div class="lvl hidden" id="moodLabel"></div>
+      <div class="drag-me hidden" id="dragMe">Drag me</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="secondary" id="skipBtn" type="button">No, I'm fine</button>
+    <button class="card hidden" id="confirmBtn" type="button">
+      <span class="desc" id="confirmDesc"></span>
+      <span class="tick">&#10004;</span>
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ── the 36 isBasic emotions, straight from EmotionRepository ─────────
+  var EMOTIONS = [
+    { n: "Enraged",      e: "☠️", x: -6, y:  6, c: "red" },
+    { n: "Stressed",     e: "😣", x: -3, y:  5, c: "red" },
+    { n: "Annoyed",      e: "😠", x: -2, y:  5, c: "red" },
+    { n: "Jealous",      e: "😒", x: -6, y:  3, c: "red" },
+    { n: "Scared",       e: "😨", x: -5, y:  3, c: "red" },
+    { n: "Angry",        e: "😡", x: -4, y:  3, c: "red" },
+    { n: "Confused",     e: "😵‍💫", x: -1, y: 3, c: "red" },
+    { n: "Embarrassed",  e: "🫣", x: -3, y:  2, c: "red" },
+    { n: "Nervous",      e: "😥", x: -3, y:  1, c: "red" },
+
+    { n: "Thrilled",     e: "🤩", x:  4, y:  6, c: "yellow" },
+    { n: "Ecstatic",     e: "🤣", x:  6, y:  6, c: "yellow" },
+    { n: "Excited",      e: "🤩", x:  1, y:  5, c: "yellow" },
+    { n: "Determined",   e: "🧐", x:  2, y:  5, c: "yellow" },
+    { n: "Proud",        e: "😎", x:  6, y:  4, c: "yellow" },
+    { n: "Happy",        e: "😄", x:  4, y:  3, c: "yellow" },
+    { n: "Confident",    e: "😏", x:  4, y:  2, c: "yellow" },
+    { n: "Playful",      e: "😜", x:  2, y:  1, c: "yellow" },
+    { n: "Accomplished", e: "🏅", x:  6, y:  1, c: "yellow" },
+
+    { n: "Bored",        e: "🙄", x: -1, y: -1, c: "blue" },
+    { n: "Ashamed",      e: "🫣", x: -5, y: -2, c: "blue" },
+    { n: "Meh",          e: "😐", x: -2, y: -2, c: "blue" },
+    { n: "Tired",        e: "😪", x: -1, y: -2, c: "blue" },
+    { n: "Sad",          e: "😢", x: -2, y: -3, c: "blue" },
+    { n: "Guilty",       e: "😣", x: -6, y: -4, c: "blue" },
+    { n: "Alienated",    e: "👽", x: -4, y: -5, c: "blue" },
+    { n: "Apathetic",    e: "😑", x: -1, y: -5, c: "blue" },
+    { n: "Helpless",     e: "😶", x: -1, y: -6, c: "blue" },
+
+    { n: "Calm",         e: "😌", x:  1, y: -1, c: "green" },
+    { n: "Respected",    e: "🫡", x:  4, y: -1, c: "green" },
+    { n: "Good",         e: "🙂", x:  1, y: -2, c: "green" },
+    { n: "Loved",        e: "❤️‍🔥", x: 5, y: -2, c: "green" },
+    { n: "Relaxed",      e: "🧘", x:  1, y: -3, c: "green" },
+    { n: "Grateful",     e: "🙏", x:  6, y: -3, c: "green" },
+    { n: "Peaceful",     e: "🕊️", x: 2, y: -5, c: "green" },
+    { n: "Relieved",     e: "😮‍💨", x: 4, y: -6, c: "green" },
+    { n: "Satisfied",    e: "☺️", x:  5, y: -6, c: "green" }
+  ];
+
+  var CHIP_COLORS = {
+    red: "#ff0606", yellow: "#ffca29", blue: "#384CAE", green: "#81d05f"
+  };
+
+  // ── grid: pack the basics into a tidy 6x6, 3 cells per side ──────────
+  // Their real coordinates are scattered, so leaving them where they are
+  // would riddle the field with holes. Each quadrant is sorted by energy,
+  // then by pleasantness, and laid out as a 3x3 block.
+  var CELLS_PER_SIDE = 3;
+
+  function compress(g) { return g > 0 ? g - 0.5 : (g < 0 ? g + 0.5 : 0); }
+
+  function buildPlacements() {
+    var out = [];
+    [false, true].forEach(function (rightHalf) {
+      [true, false].forEach(function (topHalf) {
+        var quadrant = EMOTIONS.filter(function (em) {
+          return (em.x > 0) === rightHalf && (em.y > 0) === topHalf;
+        }).sort(function (a, b) { return b.y - a.y; });
+
+        for (var row = 0; row * CELLS_PER_SIDE < quadrant.length; row++) {
+          var rowEmotions = quadrant
+            .slice(row * CELLS_PER_SIDE, (row + 1) * CELLS_PER_SIDE)
+            .sort(function (a, b) { return a.x - b.x; });
+          // Rows run away from the middle in both halves, so the strongest
+          // feelings stay furthest out.
+          var gridY = topHalf ? CELLS_PER_SIDE - row : -(row + 1);
+          rowEmotions.forEach(function (em, column) {
+            var gridX = rightHalf ? column + 1 : -(CELLS_PER_SIDE - column);
+            out.push({ em: em, x: compress(gridX), y: compress(gridY) });
+          });
+        }
+      });
+    });
+    return out;
+  }
+
+  var PLACEMENTS = buildPlacements();
+  var MIN_X = Math.min.apply(null, PLACEMENTS.map(function (p) { return p.x; }));
+  var MAX_X = Math.max.apply(null, PLACEMENTS.map(function (p) { return p.x; }));
+  var MIN_Y = Math.min.apply(null, PLACEMENTS.map(function (p) { return p.y; }));
+  var MAX_Y = Math.max.apply(null, PLACEMENTS.map(function (p) { return p.y; }));
+
+  // ── the 5-level scale ────────────────────────────────────────────────
+  // No grid has a 0 row or column — the cells straddle the middle, at +-0.5
+  // and +-1.5 and so on. So "normal" is a seam, not a cell. With 5 levels
+  // the middle level owns BOTH middle cells and +-1/+-2 own one cell each,
+  // which is what makes Normal x Normal reachable on a 6-cell axis.
+  var LEVEL_COUNT = 5;
+  var MIN_LEVEL = -2;
+  var MAX_LEVEL = 2;
+  var LEVEL_COORDS = [-2.5, -1.5, 0, 1.5, 2.5]; // indexed from MIN_LEVEL
+
+  var ENERGY_LABELS = ["Very high", "High", "Normal", "Low", "Very low"];
+  var MOOD_LABELS = ["Very sad", "Unhappy", "Normal", "Happy", "Very happy"];
+
+  function coordForLevel(level) {
+    return LEVEL_COORDS[clamp(level - MIN_LEVEL, 0, LEVEL_COUNT - 1)];
+  }
+  function levelForCoord(coord) {
+    var best = 0, bestDistance = Infinity;
+    for (var l = MIN_LEVEL; l <= MAX_LEVEL; l++) {
+      var d = Math.abs(coordForLevel(l) - coord);
+      if (d < bestDistance) { bestDistance = d; best = l; }
+    }
+    return best;
+  }
+  function bandIndex(fraction) { return clamp(Math.floor(fraction * LEVEL_COUNT), 0, LEVEL_COUNT - 1); }
+  function energyLevelForFraction(f) { return MAX_LEVEL - bandIndex(f); }
+  function moodLevelForFraction(f) { return bandIndex(f) + MIN_LEVEL; }
+  function energyLabelIndex(level) { return MAX_LEVEL - level; }
+  function moodLabelIndex(level) { return level - MIN_LEVEL; }
+  function energyBandCentreFraction(level) { return (energyLabelIndex(level) + 0.5) / LEVEL_COUNT; }
+  function moodBandCentreFraction(level) { return (moodLabelIndex(level) + 0.5) / LEVEL_COUNT; }
+
+  // ── axis colours: generated from each scale's two ends through white,
+  //    so they fit whatever level count the grid uses ────────────────────
+  var RED = [255, 23, 68], BLUE = [41, 98, 255], AMBER = [255, 196, 0], GREEN = [0, 230, 118];
+  var WHITE = [255, 255, 255];
+
+  function mix(a, b, t) {
+    return "rgb(" + Math.round(a[0] + (b[0] - a[0]) * t) + "," +
+                    Math.round(a[1] + (b[1] - a[1]) * t) + "," +
+                    Math.round(a[2] + (b[2] - a[2]) * t) + ")";
+  }
+  function ramp(start, end, index) {
+    var middle = (LEVEL_COUNT - 1) / 2;
+    if (index < middle) return mix(start, WHITE, index / middle);
+    if (index > middle) return mix(WHITE, end, (index - middle) / middle);
+    return "rgb(255,255,255)";
+  }
+  function energyBand(index) { return ramp(RED, BLUE, index); }
+  function moodBand(index) { return energyLevel > 0 ? ramp(RED, AMBER, index) : ramp(BLUE, GREEN, index); }
+
+  // ── geometry (CSS px, matching the Android dp values) ────────────────
+  var GUTTER = 28, MARKER_R = 11, BAND_W = 7, TOUCH_BAND = 24;
+  var SPACING = 86, CHIP = 70, OVERSCROLL = 48;
+  var UNSET_DIM = 0.45;
+
+  // ── state ────────────────────────────────────────────────────────────
+  var energyLevel = 0, moodLevel = 0;
+  var anchorEnergy = 0, anchorMood = 0;
+  var energyTouched = false, moodTouched = false;
+  var pan = { x: 0, y: 0 };
+  var fieldDragging = false;
+  var selected = null;
+  var side = 0, span = 0;
+
+  // ── elements ─────────────────────────────────────────────────────────
+  var app = document.getElementById("app");
+  var plot = document.getElementById("plot");
+  var field = document.getElementById("field");
+  var canvas = document.getElementById("axes");
+  var ctx = canvas.getContext("2d");
+  var titleEl = document.getElementById("title");
+  var energyLabelEl = document.getElementById("energyLabel");
+  var moodLabelEl = document.getElementById("moodLabel");
+  var dragMeEl = document.getElementById("dragMe");
+  var skipBtn = document.getElementById("skipBtn");
+  var confirmBtn = document.getElementById("confirmBtn");
+  var confirmDesc = document.getElementById("confirmDesc");
+
+  var chipEls = PLACEMENTS.map(function (placed) {
+    var el = document.createElement("div");
+    el.className = "chip";
+    el.style.background = CHIP_COLORS[placed.em.c];
+    el.innerHTML = '<span class="emoji"></span><span class="name"></span>';
+    el.querySelector(".emoji").textContent = placed.em.e;
+    el.querySelector(".name").textContent = placed.em.n;
+    el.__placed = placed;
+    field.appendChild(el);
+    return el;
+  });
+
+  // ── helpers ──────────────────────────────────────────────────────────
+  function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function axesSet() { return energyTouched && moodTouched; }
+  function targetX() { return coordForLevel(anchorMood); }
+  function targetY() { return coordForLevel(anchorEnergy); }
+
+  // Pan is bounded by how far the MIDDLE of the frame may travel over the
+  // grid: from the anchor out to each edge of the emotions, plus OVERSCROLL
+  // so there is a little blank past the last row before the drag stops.
+  // Bounding it this way is what makes every level reachable — the outermost
+  // row and column can always be brought under the middle.
+  function panBounds() {
+    return {
+      minX: (targetX() - MAX_X) * SPACING - OVERSCROLL,
+      maxX: (targetX() - MIN_X) * SPACING + OVERSCROLL,
+      minY: (MIN_Y - targetY()) * SPACING - OVERSCROLL,
+      maxY: (MAX_Y - targetY()) * SPACING + OVERSCROLL
+    };
+  }
+
+  function clampPan() {
+    var b = panBounds();
+    pan.x = clamp(pan.x, b.minX, b.maxX);
+    pan.y = clamp(pan.y, b.minY, b.maxY);
+  }
+
+  /** Reads the axes off the emotion sitting in the middle of the frame. */
+  function applyFocusToLevels() {
+    var focusMood = clamp(targetX() - pan.x / SPACING, MIN_X, MAX_X);
+    var focusEnergy = clamp(targetY() + pan.y / SPACING, MIN_Y, MAX_Y);
+    var best = null, bestDistance = Infinity;
+    PLACEMENTS.forEach(function (p) {
+      var dx = p.x - focusMood, dy = p.y - focusEnergy;
+      var d = dx * dx + dy * dy;
+      if (d < bestDistance) { bestDistance = d; best = p; }
+    });
+    if (best) {
+      moodLevel = levelForCoord(best.x);
+      energyLevel = levelForCoord(best.y);
+    }
+  }
+
+  /**
+   * How lit an emotion is, by how far it sits from the middle of the field.
+   * focus is 0 while dragging (a wide ring stays visible so the user can see
+   * where they are heading) and 1 at rest (the middle four, then dark).
+   */
+  function fieldAlpha(distance, focus) {
+    var inner = lerp(SPACING * 1.0, SPACING * 0.8, focus);
+    var outer = lerp(SPACING * 2.3, SPACING * 1.8, focus);
+    if (distance <= inner) return 1;
+    if (distance >= outer) return 0;
+    return 1 - (distance - inner) / (outer - inner);
+  }
+
+  // ── layout ───────────────────────────────────────────────────────────
+  function measure() {
+    var available = plot.parentElement.getBoundingClientRect();
+    side = Math.floor(Math.min(available.width, available.height));
+    if (side <= GUTTER) side = GUTTER + 1;
+    span = side - GUTTER;
+
+    plot.style.width = side + "px";
+    plot.style.height = side + "px";
+    field.style.width = span + "px";
+    field.style.height = span + "px";
+
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(side * dpr);
+    canvas.height = Math.round(side * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  // ── drawing ──────────────────────────────────────────────────────────
+  function drawAxisBands(startX, startY, length, vertical, colorFor) {
+    var band = length / LEVEL_COUNT;
+    var gap = 3;
+    ctx.lineWidth = BAND_W;
+    ctx.lineCap = "butt";
+    for (var i = 0; i < LEVEL_COUNT; i++) {
+      var from = i * band + gap / 2;
+      var to = (i + 1) * band - gap / 2;
+      ctx.strokeStyle = colorFor(i);
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      if (vertical) {
+        ctx.moveTo(startX, startY + from);
+        ctx.lineTo(startX, startY + to);
+      } else {
+        ctx.moveTo(startX + from, startY);
+        ctx.lineTo(startX + to, startY);
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawMarker(cx, cy, color) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, MARKER_R, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+  }
+
+  /** Two chevrons drifting away from the marker that still needs moving. */
+  function drawHint(cx, cy, vertical, time) {
+    var progress = (time % 1600) / 1600;
+    var fade = Math.sin(progress * Math.PI);
+    var drift = progress * 10;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 14 + progress * 16, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255," + (0.30 * (1 - progress)) + ")";
+    ctx.fill();
+
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    for (var i = 0; i < 2; i++) {
+      var distance = 34 + i * 22 + drift;
+      var alpha = clamp(fade * (1 - i * 0.4), 0, 1);
+      ctx.strokeStyle = "rgba(255,255,255," + alpha + ")";
+      [-1, 1].forEach(function (sign) {
+        ctx.beginPath();
+        if (vertical) {
+          var tipY = cy + sign * distance;
+          ctx.moveTo(cx - 14, tipY - sign * 11);
+          ctx.lineTo(cx, tipY);
+          ctx.lineTo(cx + 14, tipY - sign * 11);
+        } else {
+          var tipX = cx + sign * distance;
+          ctx.moveTo(tipX - sign * 11, cy - 14);
+          ctx.lineTo(tipX, cy);
+          ctx.lineTo(tipX - sign * 11, cy + 14);
+        }
+        ctx.stroke();
+      });
+    }
+    ctx.restore();
+  }
+
+  // Reading offsetWidth forces a layout, so only do it when the wording
+  // actually changed rather than on every frame.
+  function labelSize(el, text) {
+    if (el.__text !== text) {
+      el.textContent = text;
+      el.__text = text;
+      el.__w = el.offsetWidth;
+      el.__h = el.offsetHeight;
+    }
+    return { w: el.__w, h: el.__h };
+  }
+
+  function placeLabel(el, anchorX, anchorY, toTheRight) {
+    var w = el.__w || 0, h = el.__h || 0;
+    if (toTheRight) {
+      el.style.left = (anchorX + 16) + "px";
+      el.style.top = (anchorY - h / 2) + "px";
+    } else {
+      el.style.left = (anchorX - w / 2) + "px";
+      el.style.top = (anchorY - 16 - h) + "px";
+    }
+  }
+
+  // ── render ───────────────────────────────────────────────────────────
+  function render(time) {
+    var energyMarkerY = energyBandCentreFraction(energyLevel) * span;
+    var moodMarkerX = GUTTER + moodBandCentreFraction(moodLevel) * span;
+    var energyAxisX = GUTTER / 2;
+    var moodAxisY = span + GUTTER / 2;
+
+    var wantedTitle = !energyTouched ? "How's your energy?"
+      : (!moodTouched ? "How happy are you?" : "Select an emotion");
+    if (titleEl.textContent !== wantedTitle) titleEl.textContent = wantedTitle;
+
+    // axes
+    ctx.clearRect(0, 0, side, side);
+    drawAxisBands(energyAxisX, 0, span, true, energyBand);
+    drawMarker(energyAxisX, energyMarkerY, energyBand(energyLabelIndex(energyLevel)));
+    drawAxisBands(GUTTER, moodAxisY, span, false, moodBand);
+    drawMarker(moodMarkerX, moodAxisY, moodBand(moodLabelIndex(moodLevel)));
+
+    // level labels
+    if (energyTouched) {
+      energyLabelEl.classList.remove("hidden");
+      labelSize(energyLabelEl, ENERGY_LABELS[energyLabelIndex(energyLevel)]);
+      energyLabelEl.style.color = energyBand(energyLabelIndex(energyLevel));
+      placeLabel(energyLabelEl, energyAxisX, energyMarkerY, true);
+    } else {
+      energyLabelEl.classList.add("hidden");
+    }
+    if (moodTouched) {
+      moodLabelEl.classList.remove("hidden");
+      labelSize(moodLabelEl, MOOD_LABELS[moodLabelIndex(moodLevel)]);
+      moodLabelEl.style.color = moodBand(moodLabelIndex(moodLevel));
+      placeLabel(moodLabelEl, moodMarkerX, moodAxisY, false);
+    } else {
+      moodLabelEl.classList.add("hidden");
+    }
+
+    // drag hint on whichever marker is still waiting
+    var hintVertical = !energyTouched ? true : (!moodTouched ? false : null);
+    if (hintVertical === null) {
+      dragMeEl.classList.add("hidden");
+    } else {
+      dragMeEl.classList.remove("hidden");
+      var hx = hintVertical ? energyAxisX : moodMarkerX;
+      var hy = hintVertical ? energyMarkerY : moodAxisY;
+      var hint = labelSize(dragMeEl, "Drag me");
+      drawHint(hx, hy, hintVertical, time);
+      if (hintVertical) {
+        dragMeEl.style.left = (hx + 40) + "px";
+        dragMeEl.style.top = (hy - hint.h / 2) + "px";
+      } else {
+        dragMeEl.style.left = (hx - hint.w / 2) + "px";
+        dragMeEl.style.top = (hy - 40 - hint.h) + "px";
+      }
+    }
+
+    // emotions
+    var centre = span / 2;
+    var tx = targetX(), ty = targetY();
+    var focus = fieldDragging ? 0 : 1;
+    var dim = axesSet() ? 1 : UNSET_DIM;
+
+    chipEls.forEach(function (el) {
+      var p = el.__placed;
+      var x = centre + (p.x - tx) * SPACING + pan.x;
+      var y = centre - (p.y - ty) * SPACING + pan.y;
+      var isSelected = selected === p.em;
+      var distance = Math.hypot(x - centre, y - centre);
+      var alpha = isSelected ? 1 : fieldAlpha(distance, focus) * dim;
+
+      el.style.transform = "translate3d(" + (x - CHIP / 2) + "px," + (y - CHIP / 2) + "px,0)";
+      el.style.opacity = alpha;
+      el.style.pointerEvents = alpha > 0.05 ? "auto" : "none";
+      el.classList.toggle("selected", isSelected);
+    });
+
+    // action slot — one control at a time
+    if (selected) {
+      skipBtn.classList.add("hidden");
+      confirmBtn.classList.remove("hidden");
+      confirmDesc.textContent = "You feel " + MOOD_LABELS[moodLabelIndex(moodLevel)].toLowerCase() +
+        ", with " + ENERGY_LABELS[energyLabelIndex(energyLevel)].toLowerCase() + " energy.";
+    } else {
+      skipBtn.classList.remove("hidden");
+      confirmBtn.classList.add("hidden");
+    }
+  }
+
+  function frame(time) {
+    render(time);
+    requestAnimationFrame(frame);
+  }
+
+  // ── gestures ─────────────────────────────────────────────────────────
+  // One handler for the whole plot: a touch on either axis grabs that
+  // marker, anything else pans the emotions. Dragging is relative, so the
+  // marker never teleports to the finger; a tap picks a band outright.
+  var mode = null;          // "energy" | "mood" | "field"
+  var axisPosition = 0;
+  var startPoint = null, lastPoint = null, moved = false, startChip = null;
+
+  function localPoint(event) {
+    var box = plot.getBoundingClientRect();
+    return { x: event.clientX - box.left, y: event.clientY - box.top };
+  }
+
+  function axisAt(point) {
+    var moodAxisY = span + GUTTER / 2;
+    var onEnergy = point.x <= GUTTER + TOUCH_BAND;
+    var onMood = point.y >= moodAxisY - TOUCH_BAND;
+    if (onEnergy && onMood) {
+      var energyMarkerY = energyBandCentreFraction(energyLevel) * span;
+      var moodMarkerX = GUTTER + moodBandCentreFraction(moodLevel) * span;
+      var toEnergy = Math.hypot(point.x - GUTTER / 2, point.y - energyMarkerY);
+      var toMood = Math.hypot(point.x - moodMarkerX, point.y - moodAxisY);
+      return toEnergy <= toMood ? "energy" : "mood";
+    }
+    if (onEnergy) return "energy";
+    if (onMood) return "mood";
+    return null;
+  }
+
+  function releaseAxis() {
+    if (mode === "energy") energyTouched = true; else moodTouched = true;
+    // Re-anchor the field on the new point.
+    anchorEnergy = energyLevel;
+    anchorMood = moodLevel;
+    pan.x = 0; pan.y = 0;
+    selected = null;
+    if (axesSet()) applyFocusToLevels();
+  }
+
+  plot.addEventListener("pointerdown", function (event) {
+    plot.setPointerCapture(event.pointerId);
+    startPoint = lastPoint = localPoint(event);
+    moved = false;
+    var chipEl = event.target.closest ? event.target.closest(".chip") : null;
+    startChip = chipEl ? chipEl.__placed.em : null;
+
+    mode = axisAt(startPoint) || "field";
+    if (mode === "energy") axisPosition = energyBandCentreFraction(energyLevel) * span;
+    if (mode === "mood") axisPosition = moodBandCentreFraction(moodLevel) * span;
+  });
+
+  plot.addEventListener("pointermove", function (event) {
+    if (!mode) return;
+    var point = localPoint(event);
+    var dx = point.x - lastPoint.x, dy = point.y - lastPoint.y;
+    lastPoint = point;
+
+    if (!moved && Math.hypot(point.x - startPoint.x, point.y - startPoint.y) > 6) {
+      moved = true;
+      if (mode === "field") {
+        // Dragging the emotions skips the axis steps: both readings now come
+        // from whatever sits in the middle of the field.
+        energyTouched = true;
+        moodTouched = true;
+        fieldDragging = true;
+      }
+    }
+    if (!moved) return;
+
+    if (mode === "field") {
+      pan.x += dx; pan.y += dy;
+      clampPan();
+      applyFocusToLevels();
+    } else if (mode === "energy") {
+      axisPosition = clamp(axisPosition + dy, 0, span);
+      energyTouched = true;
+      energyLevel = energyLevelForFraction(axisPosition / span);
+    } else {
+      axisPosition = clamp(axisPosition + dx, 0, span);
+      moodTouched = true;
+      moodLevel = moodLevelForFraction(axisPosition / span);
+    }
+  });
+
+  function endGesture(event) {
+    if (!mode) return;
+    var point = lastPoint;
+
+    if (!moved) {
+      if (mode === "energy") {
+        energyTouched = true;
+        energyLevel = energyLevelForFraction(clamp(point.y / span, 0, 1));
+        releaseAxis();
+      } else if (mode === "mood") {
+        moodTouched = true;
+        moodLevel = moodLevelForFraction(clamp((point.x - GUTTER) / span, 0, 1));
+        releaseAxis();
+      } else if (startChip) {
+        selected = startChip;
+      }
+    } else if (mode === "energy" || mode === "mood") {
+      releaseAxis();
+    } else {
+      fieldDragging = false;
+    }
+
+    mode = null;
+    startChip = null;
+  }
+
+  plot.addEventListener("pointerup", endGesture);
+  plot.addEventListener("pointercancel", endGesture);
+
+  // ── finishing ────────────────────────────────────────────────────────
+  function finish(emotion) {
+    var done = document.createElement("div");
+    done.className = "done";
+    done.innerHTML =
+      '<div class="big"></div><h2></h2><p></p><button type="button">Try again</button>';
+    done.querySelector(".big").textContent = emotion ? emotion.e : "👋";
+    done.querySelector("h2").textContent = emotion ? emotion.n : "No check-in";
+    done.querySelector("p").textContent = emotion
+      ? "That's it — this is where the real app would log it."
+      : "No worries. Nothing was logged.";
+    done.querySelector("button").addEventListener("click", function () {
+      done.remove();
+      energyLevel = moodLevel = anchorEnergy = anchorMood = 0;
+      energyTouched = moodTouched = false;
+      pan.x = 0; pan.y = 0;
+      fieldDragging = false;
+      selected = null;
+    });
+    document.body.appendChild(done);
+  }
+
+  confirmBtn.addEventListener("click", function () { finish(selected); });
+  skipBtn.addEventListener("click", function () { finish(null); });
+
+  // ── go ───────────────────────────────────────────────────────────────
+  window.addEventListener("resize", measure);
+  window.addEventListener("orientationchange", function () { setTimeout(measure, 150); });
+  measure();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
