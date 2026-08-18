@@ -519,6 +519,37 @@
     width: 16px; height:16px; border-radius: 50%; background: var(--accent, #4361ff);
     box-shadow: 0 0 0 4px rgba(67,97,255,.18); cursor: pointer; border: 0;
   }
+  .research{ padding: 88px 0; position:relative; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(116,209,120,.10), transparent 70%), linear-gradient(180deg, rgba(116,209,120,.045), rgba(255,255,255,.015) 60%, transparent); }
+  .r-badge{ display:inline-flex; align-items:center; gap:8px; padding: 8px 16px; border-radius: 999px; border:1px solid rgba(116,209,120,.35); background: rgba(116,209,120,.10); color: var(--c-green); font-family:'JetBrains Mono', monospace; font-size: 11px; letter-spacing:.16em; text-transform:uppercase; margin-bottom: 22px; }
+  .r-badge i{ width:6px; height:6px; border-radius:50%; background: var(--c-green); box-shadow:0 0 0 4px rgba(116,209,120,.18); font-style:normal; }
+  .research-grid{ display:grid; grid-template-columns: 1.05fr 1fr; gap: 28px; align-items:stretch; }
+  @media(max-width: 900px){ .research-grid{ grid-template-columns: 1fr; } }
+  .r-panel{ border:1px solid var(--line); background: var(--panel); border-radius: var(--radius); padding: 40px; position:relative; overflow:hidden; }
+  .r-big .count, .r-close .n .count{ font-size: inherit; font-weight: inherit; letter-spacing: inherit; color: inherit; }
+  .r-lead{ z-index:0; background: radial-gradient(circle at 85% 0%, rgba(116,209,120,.16), transparent 55%), var(--panel); display:flex; flex-direction:column; justify-content:flex-start; padding: 34px 40px; }
+  .r-big{ font-family:'Comfortaa', sans-serif; font-weight:700; font-size: clamp(72px, 10vw, 124px); line-height:.9; letter-spacing:-.03em; position:relative; }
+  .r-big::before{ content:""; position:absolute; left:-8%; top:-20%; width:70%; height:140%; background: radial-gradient(circle, rgba(116,209,120,.28), transparent 65%); filter: blur(18px); z-index:-1; pointer-events:none; }
+  .r-big span{ font-size:.28em; font-weight:500; color: var(--ink-2); margin-left:6px; letter-spacing:0; }
+  .r-sub{ font-family:'Comfortaa', sans-serif; font-weight:700; font-size: clamp(22px,2.6vw,30px); line-height:1.25; letter-spacing:-.02em; padding-bottom: 22px; color: var(--ink); }
+  .r-swap{ margin-top: 26px; font-family:'Comfortaa', sans-serif; font-weight:600; font-size: clamp(26px, 3vw, 34px); letter-spacing:-.01em; }
+  .r-swap em{ font-style:normal; color: var(--c-red); }
+  .r-swap b{ color: var(--c-green); font-weight:600; }
+  .r-swap small{ display:block; margin-top:10px; font-size:15px; font-weight:400; color: var(--ink-3); letter-spacing:0; }
+  .r-gain{ margin-top: 26px; padding-bottom: 22px; border-bottom:1px solid var(--line); font-family:'Comfortaa', sans-serif; font-weight:600; font-size: clamp(20px,2.2vw,26px); color: var(--c-green); }
+  .r-findings{ display:flex; flex-direction:column; justify-content:center; gap: 0; padding: 34px 40px; }
+  .r-head{ font-family:'Comfortaa', sans-serif; font-weight:700; font-size: clamp(22px,2.6vw,30px); line-height:1.25; letter-spacing:-.02em; padding-bottom: 22px; }
+  .r-find{ display:grid; grid-template-columns: 1fr auto; align-items:baseline; column-gap: 20px; padding: 18px 0; border-top:1px solid var(--line); }
+  .r-find .n{ font-family:'Comfortaa', sans-serif; font-weight:700; font-size: clamp(26px,3vw,34px); line-height:1; letter-spacing:-.02em; text-align:right; }
+  .r-find .n.loss{ color: var(--c-red); }
+  .r-find .n.up{ color: var(--c-green); }
+  .r-find .t{ font-size: 15px; color: var(--ink-2); line-height:1.5; }
+  .r-close{ margin-top: 22px; display:grid; grid-template-columns: auto 1fr; gap: 20px; align-items:center; }
+  @media(max-width: 700px){ .r-close{ grid-template-columns: 1fr; gap: 10px; } .r-panel, .r-findings, .r-lead{ padding: 28px 24px; } }
+  .r-close .n{ font-family:'Comfortaa', sans-serif; font-weight:700; font-size: clamp(38px,5vw,52px); line-height:1; letter-spacing:-.02em; color: var(--c-blue); }
+  .r-close .n span{ font-size:.4em; color: var(--ink-2); font-weight:500; }
+  .r-close .txt{ font-size: 15px; color: var(--ink-2); line-height:1.5; }
+  .r-quote{ margin-top: 24px; font-family:'Comfortaa', sans-serif; font-weight:600; font-size: clamp(20px,2.4vw,28px); letter-spacing:-.01em; text-align:center; }
+  .r-foot{ margin-top: 14px; text-align:center; font-family:'JetBrains Mono', monospace; font-size: 11px; letter-spacing:.14em; text-transform:uppercase; color: var(--ink-3); }
   .wb-tweaks .wb-hint{ font-size: 11px; color: #84827c; margin-top: 8px; line-height: 1.5; }
   @media (max-width: 600px){
     .wb-tweaks{ right: 12px; bottom: 12px; width: calc(100vw - 24px); }
@@ -4063,6 +4094,7 @@
       <span class="name">Wellbeing</span>
     </a>
     <nav class="menu mobile-menu">
+      <a href="#research">The Win</a>
       <a href="#problem">Problem & Solution</a>
       <a href="#inside">The app</a>
       <a href="#loop">Our Hero</a>
@@ -4112,6 +4144,55 @@
         <strong>+5 wellness points 🎉</strong>
       </div>
     </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="divider"></div>
+</div>
+
+<section id="research" class="research">
+  <div class="wrap">
+    <div class="section-head" style="margin-bottom:40px;">
+      <span class="mono">WHAT THE DATA SAYS</span>
+      <h2 style="margin-top:18px;">Screen time isn't the enemy. The long session is.</h2>
+    </div>
+    <div class="research-grid">
+      <div class="r-panel r-lead">
+        <span class="r-badge"><i></i>Validated in alpha · 2026</span>
+        <div class="r-sub">We helped users reduce doomscrolling down with</div>
+        <div class="r-big"><span class="count" data-to="63">63</span><span>%</span></div>
+        <div class="r-swap"><em>6.4 hrs</em> → <b>2.2 hrs</b><small>avg per day, on social media and short-form video</small></div>
+        <div class="r-gain">4.2 hours handed back. Every day.</div>
+        <div class="r-close">
+          <div class="n"><span class="count" data-to="68">68</span><span>%</span></div>
+          <div class="txt">of users felt better after keeping their doomscrolling sessions around 5 minutes each.</div>
+        </div>
+      </div>
+      <div class="r-panel r-findings">
+        <div class="r-head">And we understand doomscrolling butter than anyone else</div>
+        <div class="r-find"><span class="t">If you spend more than 30 minutes, it makes you feel worse by</span><span class="n loss"><span class="count" data-to="18">18</span>%</span></div>
+        <div class="r-find"><span class="t">After 15 minutes it drops your energy by</span><span class="n loss"><span class="count" data-to="34">34</span>%</span></div>
+        <div class="r-find"><span class="t">YouTube made people happier than Facebook by</span><span class="n up"><span class="count" data-to="19">19</span>%</span></div>
+        <div class="r-find"><span class="t">People were happier doing shopping and gaming than using social media by</span><span class="n up"><span class="count" data-to="21">21</span>%</span></div>
+      </div>
+    </div>
+<script>
+(function(){
+  var els=[].slice.call(document.querySelectorAll('#research .count'));
+  if(!els.length) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  els.forEach(function(e){ e.textContent='0'; });
+  function run(e){
+    var to=+e.dataset.to, t0=null, d=1100;
+    function step(t){ if(!t0)t0=t; var p=Math.min(1,(t-t0)/d); e.textContent=Math.round(to*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  var io=new IntersectionObserver(function(en){ en.forEach(function(x){ if(x.isIntersecting){ run(x.target); io.unobserve(x.target); } }); },{threshold:.4});
+  els.forEach(function(e){ io.observe(e); });
+})();
+</script>
+
   </div>
 </section>
 
