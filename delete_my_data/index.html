@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delete My Data – Digital Wellbeing App</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#08080a;--panel:#131318;--line:rgba(255,255,255,0.08);--ink:#f3f1ec;--ink-2:#c9c6bf;--ink-3:#84827c;--accent:#5d76ff;--ok:#74d178;--err:#ff4f4f;}
+  *{box-sizing:border-box;}
+  body{font-family:'Comfortaa',system-ui,sans-serif;max-width:860px;margin:0 auto;padding:24px;color:var(--ink-2);line-height:1.7;font-size:15px;background:var(--bg);}
+  h1{font-size:28px;color:var(--ink);border-bottom:2px solid var(--line);padding-bottom:10px;margin-top:40px;font-weight:700;}
+  .doc-title{font-size:34px;font-weight:700;color:var(--ink);text-align:center;margin-bottom:6px;}
+  .effective{text-align:center;color:var(--ink-3);font-style:italic;margin-bottom:24px;}
+  ul{padding-left:22px;}
+  li{margin-bottom:6px;}
+  a{color:var(--accent);}
+  code{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink);background:var(--panel);padding:2px 6px;border-radius:5px;border:1px solid var(--line);}
+  .contact-block{background:var(--panel);padding:16px 20px;border-left:4px solid var(--accent);border-radius:8px;margin-top:12px;border:1px solid var(--line);}
+  .back-home{display:inline-flex;align-items:center;gap:8px;font-family:'Comfortaa',sans-serif;font-size:14px;color:var(--ink-2);text-decoration:none;padding:10px 18px;border:1px solid rgba(255,255,255,0.14);border-radius:100px;margin-bottom:20px;}
+  .back-home:hover{color:var(--ink);border-color:rgba(255,255,255,0.3);}
+
+  .form-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px;margin-top:20px;}
+  .field{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+  .field label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-3);}
+  .field .hint{font-size:13px;color:var(--ink-3);}
+  input[type=text]{width:100%;padding:13px 15px;background:#0d0d11;border:1px solid rgba(255,255,255,0.14);border-radius:10px;color:var(--ink);font-family:'Comfortaa',sans-serif;font-size:15px;}
+  #userId{font-family:'JetBrains Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;}
+  input[type=text]:focus{outline:none;border-color:var(--accent);}
+  input[type=text]::placeholder{color:#5a5852;text-transform:none;letter-spacing:normal;font-family:'Comfortaa',sans-serif;}
+  button{background:var(--accent);color:#fff;padding:13px 26px;border:none;border-radius:100px;cursor:pointer;font-size:15px;font-family:'Comfortaa',sans-serif;font-weight:600;transition:background .2s ease,transform .1s ease;}
+  button:hover{background:#4361ff;}
+  button:active{transform:scale(0.98);}
+  button[disabled]{opacity:.5;cursor:not-allowed;transform:none;}
+  .msg{display:none;margin-top:16px;padding:14px 18px;border-radius:10px;font-size:14px;border:1px solid var(--line);}
+  .msg.ok{display:block;background:rgba(116,209,120,0.08);border-color:rgba(116,209,120,0.35);color:var(--ok);}
+  .msg.err{display:block;background:rgba(255,79,79,0.08);border-color:rgba(255,79,79,0.35);color:var(--err);}
+</style>
+</head>
+<body>
+<a class="back-home" href="/">← Back to home</a>
+<p class="doc-title">Delete My Data</p>
+<p class="effective">Request erasure of the data linked to your Digital Wellbeing App install</p>
+
+<h1>Before you submit</h1>
+<p>We do not ask for your name or email. The only thing that links data to you is your <strong>User ID</strong>, so we need it to find and erase your records.</p>
+<ul>
+  <li>Open the app and go to the <strong>Profile</strong> tab.</li>
+  <li>Your ID is shown at the bottom of the screen, in the form <code>GW-XXXX-XXXX</code>.</li>
+  <li>Tap the copy button next to it, then paste it below.</li>
+</ul>
+<p>Your ID is tied to a single device. If you installed the app on more than one device, submit one request per device — each has its own ID.</p>
+
+<h1>Request deletion</h1>
+<div class="form-card">
+  <form id="deleteForm" target="deleteSink"
+        action="https://docs.google.com/forms/d/e/REPLACE_FORM_ID/formResponse"
+        method="POST">
+
+    <div class="field">
+      <label for="userId">Your User ID</label>
+      <input type="text" id="userId" name="entry.REPLACE_USERID_ENTRY"
+             placeholder="GW-XXXX-XXXX" required
+             pattern="[Gg][Ww]-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}"
+             title="Enter the ID exactly as shown in the app, e.g. GW-A3F9-C21B"
+             autocomplete="off" spellcheck="false">
+      <span class="hint">Found in the app under Profile.</span>
+    </div>
+
+    <div class="field">
+      <label for="reason">Why are you leaving? <span style="text-transform:none;letter-spacing:normal">(optional)</span></label>
+      <input type="text" id="reason" name="entry.REPLACE_REASON_ENTRY"
+             placeholder="Tell us why you are leaving (optional)" autocomplete="off">
+      <span class="hint">Not required, but it helps us improve.</span>
+    </div>
+
+    <button type="submit" id="submitBtn">Delete my data</button>
+  </form>
+
+  <div class="msg" id="okMsg">
+    <strong>Request received.</strong><br>
+    We will erase the data for that ID within 30 days, except where the law requires us to keep it.
+    You can keep using the app — a new ID is created if you check in again.
+  </div>
+  <div class="msg" id="errMsg"></div>
+</div>
+
+<iframe name="deleteSink" id="deleteSink" style="display:none" title="form target"></iframe>
+
+<h1>What happens next</h1>
+<ul>
+  <li>We locate the records stored against the ID you submitted.</li>
+  <li>Your check-ins, usage records and profile data for that install are erased within 30 days.</li>
+  <li>Deletion is permanent. We cannot restore the data afterwards.</li>
+  <li>Uninstalling the app on its own does not erase data already stored — this request does.</li>
+</ul>
+
+<h1>Prefer to email us?</h1>
+<div class="contact-block">
+  Send your User ID to <a href="mailto:info@digitalwellbeingapp.com?subject=Data%20deletion%20request">info@digitalwellbeingapp.com</a> and we will process it the same way.<br>
+  See our <a href="/privacy-policy.html">Privacy Policy</a> for how we handle your data.
+</div>
+
+<script>
+(function () {
+  var form = document.getElementById('deleteForm');
+  var btn = document.getElementById('submitBtn');
+  var sink = document.getElementById('deleteSink');
+  var okMsg = document.getElementById('okMsg');
+  var errMsg = document.getElementById('errMsg');
+  var userId = document.getElementById('userId');
+  var submitted = false;
+
+  userId.addEventListener('input', function () {
+    userId.value = userId.value.toUpperCase();
+    userId.setCustomValidity('');
+  });
+
+  userId.addEventListener('invalid', function () {
+    userId.setCustomValidity('Enter the ID exactly as shown in the app, e.g. GW-A3F9-C21B');
+  });
+
+  form.addEventListener('submit', function () {
+    submitted = true;
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    errMsg.className = 'msg';
+  });
+
+  // Google Forms answers into the hidden iframe; we cannot read its body
+  // (cross-origin), so a load event after submit is our success signal.
+  sink.addEventListener('load', function () {
+    if (!submitted) return;
+    form.style.display = 'none';
+    okMsg.className = 'msg ok';
+  });
+
+  // If the request never lands, give the user the email fallback.
+  form.addEventListener('submit', function () {
+    setTimeout(function () {
+      if (btn.disabled && form.style.display !== 'none') {
+        btn.disabled = false;
+        btn.textContent = 'Delete my data';
+        errMsg.innerHTML = 'We could not send the request. Please email your ID to ' +
+          '<a href="mailto:info@digitalwellbeingapp.com?subject=Data%20deletion%20request">info@digitalwellbeingapp.com</a>.';
+        errMsg.className = 'msg err';
+      }
+    }, 15000);
+  });
+})();
+</script>
+
+</body>
+</html>
