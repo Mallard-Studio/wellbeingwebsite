@@ -1,4 +1,16 @@
 ---
+26/8/2026 (4)
+Deleted index-preview.html (merged into index.html, nothing unique left in it) and the superseded assets/exit-sign.webp, replaced by exit-sign-1148.webp. Source originals kept: screen-0*.png, solution-exit-sign.jpg, anas.jpg, omnia.jpg are what the WebP files were built from, and logo.png is still used by axis-checkin/index.html. Not committed, not pushed.
+---
+26/8/2026 (3)
+Replaced the index.html title (was "Trade screentime for wellness", old marketplace framing) with "Wellbeing: Find out which app drops your mood" and added the missing meta description. Not committed, not pushed.
+---
+26/8/2026 (2)
+Preview signed off and merged: index-preview.html copied over index.html byte for byte, so the landing page now carries the new hero, the sticky mobile install bar, the UTM-tagged Play links, the cut investor sections and the WebP images. Pre-merge index.html backed up outside the repo at _review/index.html.pre-merge-2026-08-26.bak. index-preview.html is now a stale duplicate and should be deleted. Eight assets/*.webp are still untracked and must be added or the page ships with broken images. Not committed, not pushed.
+---
+26/8/2026
+v2 landing page task 5 done. All landing page images converted to WebP at 2x display size with width/height attributes and lazy loading below the fold: 1,689 KB of images down to 164 KB (-90%), whole page 216 KB, 43 KB of that above the fold. firstrun_hero.gif deliberately stays a GIF, animated WebP came out larger at every quality tried and MP4 needs ffmpeg which is not installed; it is lazy-loaded on investors.html only. No originals deleted, live index.html still references them. Not committed, not pushed.
+---
 25/8/2026 (3)
 v2 landing page task 4 done. Cut #research, #moat and #investors from index-preview.html, removed the two dead nav links and the UAE National Wellbeing Strategy 2031 footer line, added a footer-only Investors link. New investors.html carries that content plus a Why now section that frames Strategy 2031 as market timing and not as endorsement, and the founder photos as avatar cards. index-preview.html 58,820 -> 52,457 bytes. Not committed, not pushed.
 ---

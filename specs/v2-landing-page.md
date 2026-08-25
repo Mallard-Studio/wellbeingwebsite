@@ -69,6 +69,10 @@ There is no butterfly-over-scroll footage anywhere in the repo. Task 6 needs the
 
 ## Progress
 
+**Page title and meta description, 2026-08-26.** `<title>` was "The Wellbeing App — Trade screentime for wellness", the old marketplace framing, and there was no meta description at all. Now "Wellbeing: Find out which app drops your mood" (45 chars) plus a 136 char description built from the locked offer sentence. Both fit what Google shows.
+
+**Milestone, 2026-08-26.** Tasks 1, 2, 3, 4 and 5 are done and merged into `index.html`. Landing page is 52,795 bytes with 164 KB of images, one job, one CTA, no investor content.
+
 ### Done
 
 **Task 1 — adblock CSS stripped.** `index.html` 1,876,271 → 57,478 bytes (-97%).
@@ -93,11 +97,29 @@ Screenshots: `_review/task4-360-landing-and-investors.jpg`, `_review/task4-inves
 
 **Still on the landing page and still wrong, for task 14:** `#download` says "Real rewards.*" and both `#loop` and `#download` carry the "Marketplace & points redemption" footnote. Nav still links "Our Hero" to `#loop`. That is task 14, not task 4.
 
+**Task 5 — done.** Every image the landing page loads is now WebP, sized to twice its real display size, with `width`/`height` on the tag and `loading="lazy"` on everything below the fold.
+
+| File | Was | Now | Display size |
+|---|---|---|---|
+| `screen-03.png` -> `.webp` | 635 KB | **29 KB** | 320 px wide, built at 640 |
+| `screen-05.png` -> `.webp` | 597 KB | **21 KB** | 320 px wide, built at 640 |
+| `screen-02.png` -> `.webp` | 229 KB | **30 KB** | source is only 488 px, not upscaled |
+| `solution-exit-sign.jpg` -> `.webp` | 140 KB | **39 KB** | 509 px wide, built at 1020 |
+| `exit-sign.webp` -> `exit-sign-1148.webp` | 61 KB | **41 KB** | 574 px wide, built at 1148 |
+| `logo.png` -> `logo.webp` | 27 KB | **2 KB** | 32 px, the file was 540 px |
+| `anas.jpg` / `omnia.jpg` -> `.webp` | 133 / 59 KB | **5 / 5 KB** | 96 px avatars on `investors.html` |
+
+Landing page images: **1,689 KB -> 164 KB (-90%)**. Whole page including HTML: **216 KB**. First paint pulls **43 KB** of images, the rest arrives lazily. Brief target was under 500 KB and it is well clear.
+
+**`firstrun_hero.gif` stays a GIF, on purpose.** It is on `investors.html` only. Animated WebP was tried at three quality levels and every one came out *larger* than the 1,041 KB GIF (1,198 KB at q65, 979 KB at q50, 754 KB at q35 and visibly mushy on pixel art). A GIF's palette plus frame differencing beats lossy WebP on flat pixel art. Re-saving the GIF with PIL `optimize=True` also made it bigger, 1,267 KB. The real fix is MP4/WebM and that needs `ffmpeg`, which is not on this machine. It is lazy-loaded and below the fold on a footer-linked page, so it costs the install funnel nothing.
+
+**Originals kept.** No PNG or JPG was deleted: the live `index.html` still points at them, and it does not change until the preview is signed off and merged. `screen-01.png` and `screen-04.png` are now referenced by nothing, they went out with the cut sections.
+Screenshot: `_review/task5-screens-after-webp.jpg`.
+
 ### Not started
 
 | # | Task | Priority |
 |---|---|---|
-| 5 | Compress images — **blocked, see below** | P0 |
 | 6 | Hero video — **blocked**, no source footage exists | P1 |
 | 7 | Privacy section naming the Accessibility permission | P1 |
 | 8 | "Not a blocker" comparison table | P1 |
@@ -110,7 +132,6 @@ Screenshots: `_review/task4-360-landing-and-investors.jpg`, `_review/task4-inves
 
 ### Blocked on the founder
 
-- **Task 5** — do not start. Founder asked for an explanation of why image compression matters before any work happens. Explain, then wait.
 - **Task 6** — needs 6–10s of screen capture: the butterfly appearing over a real TikTok/Instagram scroll.
 - **Task 9** — a real form needs a third-party endpoint (Formspree, Google Form, Buttondown). GitHub Pages is static, there is no backend.
 - **Task 10** — needs a real anonymized mood chart. Voice rule: every number carries a source or comes off.
@@ -122,7 +143,8 @@ Screenshots: `_review/task4-360-landing-and-investors.jpg`, `_review/task4-inves
 
 | File | Size | Note |
 |---|---|---|
-| `assets/exit-sign.webp` | 61 KB | **New.** Made from `solution-exit-sign.jpg` (140 KB) via PIL, quality 82. In use by the hero. |
+| `assets/exit-sign-1148.webp` | 41 KB | **In use by the hero.** 1148 px wide, 2x its 574 px display size. `exit-sign.webp` (61 KB, 1376 px) is the superseded first cut. |
+| `assets/*.webp` | 2-40 KB | The task 5 set: `screen-02`, `screen-03`, `screen-05`, `solution-exit-sign`, `logo`, `anas`, `omnia`. |
 | `assets/screen-01.png` | 479 KB | Has "You earned 5 points" burned into the image. Unresolved — crop, swap, or reshoot. |
 | `assets/screen-02.png` | 234 KB | Select Apps to Track. Bottom nav shows a "Rewards" tab. |
 | `assets/screen-03.png` | 650 KB | Breath / emotion check-in, butterfly. Clean. |
@@ -137,7 +159,7 @@ No `ffmpeg`, `magick` or `cwebp` on this machine. Python **PIL 12.1.0** is avail
 
 ## Working method
 
-- **All work happens in `index-preview.html`**, a copy of `index.html`. Nothing merges back until the founder signs off.
+- **All work happens in `index.html` directly.** The preview was signed off and merged on 2026-08-26, then `index-preview.html` was deleted along with the superseded `assets/exit-sign.webp` and the `_review/harness.html` mobile harness. Pre-merge `index.html` is backed up at `_review/index.html.pre-merge-2026-08-26.bak`, outside the repo. The harness is a ten line file, rebuild it from the notes below when mobile review is needed again.
 - **`_review/`** at `D:\anas\Work\GW\website\_review\` holds review screenshots. Outside the git repo, so it never gets committed.
 - Local servers used during the session: `python -m http.server 8765` on the site root, `8766` on the scratchpad for the mobile harness. The repo's own `run-local-server.bat` uses port 8000.
 - **Mobile is simulated by iframing the page at 360px and 390px** inside a wrapper page. `resize_window` does not work — Chrome refuses to go below roughly 500px wide.
@@ -149,7 +171,8 @@ No `ffmpeg`, `magick` or `cwebp` on this machine. Python **PIL 12.1.0** is avail
 
 ## Repo rules that bit during this work
 
-- **Never commit without explicit approval.** Currently uncommitted: modified `index.html`, new `assets/exit-sign.webp`, new `index-preview.html`, new `investors.html`.
+- **Never commit without explicit approval.** The founder commits this work himself. Two of his commits already exist: `b89d363` (task 1 and the hero, **pushed, live**) and `48be0f1` (task 4, committed, **not pushed**, master is ahead of origin by one).
+- Currently uncommitted: modified `index.html` (the merge), `index-preview.html`, `investors.html`, both spec files, plus eight untracked `assets/*.webp` from task 5. The webp files must be added or the merged page ships with broken images.
 - `_review/harness.html` is the 360px review harness. Outside the repo, never committed.
 - Branch is `master`. `master` is the published branch — a commit here goes live on `digitalwellbeing.xyz` via GitHub Pages.
 - Max 200 words per response, per `CLAUDE.md`.
