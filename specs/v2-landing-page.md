@@ -74,21 +74,29 @@ There is no butterfly-over-scroll footage anywhere in the repo. Task 6 needs the
 **Task 1 — adblock CSS stripped.** `index.html` 1,876,271 → 57,478 bytes (-97%).
 Deleted lines 559–4086: twelve injected `<style>` blocks from a browser ad-blocker extension, saved into the file when the page was exported from a browser. Verified the range held zero site content. Also appended the missing `</body></html>`. Committed? **No.** This change is live in `index.html` on `master`, uncommitted.
 
-**Task 3 — partial.** The hero Play link is UTM-tagged. Two more links still need it.
-Note: the brief says `?referrer=...` but `?id=` is already in the URL, so the correct form is `&referrer=utm_source%3Dweb`.
+**Task 3 — done.** All Play links carry the canonical landing-page tag from `v2-install-attribution-links.md`:
+`&referrer=utm_source%3Dweb%26utm_medium%3Dsite`. Four links now (nav, hero, `#download`, sticky bar), all four verified tagged in the DOM.
+Two notes: the brief says `?referrer=...` but `?id=` is already in the URL, so the separator is `&`. The hero's earlier tag was missing `utm_medium%3Dsite` and has been normalized.
+
+**Task 2 — done.** Sticky install bar, `index-preview.html`. `.install-bar` is `display:none` by default and `position:fixed` bottom below 820px, matching the hamburger breakpoint. Full-width `.btn.primary`, `env(safe-area-inset-bottom)` padding for iOS, `body{padding-bottom}` on mobile so it never covers the footer. No JS, so it is visible at every scroll position by construction.
+Verified at 360px: bar present at top, mid and bottom of the page, footer clears it. Desktop at 1536px: `display:none`, body padding `0px`. Screenshot: `_review/sticky-bar-360-top-mid-bottom.jpg`.
 
 **Hero** — built in `index-preview.html`. Three real bugs found and fixed while building it:
 1. `.hero-visual{min-height:560px}` at ≤980px pushed the sign ~610px down, below the mobile fold. My override lost on source order — fix was to append the new CSS at the **end** of the stylesheet, not mid-file.
 2. Nav collided at 360px: wordmark under the hamburger, CTA wrapping to two lines. `.brand .name` now hides below 560px.
 3. Sign bled left but not right — `flex-shrink` was eating `calc(100% + 56px)`. Now symmetric negative margins.
 
+**Task 4 — done.** `#research`, `#moat` and `#investors` cut from `index-preview.html` (58,820 -> 52,457 bytes, page height at 360px 15,194 -> 10,025 px). Nav lost "The Win" and "Rewards", which now pointed at nothing. Footer lost the "Aligned with UAE National Wellbeing Strategy 2031" line per decision 3 and gained an "Investors" link in the legal row, footer only, never the nav.
+
+**`investors.html` built.** Self-contained copy of the site head and stylesheet, so it needs no shared CSS file and `index.html` is untouched. Carries: a new **Why now** section (Strategy 2031 framed as market timing, states plainly that we are not part of it, the word "aligned" is gone), then the cut `#research`, `#moat` and `#investors` content. The empty fifth `value-list` item and the empty `matrix-wrap` were dropped, and the moat eyebrow reads "The model" instead of "Coming Soon". Founder photos land here: the plain `.contacts` list is replaced by `.f-card` avatars using `assets/anas.jpg` and `assets/omnia.jpg`, so the emails appear once, not twice. No sticky install bar, this page is not part of the install funnel.
+Screenshots: `_review/task4-360-landing-and-investors.jpg`, `_review/task4-investors-desktop-founders.jpg`.
+
+**Still on the landing page and still wrong, for task 14:** `#download` says "Real rewards.*" and both `#loop` and `#download` carry the "Marketplace & points redemption" footnote. Nav still links "Our Hero" to `#loop`. That is task 14, not task 4.
+
 ### Not started
 
 | # | Task | Priority |
 |---|---|---|
-| 2 | Sticky Play button on mobile | P0 |
-| 3 | UTM-tag the remaining two Play links | P0 |
-| 4 | Cut `#investors`, `#moat`, `#research`; build `investors.html` | P0 |
 | 5 | Compress images — **blocked, see below** | P0 |
 | 6 | Hero video — **blocked**, no source footage exists | P1 |
 | 7 | Privacy section naming the Accessibility permission | P1 |
@@ -133,12 +141,15 @@ No `ffmpeg`, `magick` or `cwebp` on this machine. Python **PIL 12.1.0** is avail
 - **`_review/`** at `D:\anas\Work\GW\website\_review\` holds review screenshots. Outside the git repo, so it never gets committed.
 - Local servers used during the session: `python -m http.server 8765` on the site root, `8766` on the scratchpad for the mobile harness. The repo's own `run-local-server.bat` uses port 8000.
 - **Mobile is simulated by iframing the page at 360px and 390px** inside a wrapper page. `resize_window` does not work — Chrome refuses to go below roughly 500px wide.
+- **Scrolling inside those iframes does not work either.** `scrollTo` and `scrollingElement.scrollTop` both read back `0`. To review a lower part of the page, shift the document instead: `body{position:relative; top:-Npx}` on the iframe's document. `position:fixed` elements stay pinned, so it is a valid way to test a sticky bar against the footer.
+- Serve the **parent** dir (`D:\anas\Work\GW\website`) so the harness in `_review/` and the site share an origin. Cross-origin iframes cannot be scripted at all.
 - Anchor links (`#id`) do not reliably scroll inside those iframes; images load after the jump and the layout shifts back to the top. Build one standalone file per variant instead.
 
 ---
 
 ## Repo rules that bit during this work
 
-- **Never commit without explicit approval.** Currently uncommitted: modified `index.html`, new `assets/exit-sign.webp`, new `index-preview.html`.
+- **Never commit without explicit approval.** Currently uncommitted: modified `index.html`, new `assets/exit-sign.webp`, new `index-preview.html`, new `investors.html`.
+- `_review/harness.html` is the 360px review harness. Outside the repo, never committed.
 - Branch is `master`. `master` is the published branch — a commit here goes live on `digitalwellbeing.xyz` via GitHub Pages.
 - Max 200 words per response, per `CLAUDE.md`.

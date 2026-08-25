@@ -11,7 +11,8 @@
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Wellbeing App — Trade screentime for wellness</title>
+<title>Wellbeing — For investors</title>
+<meta name="description" content="Wellbeing: the data behind the product, the marketplace model, and how to reach the founders.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -595,334 +596,196 @@
     body{ padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
   }
 
+  /* ===== investors page only (appended last so it wins on source order) ===== */
+  #investors .f-card{ text-align:left; align-items:center; }
+  #investors .f-card .name{ font-family:'Comfortaa', sans-serif; font-weight:700; font-size:20px; margin-bottom:8px; }
+  #investors .f-card a{ display:block; font-size:14px; color:var(--ink-2); }
+  #investors .f-card a:hover{ color:var(--ink); }
+  #investors .f-card br{ display:none; }
+  #investors .founders-grid{ margin-top:44px; text-align:left; }
+
 </style>
 </head>
-<body data-titans-quick-view-extension-id="eefljgmhgaidffapnppcmmafobefjece" style="">
+<body>
 
 <header class="nav">
   <div class="wrap row">
-    <a class="brand" href="#top">
+    <a class="brand" href="index.html">
       <img src="assets/logo.png" alt="Wellbeing logo">
       <span class="name">Wellbeing</span>
     </a>
-    <nav class="menu mobile-menu">
-      <a href="#problem">Problem & Solution</a>
-      <a href="#inside">The app</a>
-      <a href="#loop">Our Hero</a>
-    </nav>
-    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu" type="button"><span></span><span></span><span></span></button>
-    <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.gw.gamerswellbeing&amp;referrer=utm_source%3Dweb%26utm_medium%3Dsite">
-      <span style="">Get the app</span>
-      <span class="arrow" style="">→</span>
-    </a>
+    <a class="btn" href="index.html">Back to the site</a>
   </div>
 </header>
 
 <main id="top">
 
-<section class="hero wrap">
-  <div class="hero-grid">
-    <div>
-      <h1>YOU<br>NEED AN<br><span class="grad">EXIT SIGN.</span></h1>
-      <div class="herotext">
-        <p class="heroline">Listen to your feelings. They're the best sign.</p>
-        <p class="heroline">Find out which app drops your mood.</p>
-      </div>
-      <div class="hero-ctas">
-        <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.gw.gamerswellbeing&amp;referrer=utm_source%3Dweb%26utm_medium%3Dsite">Get the app <span class="arrow">&#8594;</span></a>
-      </div>
-    </div>
-    <div class="hero-visual">
-      <div class="signframe">
-        <img src="assets/exit-sign.webp" width="1376" height="768"
-             alt="Highway sign: Keep Doomscrolling straight ahead, or take the exit to Real Wellbeing">
-      </div>
-    </div>
-  </div>
+<section class="wrap" style="padding: 72px 0 8px;">
+  <span class="eyebrow"><span class="dot" style="background:#5b6dff; box-shadow:0 0 10px #5b6dff;"></span>For investors</span>
+  <h1 style="margin-top:22px; font-size: clamp(34px, 5vw, 62px); line-height:1.05; letter-spacing:-.02em;">The case behind the app.</h1>
+  <p class="sub" style="max-width:620px; margin-top:18px;">What our alpha data shows, why the timing is what it is, and how the app pays for itself.</p>
 </section>
 
 <div class="wrap">
   <div class="divider"></div>
 </div>
 
-
-<section id="problem" class="problem">
-  <div class="wrap">
-    <div class="section-head">
-      <span class="mono">THE PROBLEM</span>
-      <h2 style="">Screentime is not how you should reduce stress.&nbsp;</h2>
-
+<section id="why-now" class="wrap" style="padding: 8px 0 72px;">
+  <div class="section-head" style="margin-bottom:34px;">
+    <span class="mono">WHY NOW</span>
+    <h2 style="margin-top:18px;">The market moved before we did.</h2>
+  </div>
+  <div class="research-grid">
+    <div class="r-panel">
+      <h4 style="font-size:16px; font-weight:600; margin-bottom:10px;">Money is pointing at wellbeing</h4>
+      <p style="font-size:15px; color:var(--ink-2); line-height:1.6;">The UAE published a National Wellbeing Strategy 2031, and wellbeing became a line item across health, education and workplace budgets in the region. We are not part of that strategy and we do not claim to be. We read it as timing: buyers, partners and press in this market are already primed for the category.</p>
     </div>
-
-    <div class="stat-grid">
-      <div class="stat-card">
-        <div class="num">2.5h</div>
-        <div class="label" style="">spent doomscrolling daily by 50% of millennials &amp; GenZ to "reduce stress."</div>
-        <div class="src" style="">A coping mechanism that doesn't work.</div>
-      </div>
-      <div class="stat-card">
-        <div class="num">11%</div>
-        <div class="label" style="">of professional work hours lost to ineffective digital habits.</div>
-        <div class="src" style="">Corporate lose money.</div>
-      </div>
-    </div>
-
-    <div class="two-col single">
-      <div class="who-card users">
-        <span class="who-tag">Wellness Seekers</span>
-        <h3 style="">People doomscroll to feel better. But it makes them feel worse.</h3>
-        <ul>
-          <li style="">Doomscrolling is not designed to reduce stress. Wellness services are.</li>
-          <li style="">Doomscrolling&nbsp;proven to cause mental distress, FOMO, isolation,&nbsp;dopamine addiction, escapism, and more stress.</li>
-        </ul>
-      </div>
+    <div class="r-panel">
+      <h4 style="font-size:16px; font-weight:600; margin-bottom:10px;">The belief is already there</h4>
+      <p style="font-size:15px; color:var(--ink-2); line-height:1.6;">Every phone now ships a screen time dashboard, and people already suspect the scroll costs them something. Nobody has to be convinced any more. What is missing is the instrument that names which app, and when, instead of handing them a weekly total they cannot act on.</p>
     </div>
   </div>
+  <div class="r-foot" style="margin-top:22px; text-align:left;">TIMING, NOT ENDORSEMENT</div>
 </section>
 
-<section id="solution">
+<div class="wrap">
+  <div class="divider"></div>
+</div>
+<section id="research" class="research">
   <div class="wrap">
-    <div class="moat-hero" style="margin-bottom: 40px;">
-      <div class="section-head" style="max-width: 620px; margin-bottom: 0;">
-        <span class="mono">THE SOLUTION</span>
-        <h2 style="margin-top: 18px;">You need an exit sign!</h2>
-        <p style="margin-top: 22px;">Not all scrolling is bad, too much scrolling is definitely bad.</p>
-      </div>
-      <div class="moat-gif">
-        <img src="assets/solution-exit-sign.jpg" alt="Keep Doomscrolling or Real Wellbeing — highway exit sign">
-      </div>
+    <div class="section-head" style="margin-bottom:40px;">
+      <span class="mono">WHAT THE DATA SAYS</span>
+      <h2 style="margin-top:18px;">Screen time isn't the enemy. The long session is.</h2>
     </div>
-
-    <div class="flow" style="margin-top: 0;">
-      <div class="step">
-        <div class="icon-blob">
-          <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 28C16 28 4 20.5 4 12.5C4 8.36 7.36 5 11.5 5C13.5 5 15.4 6 16 7.5C16.6 6 18.5 5 20.5 5C24.64 5 28 8.36 28 12.5C28 20.5 16 28 16 28Z"></path></svg>
-        </div>
-        <div class="num">01 / Detect</div>
-        <h3 style="">Read the mood</h3>
-        <p style="">Our AI learns each user's emotional pattern across apps and sends an exit signal at the right moment, before doomscrolling becomes harmful. Backed by scientific research.</p>
-      </div>
-      <div class="step">
-        <div class="icon-blob">
-          <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M9 4H23V8H27V11C27 13.76 24.76 16 22 16H21.5C20.7 18.5 18.7 20.5 16 20.95V24H21V27H11V24H16V20.95C13.3 20.5 11.3 18.5 10.5 16H10C7.24 16 5 13.76 5 11V8H9V4ZM9 11V10H7V11C7 12.66 8.34 14 10 14V11ZM23 14C24.66 14 26 12.66 26 11V10H23V11V14Z"></path></svg>
-        </div>
-        <div class="num">02 / Reward</div>
-        <h3 style="">Cut screentime. Earn wellness points.</h3>
-        <p style="">Every minute saved can be a point earned.&nbsp;Instead of getting hooked by apps, users get freedom and rewards.</p>
-      </div>
-      <div class="step">
-        <div class="icon-blob">
-          <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 3C8.82 3 3 8.82 3 16C3 23.18 8.82 29 16 29C23.18 29 29 23.18 29 16C29 8.82 23.18 3 16 3ZM17.5 23.5V25.5H14.5V23.5C12.57 23.16 11 21.83 11 20H13.5C13.5 20.83 14.62 21.5 16 21.5C17.38 21.5 18.5 20.83 18.5 20C18.5 19.17 17.38 18.5 16 18.5C13.24 18.5 11 17.17 11 15.5C11 13.83 12.57 12.5 14.5 12.16V10H17.5V12.16C19.43 12.5 21 13.83 21 15.5H18.5C18.5 14.67 17.38 14 16 14C14.62 14 13.5 14.67 13.5 15.5C13.5 16.33 14.62 17 16 17C18.76 17 21 18.33 21 20C21 21.83 19.43 23.16 17.5 23.5Z"></path></svg>
-        </div>
-        <div class="num">03 / Redeem*</div>
-        <h3>Unlock real offers from local wellness SMEs.*</h3>
-        <p style="">Local gyms, spas, mental-health sessions, kids' activities, family venues. A specialized marketplace. Only wellness. Only for people who earned it.</p>
-      </div>
-    </div>
-
-    <div class="coming-soon"><span class="star">✱</span><span>Marketplace &amp; points redemption are under construction and coming soon.</span></div>
-  </div>
-</section>
-
-<section id="inside" class="showcase">
-  <div class="wrap">
-    <div class="section-head">
-      <span class="mono">HOW IT WORKS</span>
-      <h2 style="">How do you feel?</h2>
-      <p style="width: 730px;">The butterfly helps you map your emotional states: angry, energized, calm, or down. Your feelings input helps us predict where you should stop scrolling.&nbsp;
-Within 4 weeks, we help you adopt new healthier habits, and earn rewards*</p>
-    </div>
-
-    <div class="screens-row">
-      <div class="screen-col">
-        <div class="screen-frame"><img src="assets/screen-03.png" alt="Emotion check-in"></div>
-        <div class="screen-cap">
-          <div class="label">Emotional Check-in</div>
-          <h4>How are you, really?</h4>
-          <p>Mark your emotions on the butterfly. We learn your patterns, app by app.</p>
+    <div class="research-grid">
+      <div class="r-panel r-lead">
+        <span class="r-badge"><i></i>Validated in alpha · 2026</span>
+        <div class="r-sub">We helped users reduce doomscrolling down with</div>
+        <div class="r-big"><span class="count" data-to="63">63</span><span>%</span></div>
+        <div class="r-swap"><em>6.4 hrs</em> → <b>2.2 hrs</b><small>avg per day, on social media and short-form video</small></div>
+        <div class="r-gain">4.2 hours handed back. Every day.</div>
+        <div class="r-close">
+          <div class="n"><span class="count" data-to="68">68</span><span>%</span></div>
+          <div class="txt">of users felt better after keeping their doomscrolling sessions around 5 minutes each.</div>
         </div>
       </div>
-      <div class="screen-col">
-        <div class="screen-frame"><img src="assets/screen-05.png" alt="Take a break exit signal"></div>
-        <div class="screen-cap">
-          <div class="label">Exit Signal</div>
-          <h4>Caught before the spiral.</h4>
-          <p>When mood drops, we send you a clear signal. You should take a break.</p>
-        </div>
-      </div>
-      <div class="screen-col">
-        <div class="screen-frame"><img src="assets/screen-02.png" alt="Apps to track"></div>
-        <div class="screen-cap">
-          <div class="label">App Tracking</div>
-          <h4>Your rules.</h4>
-          <p>Decide which apps to track and how often we check on you.</p>
-        </div>
+      <div class="r-panel r-findings">
+        <div class="r-head">And we understand doomscrolling better than anyone else.</div>
+        <div class="r-find"><span class="t">Doomscrolling for 30 minutes, makes you feel worse</span><span class="n loss"><span class="count" data-to="18">18</span>%</span></div>
+        <div class="r-find"><span class="t">After 15 minutes it drops your energy</span><span class="n loss"><span class="count" data-to="34">34</span>%</span></div>
+        <div class="r-find"><span class="t">YouTube made people happier than Facebook</span><span class="n up"><span class="count" data-to="19">19</span>%</span></div>
+        <div class="r-find"><span class="t">People were happier doing shopping and gaming than using social media by...</span><span class="n up"><span class="count" data-to="21">21</span>%</span></div>
       </div>
     </div>
-
-    <div class="coming-soon"><span class="star">✱</span><span>Marketplace &amp; points redemption are under construction and coming soon.</span></div>
-  </div>
-</section>
-
-<section id="loop">
-  <div class="wrap">
-    <div class="section-head">
-      <span class="mono">YOU ARE THE HERO</span>
-      <h2 style="">You are on a mission to define screen limits for the whole world.</h2>
-    </div>
-
-    <div class="loop-wrap">
-      <div class="loop">
-        <div class="node">
-          <div class="ring">⚡</div>
-          <h4>Recognize</h4>
-          <p style="">Learn to read your emotional state and simply understand exit signs.  </p>
-        </div>
-        <div class="node">
-          <div class="ring">↓</div>
-          <h4>Less Screen</h4>
-          <p style="">Your wellbeing improves, productivity increases, and you find more free time.</p>
-        </div>
-        <div class="node">
-          <div class="ring">★</div>
-          <h4>Real Hero</h4>
-          <p style="">Redesign the app for yourself and the community. The whole world benefits from your progress.</p>
-        </div>
-        <div class="node">
-          <div class="ring">↑</div>
-          <h4>United we stand</h4>
-          <p style="">You set an example to the community, and help us make the digital world a better place.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="coming-soon"><span class="star">✱</span><span>Marketplace &amp; points redemption are under construction and coming soon.</span></div>
-  </div>
-</section>
-
-<section id="download" class="cta-section">
-  <div class="wrap">
-    <span class="eyebrow"><span class="dot"></span>Get the app</span>
-    <h2 style="margin-top: 22px;">Less screen.
-Better mood.&nbsp;<div>Real rewards.*</div></h2>
-    <p class="sub" style="">Download Wellbeing on Android today. iOS launching soon — join the waitlist and we'll let you know the moment it's live.</p>
-    <div class="cta-block">
-      <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.gw.gamerswellbeing&amp;referrer=utm_source%3Dweb%26utm_medium%3Dsite" style="">Download for Android <span class="arrow">→</span></a>
-      <a class="btn" href="mailto:hello@digitalwellbeingapp.com?subject=iOS%20waitlist">Join iOS waitlist</a>
-    </div>
-
-    <div class="coming-soon"><span class="star">✱</span><span>Marketplace &amp; points redemption are under construction and coming soon.</span></div>
-  </div>
-</section>
-
-
-
-
-
-</main>
-
-<!-- Tweaks panel — focused on the "How do you feel?" screens row -->
-<aside class="wb-tweaks" id="wb-tweaks" aria-label="Tweaks">
-  <div class="wb-head">
-    <div class="wb-title">Tweaks · Screens row</div>
-    <button class="wb-close" id="wb-tweaks-close" aria-label="Close tweaks" type="button">✕</button>
-  </div>
-
-  <div class="wb-section">
-    <div class="wb-row">
-      <div class="wb-label">Photo align</div>
-    </div>
-    <div class="wb-seg" data-tweak="photoalign">
-      <button type="button" data-val="tops">Tops</button>
-      <button type="button" data-val="centers">Centers</button>
-      <button type="button" data-val="bottoms">
-</button>
-    </div>
-  </div>
-
-  <div class="wb-section">
-    <div class="wb-row">
-      <div class="wb-label">Lift 3rd photo</div>
-      <div class="wb-val" id="wb-lift-val">0 px</div>
-    </div>
-    <input class="wb-slider" type="range" id="wb-lift" min="-40" max="40" step="1" value="0">
-    <div class="wb-hint">Nudges the 3rd phone vertically to fine-tune the row.</div>
-  </div>
-</aside>
-
 <script>
 (function(){
-  var TWEAKS = /*EDITMODE-BEGIN*/{
-    "photoalign": "tops",
-    "lift3": 0
-  }/*EDITMODE-END*/;
-
-  var state = Object.assign({}, TWEAKS);
-  var panel  = document.getElementById('wb-tweaks');
-  var lift   = document.getElementById('wb-lift');
-  var liftV  = document.getElementById('wb-lift-val');
-  var closeB = document.getElementById('wb-tweaks-close');
-
-  function apply(){
-    document.body.setAttribute('data-photoalign', state.photoalign);
-    document.body.style.setProperty('--shift-3rd', (-state.lift3) + 'px');
-    // sync UI
-    document.querySelectorAll('.wb-tweaks [data-tweak]').forEach(function(group){
-      var k = group.getAttribute('data-tweak');
-      group.querySelectorAll('[data-val]').forEach(function(b){
-        b.classList.toggle('is-on', b.getAttribute('data-val') === state[k]);
-      });
-    });
-    lift.value = state.lift3;
-    liftV.textContent = (state.lift3 > 0 ? '+' : '') + state.lift3 + ' px';
+  var els=[].slice.call(document.querySelectorAll('#research .count'));
+  if(!els.length) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  els.forEach(function(e){ e.textContent='0'; });
+  function run(e){
+    var to=+e.dataset.to, t0=null, d=1100;
+    function step(t){ if(!t0)t0=t; var p=Math.min(1,(t-t0)/d); e.textContent=Math.round(to*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
   }
-
-  function persist(edits){
-    try { window.parent.postMessage({type:'__edit_mode_set_keys', edits: edits}, '*'); } catch(e){}
-  }
-
-  function setKey(key, val){
-    if (state[key] === val) return;
-    state[key] = val;
-    apply();
-    var edit = {}; edit[key] = val; persist(edit);
-  }
-
-  // Segmented controls
-  document.querySelectorAll('.wb-tweaks [data-tweak]').forEach(function(group){
-    var key = group.getAttribute('data-tweak');
-    group.addEventListener('click', function(e){
-      var b = e.target.closest('[data-val]'); if (!b) return;
-      setKey(key, b.getAttribute('data-val'));
-    });
-  });
-
-  // Slider — live preview, persist on release
-  lift.addEventListener('input', function(){
-    state.lift3 = parseInt(lift.value, 10) || 0;
-    apply();
-  });
-  lift.addEventListener('change', function(){
-    persist({lift3: state.lift3});
-  });
-
-  // Close
-  closeB.addEventListener('click', function(){
-    panel.classList.remove('is-open');
-    try { window.parent.postMessage({type:'__edit_mode_dismissed'}, '*'); } catch(e){}
-  });
-
-  // Edit-mode protocol: listener FIRST, then announce.
-  window.addEventListener('message', function(ev){
-    var d = ev && ev.data; if (!d || typeof d !== 'object') return;
-    if (d.type === '__activate_edit_mode')   panel.classList.add('is-open');
-    if (d.type === '__deactivate_edit_mode') panel.classList.remove('is-open');
-  });
-  try { window.parent.postMessage({type:'__edit_mode_available'}, '*'); } catch(e){}
-
-  apply();
+  var io=new IntersectionObserver(function(en){ en.forEach(function(x){ if(x.isIntersecting){ run(x.target); io.unobserve(x.target); } }); },{threshold:.4});
+  els.forEach(function(e){ io.observe(e); });
 })();
 </script>
+
+  </div>
+</section>
+<div class="wrap">
+  <div class="divider"></div>
+</div>
+<section id="moat">
+  <div class="wrap">
+    <div style="text-align:center;"><span class="eyebrow"><span class="dot" style="background:#5b6dff; box-shadow:0 0 10px #5b6dff;"></span>The model</span></div>
+    <div class="moat-hero">
+      <div class="section-head" style="max-width: 620px; margin-bottom: 0;">
+        <span class="mono">WIN WIN SITUATION</span>
+        <h2 style="margin-top: 18px;">Leave the phone. Take the reward.*</h2>
+        <p style="margin-top: 22px;">Replace old digital habits, don't just block apps.</p>
+      </div>
+      <div class="moat-gif">
+        <img src="assets/firstrun_hero.gif" alt="Leave the mobile. Take the reward.">
+      </div>
+    </div>
+
+    <ul class="value-list">
+      <li>
+        <div class="v-num">01</div>
+        <div>
+          <h4>We catch you at the right moment</h4>
+          <p>We let you discover your feelings. We help you stop unlimited scrolling while you feel refreshed and clear.</p>
+        </div>
+      </li>
+      <li>
+        <div class="v-num">02</div>
+        <div>
+          <h4>Reward you with offers you need.</h4>
+          <p>Every minute you save becomes points you can spend on a yoga class, a spa visit, a therapy session, a gym day pass.&nbsp;
+Real wellness.</p>
+        </div>
+      </li>
+      <li>
+        <div class="v-num">03</div>
+        <div>
+          <h4>Replace the habit with a better one.</h4>
+          <p>Bad digital habits need to be replaced with healthier habits.&nbsp;
+We don't block your screen, we help you change the habit.</p>
+        </div>
+      </li>
+      <li>
+        <div class="v-num">04</div>
+        <div>
+          <h4>It costs you nothing to use</h4>
+          <p>Free to download, free to earn, free to redeem. The wellness brands you visit are the ones who pay us, and only after you actually show up.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="coming-soon"><span class="star">✱</span><span>Marketplace &amp; points redemption are under construction and coming soon.</span></div>
+  </div>
+</section>
+<div class="wrap">
+  <div class="divider"></div>
+</div>
+<section id="investors" class="cta-section">
+  <div class="wrap">
+    <div style="margin-top: 0; padding-top: 0;">
+      <span class="eyebrow"><span class="dot" style="background:#5b6dff; box-shadow:0 0 10px #5b6dff;"></span>For investors</span>
+      <h2 style="margin-top: 22px; font-size: clamp(28px, 3.4vw, 44px);">We are seeking funding</h2>
+      <p class="sub" style="">Deck and financial model available on request.&nbsp;</p><div>We reply within 24 hours.</div><p></p>
+      <div class="cta-block">
+        <a class="btn primary" href="mailto:anas@digitalwellbeingapp.com?subject=Investor%20intro" style="">Talk to the founders <span class="arrow">→</span></a>
+        <a class="btn" href="index.html">Back to the site</a>
+      </div>
+    </div>
+
+    <div class="founders-grid">
+      <div class="f-card">
+        <div class="avatar a"><img src="assets/anas.jpg" alt="Anas Alsehly" loading="lazy" width="96" height="96"></div>
+        <div>
+          <div class="role">Co-founder · CEO</div>
+          <div class="name">Anas Alsehly</div>
+          <a href="mailto:anas@digitalwellbeingapp.com">anas@digitalwellbeingapp.com</a><br>
+          <a href="tel:+971554330923">+971 55 433 0923</a>
+        </div>
+      </div>
+      <div class="f-card">
+        <div class="avatar o"><img src="assets/omnia.jpg" alt="Omnia Salah" loading="lazy" width="96" height="96"></div>
+        <div>
+          <div class="role">Co-founder · Community</div>
+          <div class="name">Omnia Salah</div>
+          <a href="mailto:omnia@digitalwellbeingapp.com">omnia@digitalwellbeingapp.com</a><br>
+          <a href="tel:+971553731708">+971 55 373 1708</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
 
 <footer>
   <div class="wrap row">
@@ -932,31 +795,12 @@ Better mood.&nbsp;<div>Real rewards.*</div></h2>
     </div>
   </div>
   <div class="wrap" style="display:flex; gap:20px; margin-top:14px;">
+    <a href="index.html" style="color:var(--ink-3); font-size:12px;">Home</a>
     <a href="terms-and-conditions.html" style="color:var(--ink-3); font-size:12px;">Terms and Conditions</a>
     <a href="privacy-policy.html" style="color:var(--ink-3); font-size:12px;">Privacy Policy</a>
     <a href="eula.html" style="color:var(--ink-3); font-size:12px;">EULA</a>
-    <a href="investors.html" style="color:var(--ink-3); font-size:12px;">Investors</a>
   </div>
 </footer>
-
-<script>
-(function(){
-  var header = document.querySelector('header.nav');
-  var toggle = document.getElementById('menu-toggle');
-  if(!header||!toggle) return;
-  toggle.addEventListener('click', function(){ header.classList.toggle('menu-open'); });
-  header.querySelectorAll('nav.menu a').forEach(function(a){
-    a.addEventListener('click', function(){ header.classList.remove('menu-open'); });
-  });
-})();
-</script>
-
-
-
-
-<div class="install-bar">
-  <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.gw.gamerswellbeing&amp;referrer=utm_source%3Dweb%26utm_medium%3Dsite">Get the app <span class="arrow">&#8594;</span></a>
-</div>
 
 </body>
 </html>

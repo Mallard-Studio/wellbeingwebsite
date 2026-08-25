@@ -1,4 +1,10 @@
 ---
+25/8/2026 (3)
+v2 landing page task 4 done. Cut #research, #moat and #investors from index-preview.html, removed the two dead nav links and the UAE National Wellbeing Strategy 2031 footer line, added a footer-only Investors link. New investors.html carries that content plus a Why now section that frames Strategy 2031 as market timing and not as endorsement, and the founder photos as avatar cards. index-preview.html 58,820 -> 52,457 bytes. Not committed, not pushed.
+---
+25/8/2026 (2)
+v2 landing page tasks 2 and 3 done in index-preview.html. Task 3: all Play links normalized to the canonical landing-page attribution tag (utm_source=web, utm_medium=site) from marketing/plans/v2-install-attribution-links.md; the hero link had been missing utm_medium. Task 2: sticky install bar, fixed bottom, mobile only below 820px, safe-area padding and body padding-bottom so it never covers the footer, no JS. Verified at 360px top/mid/bottom and hidden on desktop. Not committed, not pushed.
+---
 25/8/2026
 v2 landing page rebuild started for the marketing team. Stripped 1.82 MB of browser ad-blocker CSS from index.html (1,876,271 -> 57,478 bytes, -97%) and closed the missing </body></html>. New hero built in index-preview.html: "YOU NEED AN EXIT SIGN." with assets/exit-sign.webp, no eyebrow capsule, one CTA, UTM-tagged Play link. See specs/v2-landing-page.md for the task list, locked decisions and blockers. Source of truth is D:\anas\Work\GW\marketing\plans\ (brief, GTM plan, voice-guide). Not committed, not pushed.
 ---
