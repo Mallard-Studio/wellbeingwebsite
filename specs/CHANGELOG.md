@@ -1,4 +1,7 @@
 ---
+26/8/2026 (5)
+Rewrote specs/v2-landing-page.md as a clean handoff document: current state of both pages, tasks 1 to 5 with their numbers, what is left and what is blocked, an assets table split into referenced and source-only, the findings worth keeping, and the mobile review method with the harness snippet to rebuild it. Corrected the stale claims that the work was uncommitted and that index-preview.html was still the working file.
+---
 26/8/2026 (4)
 Deleted index-preview.html (merged into index.html, nothing unique left in it) and the superseded assets/exit-sign.webp, replaced by exit-sign-1148.webp. Source originals kept: screen-0*.png, solution-exit-sign.jpg, anas.jpg, omnia.jpg are what the WebP files were built from, and logo.png is still used by axis-checkin/index.html. Not committed, not pushed.
 ---
