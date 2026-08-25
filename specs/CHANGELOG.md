@@ -1,4 +1,10 @@
 ---
+26/8/2026 (7)
+Made the #research heading break at the full stop, one line per sentence: each sentence wrapped in span.sentence set to display:block, section-head widened 760px -> 820px so the first sentence fits on one line, text-wrap:balance kept per sentence for narrow screens. Copy untouched. Applied to index.html and investors.html. Not committed, not pushed.
+---
+26/8/2026 (6)
+Founder reversed part of task 4: the What the data says section (#research) is back on the landing page between the hero and #problem, with its count-up animation and a The data nav link. It stays on investors.html as well, so both pages now carry that block and must be edited together. The seven copy edits made to it were reverted on request; the section text is byte-identical to the original on both pages. index.html 51.7 -> 55.7 KB, page height at 360px 10,025 -> 11,651 px. Not committed, not pushed.
+---
 26/8/2026 (5)
 Rewrote specs/v2-landing-page.md as a clean handoff document: current state of both pages, tasks 1 to 5 with their numbers, what is left and what is blocked, an assets table split into referenced and source-only, the findings worth keeping, and the mobile review method with the harness snippet to rebuild it. Corrected the stale claims that the work was uncommitted and that index-preview.html was still the working file.
 ---

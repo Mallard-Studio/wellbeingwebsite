@@ -35,8 +35,9 @@ Changes on this page are for the marketing team, not a dev request.
 | 1 | **Marketplace is not hidden, it just stops being sold.** Landing page gets one honest FAQ line. The full marketplace/SME story lives on `investors.html`. No public roadmap page. |
 | 2 | **Domain split is intentional, leave it.** Site is `digitalwellbeing.xyz`; emails stay `@digitalwellbeingapp.com`. The `.com` is the mail domain and redirects to `.xyz`. Brief task 13 closed as as-designed. |
 | 3 | **National Wellbeing Strategy 2031 is off the landing page**, per GTM §13. It lives on `investors.html` as **"Why now"**, framed as market timing, never as endorsement. The word "aligned" is gone. |
-| 4 | **`investors.html` is built.** Carries the cut `#investors`, `#moat` and `#research` content plus founder photos. Linked from the footer only, never the nav. |
+| 4 | **`investors.html` is built.** Carries the cut `#investors` and `#moat` content plus founder photos. Linked from the footer only, never the nav. |
 | 5 | **Hero headline is locked**, founder's own words. See below. |
+| 6 | **`#research` stays on the landing page.** Founder's call, 2026-08-26, reversing that part of task 4. The alpha numbers are install-driving proof for a regular user, not investor material. The section also stays on `investors.html`, so the two pages carry the same block and must be edited together. |
 
 ---
 
@@ -63,7 +64,7 @@ Find out which app drops your mood.
 
 ## Where the site stands right now
 
-**`index.html`, 51.7 KB.** Sections in order: hero, `#problem`, `#solution`, `#inside`, `#loop`, `#download`. Nav is three links (Problem & Solution, The app, Our Hero) plus the Play CTA. Footer carries Terms, Privacy, EULA, Investors. Sticky install bar fixed to the bottom below 820px. Four Play links, all four UTM-tagged. 164 KB of images, 43 KB of it above the fold.
+**`index.html`, 55.7 KB.** Sections in order: hero, `#research`, `#problem`, `#solution`, `#inside`, `#loop`, `#download`. Nav is four links (The data, Problem & Solution, The app, Our Hero) plus the Play CTA. Footer carries Terms, Privacy, EULA, Investors. Sticky install bar fixed to the bottom below 820px. Four Play links, all four UTM-tagged. 164 KB of images, 43 KB of it above the fold.
 
 Title and meta description, set 2026-08-26:
 
@@ -74,7 +75,7 @@ Title and meta description, set 2026-08-26:
 
 The old title was "The Wellbeing App — Trade screentime for wellness", the marketplace framing, and there was no description tag at all.
 
-**`investors.html`, 46.6 KB.** Footer-linked, never in the nav. Order: intro, **Why now**, `#research` data, `#moat` (the model), `#investors` funding ask with founder avatar cards. Self-contained: it carries its own copy of the site head and stylesheet, so there is no shared CSS file to keep in sync. No sticky bar, it is not part of the install funnel.
+**`investors.html`, 47.6 KB.** Footer-linked, never in the nav. Order: intro, **Why now**, `#research` data, `#moat` (the model), `#investors` funding ask with founder avatar cards. Self-contained: it carries its own copy of the site head and stylesheet, so there is no shared CSS file to keep in sync. No sticky bar, it is not part of the install funnel.
 
 ---
 
@@ -88,7 +89,7 @@ The old title was "The Wellbeing App — Trade screentime for wellness", the mar
 `&referrer=utm_source%3Dweb%26utm_medium%3Dsite`.
 The brief writes `?referrer=...` but `?id=` is already in the URL, so the separator is `&`. The hero's first tag was missing `utm_medium%3Dsite` and was normalized.
 
-**Task 4 — investor content cut.** `#research`, `#moat` and `#investors` removed from the landing page (58,820 -> 52,457 bytes at the time, page height at 360px 15,194 -> 10,025 px). Nav lost "The Win" and "Rewards", both pointing at cut sections. Footer lost the Strategy 2031 line and gained the Investors link. All of it moved into the new `investors.html`, where the empty fifth `value-list` item and the empty `matrix-wrap` were dropped, the moat eyebrow became "The model" instead of "Coming Soon", and the plain `.contacts` list became `.f-card` avatars so the emails appear once instead of twice. Screenshots: `_review/task4-360-landing-and-investors.jpg`, `_review/task4-investors-desktop-founders.jpg`.
+**Task 4 — investor content cut.** `#moat` and `#investors` removed from the landing page, and `#research` too until the founder put it back on 2026-08-26, see below. The cut took the page from 58,820 to 52,457 bytes and its height at 360px from 15,194 to 10,025 px. Nav lost "The Win" and "Rewards", both pointing at cut sections. Footer lost the Strategy 2031 line and gained the Investors link. All of it moved into the new `investors.html`, where the empty fifth `value-list` item and the empty `matrix-wrap` were dropped, the moat eyebrow became "The model" instead of "Coming Soon", and the plain `.contacts` list became `.f-card` avatars so the emails appear once instead of twice. Screenshots: `_review/task4-360-landing-and-investors.jpg`, `_review/task4-investors-desktop-founders.jpg`.
 
 **Task 5 — images.** Every image is WebP, built at twice its real display size, with `width`/`height` on the tag and `loading="lazy"` below the fold.
 
@@ -103,6 +104,21 @@ The brief writes `?referrer=...` but `?id=` is already in the URL, so the separa
 | `anas` / `omnia` | 133 / 59 KB | **5 / 5 KB** | 96 px avatars on `investors.html` |
 
 Landing page images **1,689 KB -> 164 KB (-90%)**. Whole page including HTML **216 KB**, against a brief target of 500 KB. Screenshot: `_review/task5-screens-after-webp.jpg`.
+
+**`#research` restored, 2026-08-26.** The founder rejected cutting "What the data says": the alpha numbers are the strongest install argument on the page and read as product proof, not investor material. The section is back between the hero and `#problem`, its count-up animation intact, and the nav has a "The data" link again. Page height at 360px went 10,025 -> 11,651 px, which is the cost of keeping it.
+
+The copy inside the section is the founder's and is unchanged. I rewrote seven strings in it on the way back in and was told to revert; all seven are byte-identical to the original again on both pages.
+
+Screenshot: `_review/research-restored-360.jpg`.
+
+**`#research` heading breaks at the full stop, 2026-08-26.** At desktop width it wrapped as "Screen time isn't the / enemy. The long session / is.", leaving "is." alone. `text-wrap: balance` alone was not enough, the founder wants one line per sentence. Each sentence is now its own `<span class="sentence">` inside the same h2, set to `display:block`, and `#research .section-head` was widened from 760px to 820px because the first sentence needs 806px at the 58px max font size. Wording untouched.
+
+```
+Screen time isn't the enemy.
+The long session is.
+```
+
+`text-wrap: balance` stays on each sentence so that when one has to wrap on a narrow screen it splits evenly instead of dropping a single word. Two lines hold down to roughly 530px viewport width; below that each sentence takes two balanced lines, which at 360px reads "Screen time / isn't the enemy. / The long / session is." Same change on both pages, since they share the section. Screenshots: `_review/research-heading-two-lines-desktop.jpg`, `_review/research-heading-360.jpg`.
 
 ---
 
@@ -186,7 +202,7 @@ Deleted 2026-08-26: `index-preview.html` (merged into `index.html`), `assets/exi
 
 ## Working method
 
-- **All work happens in `index.html` directly.** The preview was signed off and merged on 2026-08-26, and `index-preview.html` was deleted. Pre-merge backup: `_review/index.html.pre-merge-2026-08-26.bak`, outside the repo.
+- **All work happens in `index.html` directly.** The preview was signed off and merged on 2026-08-26, and `index-preview.html` was deleted. `_review/harness.html` was rebuilt on 2026-08-26 for the `#research` review and is on disk again. Pre-merge backup: `_review/index.html.pre-merge-2026-08-26.bak`, outside the repo.
 - **`_review/`** at `D:\anas\Work\GW\website\_review\` holds review screenshots and the backup. Outside the git repo, so it never gets committed.
 - Serve the **parent** dir so the site and any review harness share an origin: `python -m http.server 8765` in `D:\anas\Work\GW\website`. The repo's own `run-local-server.bat` uses port 8000.
 
@@ -213,6 +229,7 @@ Programmatic scrolling fails on the top-level page in this browser tooling too. 
 
 ## Repo and git
 
+- **Never edit the founder's copy.** Not grammar, not register, not a stray comma. Suggest the change in the reply and let him decide. This was a real mistake on 2026-08-26: seven strings in `#research` were rewritten without being asked and had to be reverted.
 - **Never commit without explicit approval.** The founder commits this work himself.
 - Branch is `master`, and `master` is the published branch. A push goes live on `digitalwellbeing.xyz` through GitHub Pages.
 - Commits so far: `b89d363` task 1 and the hero, `48be0f1` task 4 and `investors.html`, `53e0014` tasks 2, 3 and 5 plus the merge, the title and the two deletions.
