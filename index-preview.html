@@ -555,6 +555,29 @@
     .wb-tweaks{ right: 12px; bottom: 12px; width: calc(100vw - 24px); }
   }
 
+
+  /* ===== hero: exit-sign treatment (appended last so it wins on source order) ===== */
+  .hero-grid{ grid-template-columns: 1fr 1.05fr; }
+  .herotext{ margin-top: 28px; max-width: 520px; }
+  .heroline{ margin:0; font-size: clamp(18px,1.5vw,22px); color: var(--ink-2); line-height:1.55; }
+  .heroline + .heroline{ margin-top: 6px; }
+  .hero-visual{ min-height: auto; }
+  .signframe{ width:100%; border-radius: var(--radius); overflow:hidden;
+              border:1px solid var(--line-2); box-shadow: 0 30px 80px rgba(0,0,0,.55); }
+  .signframe img{ width:100%; height:auto; }
+  @media(max-width: 980px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .hero-visual{ min-height: auto; }
+    .herotext{ max-width:none; }
+    .signframe{ margin-left:-28px; margin-right:-28px; width:auto; align-self:stretch;
+                border-radius:0; border-left:0; border-right:0; }
+  }
+  @media(max-width: 560px){
+    .brand .name{ display:none; }
+    header.nav .row .btn.primary{ padding:10px 16px; font-size:14px; white-space:nowrap; }
+    .hero{ min-height:auto; padding-top:40px; padding-bottom:56px; }
+  }
+
 </style>
 </head>
 <body data-titans-quick-view-extension-id="eefljgmhgaidffapnppcmmafobefjece" style="">
@@ -585,35 +608,19 @@
 <section class="hero wrap">
   <div class="hero-grid">
     <div>
-      <span class="eyebrow">NOW IN ALPHA</span>
-      <h1 style="margin-top:24px;">
-        Trade screentime<br>
-        for <span class="grad" style="">wellbeing.</span>
-      </h1>
-      <p class="lede" style="">Wellbeing nudges you out of infinite scrolling, replacing your old digital habits with healthier ones. Then rewards you with real wellness, therapy sessions and activities you'll love. *</p>
-      <div class="hero-ctas">
-        <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.gw.gamerswellbeing" style="">Get the app <span class="arrow">→</span></a>
-        <a class="btn" href="#solution">See how it works</a>
+      <h1>YOU<br>NEED AN<br><span class="grad">EXIT SIGN.</span></h1>
+      <div class="herotext">
+        <p class="heroline">Listen to your feelings. They're the best sign.</p>
+        <p class="heroline">Find out which app drops your mood.</p>
       </div>
-      <div class="hero-tags">
-        <span class="tag">Wellbeing Strategy 2031 aligned</span>
-        <span class="tag">Free for users</span>
-        <span class="tag">Real rewards, not badges *</span>
-        <div class="coming-soon"><span class="star">✱</span><span>Marketplace &amp; points redemption are under construction and coming soon.</span></div>
+      <div class="hero-ctas">
+        <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.gw.gamerswellbeing&amp;referrer=utm_source%3Dweb">Get the app <span class="arrow">&#8594;</span></a>
       </div>
     </div>
     <div class="hero-visual">
-      <div class="glow"></div>
-      <div class="phone">
-        <img src="assets/screen-01.png" alt="Wellbeing app — You earned 5 points">
-      </div>
-      <div class="floating float-1">
-        <span class="mono">Mood detected</span>
-        <strong>You're doing great ✦</strong>
-      </div>
-      <div class="floating float-2">
-        <span class="mono">Reward unlocked</span>
-        <strong>+5 wellness points 🎉</strong>
+      <div class="signframe">
+        <img src="assets/exit-sign.webp" width="1376" height="768"
+             alt="Highway sign: Keep Doomscrolling straight ahead, or take the exit to Real Wellbeing">
       </div>
     </div>
   </div>
