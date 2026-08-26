@@ -64,7 +64,7 @@ Find out which app drops your mood.
 
 ## Where the site stands right now
 
-**`index.html`, 55.7 KB.** Sections in order: hero, `#research`, `#problem`, `#solution`, `#inside`, `#loop`, `#download`. Nav is four links (The data, Problem & Solution, The app, Our Hero) plus the Play CTA. Footer carries Terms, Privacy, EULA, Investors. Sticky install bar fixed to the bottom below 820px. Four Play links, all four UTM-tagged. 164 KB of images, 43 KB of it above the fold.
+**`index.html`, 54.1 KB.** Sections in order: hero, `#research`, `#problem`, `#solution`, `#inside`, `#loop`, `#download`. Nav is four links (The data, Problem & Solution, The app, Our Hero) plus the Play CTA. Footer carries Terms, Privacy, EULA, Investors. Sticky install bar fixed to the bottom below 820px. Four Play links, all four UTM-tagged. 164 KB of images, 43 KB of it above the fold.
 
 Title and meta description, set 2026-08-26:
 
@@ -120,6 +120,32 @@ The long session is.
 
 `text-wrap: balance` stays on each sentence so that when one has to wrap on a narrow screen it splits evenly instead of dropping a single word. Two lines hold down to roughly 530px viewport width; below that each sentence takes two balanced lines, which at 360px reads "Screen time / isn't the enemy. / The long / session is." Same change on both pages, since they share the section. Screenshots: `_review/research-heading-two-lines-desktop.jpg`, `_review/research-heading-360.jpg`.
 
+**Task 14 — rewards, points and marketplace off the landing page, 2026-08-26.** `grep -i "reward|marketplace|redemption"` over `index.html` now returns zero content hits.
+
+`#solution` was three steps, two of which sold the marketplace. Rebuilt as a real how-it-works, the brief's block 3 and GTM §8.3, "notices -> asks -> good job". Founder picked variant A, the mechanism wording, over the brief's literal arc:
+
+| # | Label | Head | Body |
+|---|---|---|---|
+| 01 | Notice | Reads the mood | You pick the apps to track. Wellbeing watches how your mood moves inside each one, app by app. |
+| 02 | Ask | Asks how you feel | The butterfly turns up and asks. One tap: angry, energized, calm, or down. That is the whole check-in. |
+| 03 | Signal | Sends the exit sign | When your mood starts dropping mid-session, you get the sign. It never locks you out. You decide whether to leave. |
+
+Old 01 carried detect **and** signal, so it was re-split across 01 and 03. It also lost "Backed by scientific research", an unsourced claim standing right below `#research`, which now carries the real alpha numbers. Trophy and coin icons swapped for a speech bubble and an exit-door arrow, both inline paths, no new assets.
+
+`#solution` cannot borrow the brief's "real screenshots" instruction: `#inside` already is that section. `#solution` stays the text mechanism, `#inside` stays the screenshots.
+
+Also cut: the `and earn rewards*` tail on the `#inside` intro, and `Real rewards.*` from the `#download` headline, which is now two lines, `Less screen.` / `Better mood.`
+
+**There were four "coming soon" footnotes, not two.** This spec recorded `#loop` and `#download`; `#solution` and `#inside` had one each as well. All four gone.
+
+**Nav and `#loop` were left alone**, founder's instruction, 2026-08-26. The `Our Hero` link and the "YOU ARE THE HERO" section copy carry no rewards language; only the footnote inside `#loop` was the problem.
+
+`investors.html` untouched. It keeps the marketplace story by decision 1.
+
+`index.html` 55,983 -> 54,649 bytes. Height at 360px 11,651 -> 11,132 px. Backup: `_review/index.html.pre-task14-2026-08-26.bak`. Screenshots: `_review/task14-solution-3steps-desktop.jpg`, `_review/task14-download-headline-desktop.jpg`, `_review/task14-360-solution-and-download.jpg`.
+
+The `.coming-soon` CSS was deleted too, four rules, on the founder's call 2026-08-26: "if it's useless it goes". Zero `coming-soon` references left in `index.html`. `investors.html` keeps its own copy, it still uses the footnote.
+
 ---
 
 ## Not started
@@ -129,29 +155,37 @@ The long session is.
 | 6 | Hero video, **blocked**, no source footage exists | P1 |
 | 7 | Privacy section naming the Accessibility permission | P1 |
 | 8 | "Not a blocker" comparison table | P1 |
-| 9 | Real iOS waitlist form, **blocked**, needs a form endpoint | P1 |
+| 9 | Real iOS waitlist form, **unblocked**, needs Google Form IDs | P1 |
 | 10 | Mood chart as proof, **blocked**, needs real anonymized data | P1 |
 | 11 | QR code for desktop | P2 |
 | 12 | FAQ block, six questions | P2 |
 | 13 | Domain split, **closed, as-designed** | P2 |
-| 14 | Audit `#loop` and the marketplace footnotes | P2 |
 
-### Task 14 is bigger than it looks
+### Task 9 is no longer blocked on the tech
 
-The landing page still contradicts the positioning in three visible places, all found during task 4:
+The pattern already exists in this repo. `delete_my_data/index.html` posts a plain `<form>` straight at a Google Form's `formResponse` endpoint, `target`-ed at a hidden iframe, and treats the iframe's `load` event as the success signal because the response is cross-origin and unreadable. No backend, no third-party script, works on GitHub Pages. Copy that whole approach for the iOS waitlist: one email field instead of the ID and reason fields.
 
-- `#download` headline reads "Less screen. Better mood. **Real rewards.\***"
-- `#loop` and `#download` both carry the "Marketplace & points redemption are under construction and coming soon" footnote
-- nav still links "Our Hero" to `#loop`
+It also carries the two things worth stealing: an inline success message that replaces the form, and a timeout fallback that re-enables the button and shows a `mailto:` if the POST never lands.
 
-The brief's done-list says zero occurrences of rewards, points or marketplace outside one FAQ line. Right now there are several, above the fold of the install CTA.
+**But that form has never worked.** It ships three literal placeholders:
+
+```
+action="https://docs.google.com/forms/d/e/REPLACE_FORM_ID/formResponse"
+name="entry.REPLACE_USERID_ENTRY"
+name="entry.REPLACE_REASON_ENTRY"
+```
+
+So every deletion request submitted from that page has failed since 2026-08-16, falling through to the email fallback if the user waited for it. Nothing links to `delete_my_data/` from either HTML page, so the only traffic is from the Play Store listing or the app itself. **Founder needs to check whether the Play listing points at it.**
+
+To get both pages working the founder creates the Google Forms and sends the IDs. To read them: open the live form, view source, find `FB_PUBLIC_LOAD_DATA_`, the `entry.NNNNNNN` numbers are in there. The form id is the `/d/e/<id>/viewform` segment of its share URL.
 
 ### Blocked on the founder
 
 - **Task 6** — needs 6 to 10 seconds of screen capture: the butterfly appearing over a real TikTok or Instagram scroll.
-- **Task 9** — a real form needs a third-party endpoint (Formspree, Google Form, Buttondown). GitHub Pages is static, there is no backend.
+- **Task 9** — needs a Google Form and its three IDs, see "Task 9 is no longer blocked on the tech" below.
 - **Task 10** — needs a real anonymized mood chart. Voice rule: every number carries a source or comes off.
 - **`#solution` screenshots** — founder is creating a new butterfly screenshot.
+- **Google Form IDs** — for task 9 and to repair `delete_my_data/`.
 
 ---
 
@@ -184,6 +218,12 @@ Kept as sources, referenced by nothing:
 Deleted 2026-08-26: `index-preview.html` (merged into `index.html`), `assets/exit-sign.webp` (1376 px first cut, superseded).
 
 **No `ffmpeg`, `magick` or `cwebp` on this machine.** Python **PIL 12.1.0** is available and produced every WebP here.
+
+---
+
+## Open, not yet decided
+
+- **Em dash in the `#download` sub copy.** It reads "Download Wellbeing on Android today. iOS launching soon **—** join the waitlist and we'll let you know the moment it's live." The no-em-dash rule says it goes. Raised 2026-08-26, founder answered about the form instead, so the dash is still there. It is his copy, so it stays until he says. The sentence changes anyway when task 9 replaces the `mailto:` button with a real field.
 
 ---
 
