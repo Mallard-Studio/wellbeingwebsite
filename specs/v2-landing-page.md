@@ -56,7 +56,7 @@ Find out which app drops your mood.
 
 - Visual: `assets/exit-sign-1148.webp`, the pixel-art highway sign, "Keep Doomscrolling / Real Wellbeing".
 - **No eyebrow capsule.** "NOW IN ALPHA" was removed on purpose, founder does not want a capsule as the first thing on the page.
-- **One CTA.** "See how it works" was removed on purpose.
+- **One CTA.** "See how it works" was removed on purpose. The button lost its `→` on 2026-08-26 when the QR card was placed beside it; the nav and sticky-bar buttons keep theirs.
 - Text style is `clamp(18px,1.5vw,22px)` / `var(--ink-2)` / weight 400, after trying `.who-card h3` (26px/600/`--ink`) and rejecting it.
 - Grid `1fr 1.05fr`, `.herotext` max-width 520px.
 
@@ -64,7 +64,7 @@ Find out which app drops your mood.
 
 ## Where the site stands right now
 
-**`index.html`, 54.1 KB.** Sections in order: hero, `#research`, `#problem`, `#solution`, `#inside`, `#loop`, `#download`. Nav is four links (The data, Problem & Solution, The app, Our Hero) plus the Play CTA. Footer carries Terms, Privacy, EULA, Investors. Sticky install bar fixed to the bottom below 820px. Four Play links, all four UTM-tagged. 164 KB of images, 43 KB of it above the fold.
+**`index.html`, 58.4 KB.** Sections in order: hero, `#research`, `#problem`, `#solution`, `#inside`, `#loop`, `#download`. Nav is four links (The data, Problem & Solution, The app, Our Hero) plus the Play CTA and the docked QR. Footer carries Terms, Privacy, EULA, Investors. Sticky install bar fixed to the bottom below 820px. Seven Play links, all UTM-tagged: four buttons on `utm_medium=site` and three QR codes on `utm_medium=qr`. 177 KB of images, 43 KB of it above the fold.
 
 Title and meta description, set 2026-08-26:
 
@@ -144,6 +144,30 @@ Also cut: the `and earn rewards*` tail on the `#inside` intro, and `Real rewards
 
 `index.html` 55,983 -> 54,649 bytes. Height at 360px 11,651 -> 11,132 px. Backup: `_review/index.html.pre-task14-2026-08-26.bak`. Screenshots: `_review/task14-solution-3steps-desktop.jpg`, `_review/task14-download-headline-desktop.jpg`, `_review/task14-360-solution-and-download.jpg`.
 
+**Task 11 done, 2026-08-26. The QR follows the visitor, it does not sit in one place.** The brief asked for a QR beside the Play badge in `#download`. The founder asked for more: hero first, then docked to the nav on scroll, then parked under the badge at the end of the page.
+
+| Position | Size | Shown when |
+|---|---|---|
+| Hero, beside "Get the app" | 112 px | Always, desktop only |
+| Nav, docked under the sticky bar | 96 px | Only while neither in-page QR is on screen |
+| `#download`, under the Play badge | 112 px | Always, desktop only |
+
+One `IntersectionObserver` watches both `.qr-scan` elements and toggles `header.nav.qr-on`, so there is never a pair of QR codes on screen at once. `rootMargin: '-72px 0px 0px 0px'` accounts for the nav height. The nav card is absolutely positioned against `header.nav .row`, hanging below the bar rather than sitting inside it: at a 72px bar height an inline QR would be about 48px, roughly one pixel per module, which no camera can read.
+
+**Everything QR and badge is `min-width: 981px`.** A phone cannot scan its own screen, and below 980 the hero drops to one column. Verified at 360px: no QR anywhere, sticky bar untouched.
+
+`assets/qr-play.webp`, **456 bytes**, 392px for a 112px display. Built with Python `qrcode`, error correction M, version 7, 45 modules. The encoded URL was decoded back out of the WebP with OpenCV and matched byte for byte, which is the only way to know the `%3D` and `%26` survived.
+
+**New tag: `utm_medium=qr`,** same `utm_source=web`. Source stays intact so channel reports do not split, and desktop scans become countable against button taps. Row added to `v2-install-attribution-links.md`, per its rule 5.
+
+**The `#download` pill is now the official Google Play badge.** No download was needed, the artwork was already in the repo's parent at `google-play-app.png`. Cropped to the badge bounds, resized to 400x136, saved as `assets/play-badge.webp` at **12 KB lossless**: Google's brand terms forbid modifying the badge, so no lossy compression. It displays at 200x68, above their 40px minimum. The "Download for Android" arrow went with the pill.
+
+Two layout bugs fixed on the way, both the same root cause, a flex row with no `align-items`:
+1. `.hero-ctas` stretched the 145px-tall QR card onto the pill button and turned it into a circle.
+2. `.cta-block` floated "Join iOS waitlist" down beside the QR instead of beside the badge. Now `flex-start` with a 12px nudge to match the badge midline.
+
+`index.html` 54,116 -> 58,380 bytes. Backup: `_review/index.html.pre-task11-2026-08-26.bak`. Screenshots: `_review/task11-hero-qr.jpg`, `_review/task11-nav-qr-scrolled.jpg`, `_review/task11-download-badge-qr.jpg`, `_review/task11-360-hero-and-download.jpg`.
+
 The `.coming-soon` CSS was deleted too, four rules, on the founder's call 2026-08-26: "if it's useless it goes". Zero `coming-soon` references left in `index.html`. `investors.html` keeps its own copy, it still uses the footnote.
 
 ---
@@ -157,9 +181,9 @@ The `.coming-soon` CSS was deleted too, four rules, on the founder's call 2026-0
 | 8 | "Not a blocker" comparison table | P1 |
 | 9 | Real iOS waitlist form, **unblocked**, needs Google Form IDs | P1 |
 | 10 | Mood chart as proof, **blocked**, needs real anonymized data | P1 |
-| 11 | QR code for desktop | P2 |
 | 12 | FAQ block, six questions | P2 |
 | 13 | Domain split, **closed, as-designed** | P2 |
+| 11 | QR for desktop, **done 2026-08-26**, see above | P2 |
 
 ### Task 9 is no longer blocked on the tech
 
@@ -179,6 +203,12 @@ So every deletion request submitted from that page has failed since 2026-08-16, 
 
 To get both pages working the founder creates the Google Forms and sends the IDs. To read them: open the live form, view source, find `FB_PUBLIC_LOAD_DATA_`, the `entry.NNNNNNN` numbers are in there. The form id is the `/d/e/<id>/viewform` segment of its share URL.
 
+### Task 7 can be verified, not guessed
+
+The Android source is on this machine at `D:\anas\Work\GW\dev\gamerswellbeing`. `app/src/main/AndroidManifest.xml` is the ground truth for the privacy block the brief asks for, and the brief is explicit that only true claims go on the page. What it declares today: `SYSTEM_ALERT_WINDOW`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_SPECIAL_USE`, `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`, `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK`, `SCHEDULE_EXACT_ALARM`, `POST_NOTIFICATIONS` and **`ACCESS_COARSE_LOCATION`**.
+
+Two things to settle before writing a word of that section. The manifest grep turned up no `BIND_ACCESSIBILITY_SERVICE` service declaration, so **whether the app actually uses the Accessibility permission at all still has to be confirmed** against `services/AppDetectionService` and the res XML. And **`ACCESS_COARSE_LOCATION` needs an answer for the page**: a privacy block that names the scary permission but omits location is the kind of omission that costs more than it saves.
+
 ### Blocked on the founder
 
 - **Task 6** — needs 6 to 10 seconds of screen capture: the butterfly appearing over a real TikTok or Instagram scroll.
@@ -196,6 +226,8 @@ Referenced by a live page:
 | File | Size | Used by |
 |---|---|---|
 | `exit-sign-1148.webp` | 41 KB | hero |
+| `qr-play.webp` | 456 B | hero, nav and `#download`, all desktop only |
+| `play-badge.webp` | 12 KB | `#download`, the official Google Play badge |
 | `solution-exit-sign.webp` | 39 KB | `#solution` |
 | `screen-02/03/05.webp` | 30 / 29 / 21 KB | `#inside` |
 | `logo.webp` | 2 KB | nav and footer, both pages |
@@ -213,15 +245,21 @@ Kept as sources, referenced by nothing:
 | `screen-04.png` | 974 KB | Emotion grid. Clean. |
 | `screen-05.png` | 597 KB | "Take a break / There is a drop in your mood." The strongest asset for the exit-signal story. |
 | `solution-exit-sign.jpg` | 140 KB | Source of the hero and `#solution` WebP files. |
+| `google-play-app.png` | 78 KB | **Outside the repo**, at `D:\anas\Work\GW\website\`. The official Play badge on a white canvas, alpha bbox (45,149)-(1160,527). Source of `play-badge.webp`. |
 | `anas.jpg` / `omnia.jpg` | 133 / 59 KB | Sources of the avatar WebP files. |
 
 Deleted 2026-08-26: `index-preview.html` (merged into `index.html`), `assets/exit-sign.webp` (1376 px first cut, superseded).
 
 **No `ffmpeg`, `magick` or `cwebp` on this machine.** Python **PIL 12.1.0** is available and produced every WebP here.
 
+Python **`qrcode`** is installed and generated the QR. **`opencv-python-headless`** was installed on 2026-08-26 to decode a generated QR back to its URL, which is the only real check that an attribution tag survived encoding. `segno` is not installed. SVG output from `qrcode` was rejected: one `<path>` per module came to 16 KB against 456 bytes for the WebP.
+
 ---
 
 ## Open, not yet decided
+
+- **The blue pill vs the Play badge.** Only `#download` uses the official badge. The hero, the nav and the sticky mobile bar are still the blue "Get the app" pill. Google's guidelines want the badge wherever the page points at Play. Raised 2026-08-26, undecided: swap all four, or keep the pill above the fold for contrast against the dark palette.
+- **A dev tweaks panel is still shipped in `index.html`.** `aside.wb-tweaks`, "Tweaks / Screens row", a photo-align segmented control and a lift slider with about 60 lines of JS behind it, sitting between `</main>` and the footer. It is live on `digitalwellbeing.xyz`. Not on any task list, found 2026-08-26. Ask before cutting it, it may still be how the founder nudges the `#inside` phone row.
 
 - **Em dash in the `#download` sub copy.** It reads "Download Wellbeing on Android today. iOS launching soon **—** join the waitlist and we'll let you know the moment it's live." The no-em-dash rule says it goes. Raised 2026-08-26, founder answered about the form instead, so the dash is still there. It is his copy, so it stays until he says. The sentence changes anyway when task 9 replaces the `mailto:` button with a real field.
 
@@ -272,6 +310,6 @@ Programmatic scrolling fails on the top-level page in this browser tooling too. 
 - **Never edit the founder's copy.** Not grammar, not register, not a stray comma. Suggest the change in the reply and let him decide. This was a real mistake on 2026-08-26: seven strings in `#research` were rewritten without being asked and had to be reverted.
 - **Never commit without explicit approval.** The founder commits this work himself.
 - Branch is `master`, and `master` is the published branch. A push goes live on `digitalwellbeing.xyz` through GitHub Pages.
-- Commits so far: `b89d363` task 1 and the hero, `48be0f1` task 4 and `investors.html`, `53e0014` tasks 2, 3 and 5 plus the merge, the title and the two deletions.
-- As of 2026-08-26 the working tree is **clean and pushed**, `master` in sync with `origin/master`. GitHub Pages was still serving the old page a minute after the push, which is normal build lag. Verify at `digitalwellbeing.xyz`: the title should read "Wellbeing: Find out which app drops your mood" and the page source should contain `install-bar`.
+- Commits so far: `b89d363` task 1 and the hero, `48be0f1` task 4 and `investors.html`, `53e0014` tasks 2, 3 and 5 plus the merge, the title and the two deletions. `43628d2` task 11, the three QR codes and the Play badge, committed by the founder on 2026-08-26 while the notes were still being written, so the spec and changelog entries for it landed across that commit and the working tree.
+- As of 2026-08-26, after `43628d2`, the only uncommitted files are `specs/CHANGELOG.md` and `specs/v2-landing-page.md`, the rest of these task 11 notes. `master` is in sync with `origin/master`, so the QR codes and the badge are live. GitHub Pages was still serving the old page a minute after the push, which is normal build lag. Verify at `digitalwellbeing.xyz`: the title should read "Wellbeing: Find out which app drops your mood" and the page source should contain `install-bar`.
 - Max 200 words per response, per `CLAUDE.md`.
