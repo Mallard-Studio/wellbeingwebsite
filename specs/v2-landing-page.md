@@ -3,11 +3,13 @@
 Rebuild of `index.html` to serve one job: **get the Google Play install.**
 Deadline: live by **2026-09-04**. Started 2026-08-24. Last updated 2026-08-27.
 
+**Where things stand:** 13 of the 14 brief tasks are closed. Task 6, the hero video, is the only one left and it is waiting on footage that does not exist yet. Three tasks were rejected or skipped by Anas, see the decisions table. Six small questions still need a yes or no from him.
+
 Changes on this page are for the marketing team, not a dev request.
 
 ---
 
-## Source of truth — read these first, they live outside this repo
+## Read these first. They live outside this repo
 
 | File | What it holds |
 |---|---|
@@ -18,30 +20,62 @@ Changes on this page are for the marketing team, not a dev request.
 
 ---
 
-## Positioning — do not drift
+## What this page is selling. Do not drift from it
 
 **Offer, one sentence:** You'll see how each app actually makes you feel, and you'll get tapped on the shoulder before the scroll turns on you.
 
-**Never on this page:** rewards, points, marketplace, or any productivity/focus benefit. One honest FAQ line is the single exception (block 8 of the brief).
+**Never on this page:** rewards, points, marketplace, or any productivity/focus benefit. The brief allowed one honest FAQ line as an exception. That FAQ was rejected on 2026-08-27, so there is no exception left and the page carries none of it. Stricter than the brief asks, not looser.
 
 **Voice, short version:** concrete, second person, short sentences. Write about feelings freely, "feel good", "feel worse", "how it made you feel" are correct and are the product. Banned is the abstract wellness register: mindful, journey, balance, cultivate, holistic, self-care, reclaim, thrive. "Wellbeing" is the app's name and is always fine. Never shame the user. Every number carries a source or comes off. **No em dash anywhere**, founder's rule.
 
 ---
 
-## Decisions made with the founder — do not re-litigate
+## Decisions Anas made, and why. Do not reopen these.
 
-| # | Decision |
+Newest last. Every row is his call, not mine. The reason column is why he made it, in his words where he gave them.
+
+### Before 2026-08-27
+
+| # | Decision | Why |
+|---|---|---|
+| 1 | Marketplace is not hidden, it just stops being sold. The full marketplace and SME story lives on `investors.html`. No public roadmap page. **Overtaken by decision 9:** the one honest FAQ line this originally allowed no longer exists, because the FAQ was rejected. The landing page now carries no marketplace language at all. | Hiding it looks dishonest. Selling it oversells a thing that does not exist yet. |
+| 2 | The two domains stay as they are. Site is `digitalwellbeing.xyz`, emails stay `@digitalwellbeingapp.com`, and the `.com` redirects to the `.xyz`. | Brief task 13 asked to fix it. Nothing to fix, it is already right. The `.com` is the mail domain on purpose. |
+| 3 | National Wellbeing Strategy 2031 comes off the landing page. It lives on `investors.html` as "Why now", framed as market timing. The word "aligned" is gone. | Reading it as an endorsement would be a claim he cannot back. Market timing he can. |
+| 4 | `investors.html` gets built and carries the cut investor content plus founder photos. Footer link only, never the nav. | Investor material was pushing regular visitors away from the install. It still has to exist somewhere. |
+| 5 | Hero headline is locked. "YOU NEED AN EXIT SIGN." | His own words. Not up for rewriting. |
+| 6 | WHAT THE DATA SAYS stays on the landing page. Reverses that part of task 4. The same block stays on `investors.html`, so both pages must be edited together. | 2026-08-26. The alpha numbers are the strongest install argument on the page. They read as product proof to a regular user, not as investor material. |
+| 7 | Typos in his copy get fixed silently. Meaning, wording and register still get proposed to him first. | 2026-08-27. Two typos shipped because the old rule said flag, never fix. His answer: "come on man! fix my typos.. don't make me look stupid!" |
+
+### 2026-08-27
+
+| # | Decision | Why |
+|---|---|---|
+| 8 | **Task 8, the "Not a blocker" comparison table, is rejected.** Not postponed. If it ever returns it belongs on `investors.html` with new copy. | Two reasons. The brief's copy is bad: "I reject the copy. it's stupid." And the block is aimed at the wrong person: an argument against blocker apps is investor material, not something a regular visitor came to the page for. |
+| 9 | **Task 12, the FAQ block, is rejected.** Not postponed. | "all these questions are so technical and not not important for regular users." Does it block apps, battery drain, Xiaomi/MIUI, is my data sold, what are points for. Those are support questions, not the doubts someone has before installing. |
+| 10 | Both forms post to Google Forms. Not to Firebase. | The site is static on GitHub Pages, so Firebase would need the web API key sitting in the page and a collection anyone can write to. The Firestore rules are already wide open, see below. Adding a second unauthenticated write path into that database would make it worse. |
+| 11 | The iOS waitlist reuses the existing Google Form from Oct 2025 instead of a new one. | "Fine, no one signed in." The old signup list is empty, so there is nothing for the iOS list to get mixed up with. |
+| 12 | On desktop the email field sits above the Join iOS waitlist button, not beside it. | His call after seeing it side by side. He also said the mobile version reads better than the desktop one, and stacking is what mobile was already doing. |
+| 13 | The Firestore rules get handed to the dev project. Not fixed from here. | "write a prompt with your claims and marketing claims to the claude dev project. they will handle it." Website repo is the wrong place to change app security. Prompt written to `_review/dev-project-prompt.md`. |
+| 14 | Nothing to do on the legal side. An aggregate chart over many users is safe to publish. | "The data on the landingpage is anonmous and for many users without spacifying any personal information about them." Correct. Aggregate over a group that size is anonymous data, so the privacy policy and GDPR do not reach it. His own rule stands too: a user sharing their weekly report is that user's choice, and nothing gets shared against their will. |
+| 15 | **Task 10, the mood chart, is skipped.** | Called off after the data was rendered and the numbers checked. The legal route was clear and one real chart existed. He chose not to spend the page on it. Skipped, not deferred. |
+| 16 | Sections are called by the label printed on the page, never by their HTML id. | "I don't understand when you tell me @research or #inside. that is not how I comunicate sections names with you!" He wrote the page as headings. The ids are mine to work with, not his to read. |
+| 17 | A report is owed to the marketing team once the remaining work closes. Four buckets: done as briefed, done with a change from him, done completely differently by him, and rejected. | He is the PM. The marketing team wrote the brief and has not seen how much of it changed. |
+| 18 | Every update and decision gets written down with its reason, including the ones that postpone or kill something. | His instruction, 2026-08-27. This section is that. |
+
+### Section names to use with him
+
+| HTML id | Say this |
 |---|---|
-| 1 | **Marketplace is not hidden, it just stops being sold.** Landing page gets one honest FAQ line. The full marketplace/SME story lives on `investors.html`. No public roadmap page. |
-| 2 | **Domain split is intentional, leave it.** Site is `digitalwellbeing.xyz`; emails stay `@digitalwellbeingapp.com`. The `.com` is the mail domain and redirects to `.xyz`. Brief task 13 closed as as-designed. |
-| 3 | **National Wellbeing Strategy 2031 is off the landing page**, per GTM §13. It lives on `investors.html` as **"Why now"**, framed as market timing, never as endorsement. The word "aligned" is gone. |
-| 4 | **`investors.html` is built.** Carries the cut `#investors` and `#moat` content plus founder photos. Linked from the footer only, never the nav. |
-| 5 | **Hero headline is locked**, founder's own words. See below. |
-| 6 | **`#research` stays on the landing page.** Founder's call, 2026-08-26, reversing that part of task 4. The alpha numbers are install-driving proof for a regular user, not investor material. The section also stays on `investors.html`, so the two pages carry the same block and must be edited together. |
+| `#research` | WHAT THE DATA SAYS |
+| `#problem` | THE PROBLEM |
+| `#solution` | THE SOLUTION |
+| `#inside` | HOW IT WORKS |
+| `#loop` | YOU ARE THE HERO |
+| `#download` | the download block, "Less screen. Better mood." |
 
 ---
 
-## Hero — locked, built, shipped
+## The hero. Locked, built, shipped
 
 ```
 YOU
@@ -79,7 +113,7 @@ The old title was "The Wellbeing App — Trade screentime for wellness", the mar
 
 ---
 
-## Done
+## What was built, and what changed on the way
 
 **Task 1 — adblock CSS stripped.** `index.html` 1,876,271 -> 57,478 bytes (-97%). Twelve injected `<style>` blocks from a browser ad-blocker extension, saved into the file when the page was exported from a browser. The range held zero site content. The missing `</body></html>` was also restored.
 
@@ -201,20 +235,30 @@ Markup is a flex row inside `.privacy-note`: the house `.eyebrow` chip with its 
 
 ---
 
-## Not started
+## The task list, where each one stands
 
-| # | Task | Priority |
-|---|---|---|
-| 6 | Hero video, **blocked**, no source footage exists | P1 |
-| 8 | "Not a blocker" comparison table, **rejected 2026-08-27**, see below | P1 |
-| 9 | Real iOS waitlist form and the deletion page, **both done 2026-08-27** | P1 |
-| 10 | Mood chart as proof, **skipped 2026-08-27** by the founder, see below | P1 |
-| 12 | FAQ block, **rejected 2026-08-27**, see below | P2 |
-| 13 | Domain split, **closed, as-designed** | P2 |
-| 11 | QR for desktop, **done 2026-08-26**, see above | P2 |
-| 7 | Privacy, **done 2026-08-27**, see above. Shipped as a disclaimer capsule, not a section | P1 |
+All 14 tasks from the brief. Nothing is missing from this table.
 
-### Rejected by the founder, 2026-08-27
+| # | Task | State | Why |
+|---|---|---|---|
+| 1 | Strip the adblock CSS | **Done** 2026-08-24 | |
+| 2 | Sticky Play button on mobile | **Done** 2026-08-25 | |
+| 3 | UTM tags on every Play link | **Done** 2026-08-25 | |
+| 4 | Cut the investor content | **Done** 2026-08-25, partly reversed 2026-08-26 | Anas put WHAT THE DATA SAYS back, decision 6 |
+| 5 | Compress the images | **Done** 2026-08-25 | 1,689 KB down to 164 KB |
+| 6 | Hero video | **Waiting** | Two things missing. No footage of the butterfly over a real scroll exists anywhere. And this machine has no `ffmpeg`, so even with footage nothing here can make an MP4. Anas: "that will need sometime." |
+| 7 | Privacy block | **Done** 2026-08-27 | Shipped as a two-line capsule in his own words, not the section the brief asked for |
+| 8 | "Not a blocker" comparison table | **Rejected** by Anas 2026-08-27 | Copy is bad and it is aimed at investors, not visitors. Decision 8 |
+| 9 | Real iOS waitlist form | **Done** 2026-08-27 | Both it and the deletion page work. He tested both |
+| 10 | Mood chart as proof | **Skipped** by Anas 2026-08-27 | Decision 15 |
+| 11 | QR code for desktop | **Done** 2026-08-26 | Three positions, not the one the brief asked for |
+| 12 | FAQ block | **Rejected** by Anas 2026-08-27 | Questions are too technical for a regular user. Decision 9 |
+| 13 | Fix the domain split | **Nothing to fix** | Already correct. Decision 2 |
+| 14 | Cut rewards and marketplace | **Done** 2026-08-26 | |
+
+Task 6 is the only one still open. Everything else is finished, rejected or skipped.
+
+### Tasks 8 and 12, rejected by Anas 2026-08-27
 
 Both killed outright, not deferred. Neither ships on the landing page.
 
@@ -228,7 +272,7 @@ It also drops the only place the page answered "is my data sold". The Firestore 
 
 **A report to the marketing team is owed** once the remaining tasks close, sorted four ways: done as briefed, done with a change from the PM, done completely differently by the PM, and rejected. Tasks 8 and 12 are the first two entries under rejected.
 
-### Task 9 built, 2026-08-27. The waitlist ships, the deletion page does not.
+### Task 9 done, 2026-08-27. Both forms work.
 
 **A working Google Form was already in the repo.** `D:\anas\Work\GW\website\embed\index.html`, from Oct 2025, a leftover embeddable signup widget. Checked live: HTTP 200, titled "Sign up for the Digital wellbeing app", two questions.
 
@@ -261,7 +305,7 @@ Rewritten with the three IDs as named constants at the top of the script and a `
 
 **Google Forms over Firestore, decided 2026-08-27.** The site is static on GitHub Pages, so writing to Firestore needs the web API key in the page and a publicly writable collection. See the rules finding below. Forms need no key, no rules change and no cost, and the plumbing already existed.
 
-### Task 10 skipped by the founder, 2026-08-27
+### Task 10, skipped by Anas 2026-08-27
 
 Called off after the data was rendered and costed. The legal route was clear and the chart was buildable, he chose not to spend the page on it. Not deferred, skipped. Goes under rejected in the marketing report alongside tasks 8 and 12.
 
@@ -317,11 +361,7 @@ This also settles the forms question above: do not add a second unauthenticated 
 
 **Reads cannot be closed from the rules file.** The app signs nobody in, so every request arrives unauthenticated and Firestore cannot tell the app from a stranger. Closing reads needs `signInAnonymously()` at first run plus an `ownerUid` field on the doc, which is an app change and a release. Written up as stage 2 at the bottom of the proposed file. It does not touch decision D1, the doc id stays the device hash.
 
-### The `#inside` intro paragraph overflows at 360
-
-`index.html:869` carries a hardcoded `style="width: 730px;"`. At a 360 viewport the paragraph is 640px wide and the document scrolls sideways. Pre-existing, present in the pre-task-9 backup, not caused by this work. One line: `max-width:730px; width:100%`. Not fixed, waiting on the founder.
-
-### Task 9 is no longer blocked on the tech
+### How the forms work, for whoever touches them next
 
 The pattern already exists in this repo. `delete_my_data/index.html` posts a plain `<form>` straight at a Google Form's `formResponse` endpoint, `target`-ed at a hidden iframe, and treats the iframe's `load` event as the success signal because the response is cross-origin and unreadable. No backend, no third-party script, works on GitHub Pages. Copy that whole approach for the iOS waitlist: one email field instead of the ID and reason fields.
 
@@ -361,13 +401,18 @@ Kept because task 7 is done but every other privacy or permission claim on any s
 
 **Check-ins do not stay on the device.** `EmotionRepository.kt:131` writes them to the Firestore `emotionLogs` collection. The app also ships Firebase Analytics, Crashlytics, Auth, Storage, Config and Functions. So "nothing leaves your phone" is not a claim this page can make.
 
-### Blocked on the founder
+### Waiting on Anas
 
-- **Task 6** — needs 6 to 10 seconds of screen capture: the butterfly appearing over a real TikTok or Instagram scroll.
-- **Task 9** — needs a Google Form and its three IDs, see "Task 9 is no longer blocked on the tech" below.
-- **Task 10** — needs a real anonymized mood chart. Voice rule: every number carries a source or comes off.
-- **`#solution` screenshots** — founder is creating a new butterfly screenshot.
-- **Google Form IDs** — for task 9 and to repair `delete_my_data/`.
+- **Task 6, the hero video.** Needs 6 to 10 seconds of screen capture, the butterfly appearing over a real TikTok or Instagram scroll. Nothing like it exists in any repo. He knows, and said it will take time.
+- **THE SOLUTION screenshots.** He is making a new butterfly screenshot.
+- **Does the Play Store listing link to `delete_my_data/`?** Nothing on either HTML page links to it, so its only traffic comes from the listing or the app. Worth knowing now that the page works.
+- **A "Why are you leaving?" question on the deletion form.** The form has one question. Until a second one exists, that field on the page stays hidden rather than collecting an answer with nowhere to put it.
+
+Cleared since this list was written: task 9 needed Google Form IDs and now has them, task 10 needed a mood chart and was skipped.
+
+### His own idea, not on the brief
+
+Replace the screenshots in **HOW IT WORKS** with a walkthrough built from the check-in mockup at `dev/gamerswellbeing/web/axis-checkin/index.html`: butterfly appears, user taps it, user picks an emotion, butterfly says there is a drop in your mood, take a break. Raised 2026-08-27. Not started, not scoped, no decision yet.
 
 ---
 
@@ -408,20 +453,22 @@ Python **`qrcode`** is installed and generated the QR. **`opencv-python-headless
 
 ---
 
-## Open, not yet decided
+## Still needs a yes or no from Anas
 
-- **The privacy line says Wellbeing never sees "any phone data", and `ACCESS_COARSE_LOCATION` ships today.** It is requested in `RewardsFragment.kt:188` for a marketplace that is not live. Either the permission comes out of the app until the marketplace ships, or the clause narrows. Raised 2026-08-27, undecided. This is a claim on a live page, not a style question.
-- **`investors.html` still carries "Validated in alpha · 2026".** The capsule was removed from `index.html` only. That breaks the rule that both pages carry an identical `#research`. Deliberate for now, since the alpha claim is investor material, but it needs a yes or no. Raised 2026-08-27.
-- **The Play listing may still declare an Accessibility service** the APK does not have. Founder's to check. Raised 2026-08-27.
+Small things. None of them block anything. Each one has been raised and none has been answered.
 
-- **The blue pill vs the Play badge.** Only `#download` uses the official badge. The hero, the nav and the sticky mobile bar are still the blue "Get the app" pill. Google's guidelines want the badge wherever the page points at Play. Raised 2026-08-26, undecided: swap all four, or keep the pill above the fold for contrast against the dark palette.
-- **A dev tweaks panel is still shipped in `index.html`.** `aside.wb-tweaks`, "Tweaks / Screens row", a photo-align segmented control and a lift slider with about 60 lines of JS behind it, sitting between `</main>` and the footer. It is live on `digitalwellbeing.xyz`. Not on any task list, found 2026-08-26. Ask before cutting it, it may still be how the founder nudges the `#inside` phone row.
-
-- **Em dash in the `#download` sub copy.** It reads "Download Wellbeing on Android today. iOS launching soon **—** join the waitlist and we'll let you know the moment it's live." The no-em-dash rule says it goes. Raised 2026-08-26, founder answered about the form instead, so the dash is still there. It is his copy, so it stays until he says. The sentence changes anyway when task 9 replaces the `mailto:` button with a real field.
+| # | Question | Why it is open |
+|---|---|---|
+| 1 | The privacy capsule says Wellbeing never sees "any phone data", but `ACCESS_COARSE_LOCATION` ships in the app today | Requested at `RewardsFragment.kt:188` for a marketplace that is not live. Either the permission comes out of the app, or the sentence narrows. This is a claim on a live page, not a style point. Raised 2026-08-27, now also in the dev project prompt |
+| 2 | `investors.html` still shows the green "Validated in alpha · 2026" capsule | It was removed from the landing page only. The two pages are supposed to carry an identical WHAT THE DATA SAYS block. Left on purpose for now, since the alpha claim is investor material, but it needs a decision. Raised 2026-08-27 |
+| 3 | Three of the four Play links are still the blue "Get the app" pill | Only the download block uses the official Google Play badge. Google's guidelines want the badge everywhere the page points at Play. Swap all four, or keep the pill above the fold because it looks better on the dark background. Raised 2026-08-26 |
+| 4 | A developer tweaks panel is still shipped and live on `digitalwellbeing.xyz` | `aside.wb-tweaks`, "Tweaks / Screens row", a photo-align control and a slider with about 60 lines of JS, sitting between `</main>` and the footer. Not on any task list, found 2026-08-26. It may still be how he nudges the phone row in HOW IT WORKS, so ask before cutting |
+| 5 | Em dash in the download block sub copy | "iOS launching soon **—** join the waitlist". His no-em-dash rule says it goes, but it is his sentence, so it stays until he says otherwise. Raised 2026-08-26, he answered about the form instead |
+| 6 | One paragraph in HOW IT WORKS has a hardcoded `width: 730px` at `index.html:869` | On a phone the whole page scrolls sideways. Pre-existing, not caused by any task. One line to fix: `max-width:730px; width:100%`. Raised 2026-08-27 |
 
 ---
 
-## Findings worth keeping
+## Things worth remembering
 
 **The brief is wrong about `firstrun_hero.gif`.** Block 1 calls it "the butterfly appearing over a real scroll" and wants it as the hero video. It is not that. It is a 320x183, 162-frame pixel-art meme, a Godfather riff where a man takes a gift box off a car. Pure marketplace messaging and far too small for a hero. There is no butterfly-over-scroll footage anywhere in the repo, which is why task 6 is blocked.
 
@@ -434,13 +481,13 @@ Python **`qrcode`** is installed and generated the QR. **`opencv-python-headless
 
 ---
 
-## Working method
+## How the work gets done
 
 - **All work happens in `index.html` directly.** The preview was signed off and merged on 2026-08-26, and `index-preview.html` was deleted. `_review/harness.html` was rebuilt on 2026-08-26 for the `#research` review and is on disk again. Pre-merge backup: `_review/index.html.pre-merge-2026-08-26.bak`, outside the repo.
 - **`_review/`** at `D:\anas\Work\GW\website\_review\` holds review screenshots and the backup. Outside the git repo, so it never gets committed.
 - Serve the **parent** dir so the site and any review harness share an origin: `python -m http.server 8765` in `D:\anas\Work\GW\website`. The repo's own `run-local-server.bat` uses port 8000.
 
-### Reviewing at mobile width
+### Looking at the page at phone width
 
 `resize_window` cannot do it, Chrome refuses to go below roughly 500px wide. Iframe the page instead, from a harness served on the same origin. Rebuild `_review/harness.html` when needed:
 
@@ -461,11 +508,12 @@ Programmatic scrolling fails on the top-level page in this browser tooling too. 
 
 ---
 
-## Repo and git
+## Git
 
-- **Never edit the founder's copy.** Not grammar, not register, not a stray comma. Suggest the change in the reply and let him decide. This was a real mistake on 2026-08-26: seven strings in `#research` were rewritten without being asked and had to be reverted.
-- **Never commit without explicit approval.** The founder commits this work himself.
-- Branch is `master`, and `master` is the published branch. A push goes live on `digitalwellbeing.xyz` through GitHub Pages.
-- Commits so far: `b89d363` task 1 and the hero, `48be0f1` task 4 and `investors.html`, `53e0014` tasks 2, 3 and 5 plus the merge, the title and the two deletions. `43628d2` task 11, the three QR codes and the Play badge, committed by the founder on 2026-08-26 while the notes were still being written, so the spec and changelog entries for it landed across that commit and the working tree.
-- As of 2026-08-26, after `43628d2`, the only uncommitted files are `specs/CHANGELOG.md` and `specs/v2-landing-page.md`, the rest of these task 11 notes. `master` is in sync with `origin/master`, so the QR codes and the badge are live. GitHub Pages was still serving the old page a minute after the push, which is normal build lag. Verify at `digitalwellbeing.xyz`: the title should read "Wellbeing: Find out which app drops your mood" and the page source should contain `install-bar`.
+- **Never rewrite his copy.** Not the wording, not the register, not a stray comma. Propose it in the reply and let him decide. This was a real mistake on 2026-08-26: seven strings in WHAT THE DATA SAYS were rewritten unasked and had to be reverted. The one exception is typos, which get fixed silently. See decision 7.
+- **Never commit without him saying so.** He commits this work himself.
+- Branch is `master` and `master` is what gets published. A push goes live on `digitalwellbeing.xyz` through GitHub Pages, with a minute or two of build lag.
+- Commits so far: `b89d363` task 1 and the hero. `48be0f1` task 4 and `investors.html`. `53e0014` tasks 2, 3 and 5, plus the merge, the title and two deletions. `43628d2` task 11, the three QR codes and the Play badge. `62f093d` task 9, the deletion page and the iOS waitlist.
+- **As of 2026-08-27:** `62f093d` is committed but **not pushed**, `master` is one ahead of `origin/master`. So the working forms are not live yet. The only uncommitted file is `specs/v2-landing-page.md`, these notes.
+- To check what is actually live, open `digitalwellbeing.xyz`: the title should read "Wellbeing: Find out which app drops your mood", and the page source should contain `install-bar` and `waitForm`.
 - Max 200 words per response, per `CLAUDE.md`.
