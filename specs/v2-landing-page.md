@@ -206,13 +206,120 @@ Markup is a flex row inside `.privacy-note`: the house `.eyebrow` chip with its 
 | # | Task | Priority |
 |---|---|---|
 | 6 | Hero video, **blocked**, no source footage exists | P1 |
-| 8 | "Not a blocker" comparison table | P1 |
-| 9 | Real iOS waitlist form, **unblocked**, needs Google Form IDs | P1 |
-| 10 | Mood chart as proof, **blocked**, needs real anonymized data | P1 |
-| 12 | FAQ block, six questions | P2 |
+| 8 | "Not a blocker" comparison table, **rejected 2026-08-27**, see below | P1 |
+| 9 | Real iOS waitlist form and the deletion page, **both done 2026-08-27** | P1 |
+| 10 | Mood chart as proof, **skipped 2026-08-27** by the founder, see below | P1 |
+| 12 | FAQ block, **rejected 2026-08-27**, see below | P2 |
 | 13 | Domain split, **closed, as-designed** | P2 |
 | 11 | QR for desktop, **done 2026-08-26**, see above | P2 |
 | 7 | Privacy, **done 2026-08-27**, see above. Shipped as a disclaimer capsule, not a section | P1 |
+
+### Rejected by the founder, 2026-08-27
+
+Both killed outright, not deferred. Neither ships on the landing page.
+
+**Task 8, "Not a blocker" comparison, brief block 5.** The copy was rejected on quality, and the block was rejected on audience: the founder reads the comparison-against-blockers argument as investor material, not something a regular visitor came for. If it is rebuilt at all it belongs on `investors.html`, with new copy, and nothing has been written for it yet.
+
+**Task 12, FAQ, brief block 8.** Rejected on audience. The five questions the brief specifies (does it block apps, battery drain, Xiaomi/MIUI, is my data sold, what are points for) are technical support questions, not install objections a regular user has before installing.
+
+This kills the only sanctioned home for the marketplace line. Brief Part 6 says "zero occurrences of rewards, points or marketplace outside the single FAQ line" and there is now no FAQ line, so the landing page carries none of it at all. That is stricter than the brief, not looser, so nothing else has to change. Decision 1 stands: the full marketplace story stays on `investors.html`.
+
+It also drops the only place the page answered "is my data sold". The Firestore and location question in "Open, not yet decided" stops being a copy blocker and stays a factual one.
+
+**A report to the marketing team is owed** once the remaining tasks close, sorted four ways: done as briefed, done with a change from the PM, done completely differently by the PM, and rejected. Tasks 8 and 12 are the first two entries under rejected.
+
+### Task 9 built, 2026-08-27. The waitlist ships, the deletion page does not.
+
+**A working Google Form was already in the repo.** `D:\anas\Work\GW\website\embed\index.html`, from Oct 2025, a leftover embeddable signup widget. Checked live: HTTP 200, titled "Sign up for the Digital wellbeing app", two questions.
+
+| Field | Entry ID | |
+|---|---|---|
+| Email | `entry.1406486002` | required |
+| Leave a comment! | `entry.813107488` | optional |
+
+That is exactly the shape the waitlist needs, so no new form was created. If the founder wants the iOS list kept separate from the old signups, only the form id and the email entry id change.
+
+**Shipped in `#download`.** The `mailto:` button is gone, replaced by an email field plus the same "Join iOS waitlist" button, posting into a hidden iframe exactly like `delete_my_data/`. Success replaces the form with "You're on the list. We'll email you the moment iOS is live." A 15 second timeout re-enables the button and hands back the `hello@` address. The founder's `.sub` copy above it is untouched, including its em dash: the control changed, not the sentence.
+
+CSS appended at the end of the stylesheet per the source-order rule. New `.sr-only` utility for the field label, the page had none. At 360 the row stacks and both the field and the button go full width.
+
+**The deletion page was lying.** The iframe `load` event fires on Google's 404 too, so submitting against `REPLACE_FORM_ID` showed "Request received" for a request that was never received. Every user who asked to be forgotten since 2026-08-16 was told it worked.
+
+Rewritten with the three IDs as named constants at the top of the script and a `configured` check. While the placeholders are in, submit is cancelled and the page says "The form is not connected yet", pointing at `info@digitalwellbeingapp.com`. When the IDs land, the same code wires `form.action` and both input names at runtime and behaves as originally designed. One paste, no other edit.
+
+**Deletion form wired 2026-08-27.** Founder created it and sent the link. Form id `1FAIpQLScnsTdwAGurb61MKXVxesIqlKv5Sc2jnpBLJ7Spxj28BABN7A`, one required question "Your User ID" at `entry.1338548693`. There is no second question, so the "Why are you leaving?" field hides itself rather than collecting an answer that would be thrown away. Add a short-answer question to the form and paste its entry id into `REASON_ENTRY` and the field comes back on its own.
+
+**Waitlist form: reuse confirmed**, founder's call, "no one signed in" on the old Oct 2025 list. The `#download` field posts at `1FAIpQLSez...`, `entry.1406486002`.
+
+**Field sits above the button on desktop**, founder's call. `.wait-row` is a 260px column, not a row.
+
+**Both forms tested live by the founder 2026-08-27.** `GW-TEST-0000` arrived in the deletion sheet, the iOS waitlist email arrived in the signup sheet. Task 9 is closed.
+
+**Still on the founder:** check whether the Play listing links to `delete_my_data/`.
+
+`index.html` 59,185 -> 62,341 bytes. Backups: `_review/index.html.pre-task9-2026-08-27.bak`, `_review/delete_my_data.index.html.pre-task9-2026-08-27.bak`.
+
+**Google Forms over Firestore, decided 2026-08-27.** The site is static on GitHub Pages, so writing to Firestore needs the web API key in the page and a publicly writable collection. See the rules finding below. Forms need no key, no rules change and no cost, and the plumbing already existed.
+
+### Task 10 skipped by the founder, 2026-08-27
+
+Called off after the data was rendered and costed. The legal route was clear and the chart was buildable, he chose not to spend the page on it. Not deferred, skipped. Goes under rejected in the marketing report alongside tasks 8 and 12.
+
+What the render found, kept because it outlives the task:
+
+| Candidate | Verdict |
+|---|---|
+| Screen time before vs after | Dead. The prototype's own banner says the "after" minutes are a stand-in, about 19% of the real clock |
+| Session length vs mood | Dead. Only 54 sessions across 12 users have both a duration and a check-in. Bands read 50%, 58%, 40%, 50%, which is noise |
+| How each app leaves you feeling | Real. YouTube 75% pleasant, Instagram 67%, Facebook 59%. 391 check-ins, 18 users, 16 Jul to 10 Aug. LinkedIn dropped, only 3 users behind it |
+
+**The dataset is smaller than this spec said.** 188 is the number of user records. Only 44 ever produced a log, and 27 have a usable emotion answer. Any future claim sourced from it uses those numbers, not 188.
+
+### Task 10, the legal question settled 2026-08-27
+
+The founder asked what the rule actually is. It is four lines.
+
+| Act | Allowed? | Why |
+|---|---|---|
+| Collect emotion data | Yes | Privacy policy §2 already lists it |
+| Train the model on it | Yes | Same §2, "detect your optimal digital exit signal", "generate insights" |
+| Publish an aggregate chart over all 188 users | Yes | Aggregate over a group that size is anonymous, so the policy does not govern it |
+| Publish one user's week | Only with that user's consent | One person's data is pseudonymous, not anonymous |
+
+Building the model was never the problem and the founder was right to push back on that. Publishing is a separate act, and §2 lists no marketing purpose and §3 lists no public disclosure, which is why the aggregate route is the one that works.
+
+**Why one user is different.** The exported dataset at `web/insights/data/dataset.json` is clean on its own: 188 users, fields are `userId`, `publicId`, `createdAt`, `age`, `sex`, no email and no name. But `userId` is the same SHA-256 device hash that keys the Firestore doc, the doc carries `googleUid` per decision D3, and `googleUid` resolves to an email in Firebase Auth. Three steps inside the founder's own console. That chain is what "pseudonymous" means: the key still exists. Anonymous means the key is gone. Pseudonymisation is a good thing and GDPR Article 32 asks for it, it is just not an exemption.
+
+**Founder's own rule, adopted:** a user sharing their weekly report is their choice and nothing gets shared against their will. That is consent, which is the cleanest basis there is, and a real person's real week is a stronger landing page object than a bar chart. Worth building as a share feature rather than treating it as a legal workaround.
+
+**One line to add** to `legal/privacy-policy.html` §2 next time it is touched: publication of anonymous aggregate statistics. Not urgent, the aggregate route does not depend on it.
+
+Chart still to pick from `dev/gamerswellbeing/web/weekly-report/`. Two candidates: `catChart`, median minutes a day by category, which is not emotion data at all, and `moodChart`, the mood map.
+
+### `firestore.rules` is wide open, found 2026-08-27
+
+Not a website task, but it outranks everything on this list.
+
+```
+match /users/{userId}/{document=**} { allow read, write: if true; }
+match /emotionLogs/{logId}          { allow read, write: if true; }
+```
+
+Comment says "allow all during development". The commit that introduced them is `cfb1d4c [RULES] live firebase rules`. Project id `gwapp-30e03` ships inside every APK in `app/google-services.json`, so it is public by definition. Anyone can read every user's check-ins and screen time, and write or delete them. The founder confirmed the deployed rules are byte-identical to the file.
+
+This also settles the forms question above: do not add a second unauthenticated write path into that database.
+
+**Proposal written to `dev/gamerswellbeing/firestore.rules.proposed`, not deployed.** It blocks delete on `users` and its subcollections, blocks update and delete on `emotionLogs`, and requires the 64-hex device hash on every write. Checked against the app first: the only `.delete()` in the Kotlin is `FieldValue.delete()` on one field, which is an update, and check-ins are only ever created, so none of it breaks the current app.
+
+**The deployed rules are the file.** The founder pasted his live rules on 2026-08-27 and they diff clean against `firestore.rules` apart from whitespace, so nothing about the finding changes.
+
+**Handed to the dev project, not fixed here.** Prompt at `_review/dev-project-prompt.md`, covering the rules in both stages plus the three marketing claims that depend on the Android repo: the Play listing's Accessibility declaration, `ACCESS_COARSE_LOCATION` against the "never any phone data" line, and the absence of any device-local claim. It also asks for a share control on the weekly report, which is the consent route to a single-user chart for task 10.
+
+**Reads cannot be closed from the rules file.** The app signs nobody in, so every request arrives unauthenticated and Firestore cannot tell the app from a stranger. Closing reads needs `signInAnonymously()` at first run plus an `ownerUid` field on the doc, which is an app change and a release. Written up as stage 2 at the bottom of the proposed file. It does not touch decision D1, the doc id stays the device hash.
+
+### The `#inside` intro paragraph overflows at 360
+
+`index.html:869` carries a hardcoded `style="width: 730px;"`. At a 360 viewport the paragraph is 640px wide and the document scrolls sideways. Pre-existing, present in the pre-task-9 backup, not caused by this work. One line: `max-width:730px; width:100%`. Not fixed, waiting on the founder.
 
 ### Task 9 is no longer blocked on the tech
 

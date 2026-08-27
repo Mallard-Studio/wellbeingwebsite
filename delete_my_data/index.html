@@ -108,13 +108,47 @@
 
 <script>
 (function () {
+  // ---------------------------------------------------------------------
+  // CONFIG. Paste the three values from the live Google Form and nothing
+  // else on this page has to change.
+  //   FORM_ID      the /d/e/<id>/viewform segment of the form's share URL
+  //   USERID_ENTRY the entry.NNNNNNN name of the "Your User ID" question
+  //   REASON_ENTRY the entry.NNNNNNN name of the "Why are you leaving" question
+  // To read them: open the live form, view source, search FB_PUBLIC_LOAD_DATA_.
+  // ---------------------------------------------------------------------
+  var FORM_ID      = '1FAIpQLScnsTdwAGurb61MKXVxesIqlKv5Sc2jnpBLJ7Spxj28BABN7A';
+  var USERID_ENTRY = 'entry.1338548693';
+  // The live form has no second question, so the reason field is hidden.
+  // Add a short-answer "Why are you leaving?" question to the form, paste its
+  // entry id here, and the field comes back on its own.
+  var REASON_ENTRY = '';
+
+  var MAILTO = 'mailto:info@digitalwellbeingapp.com?subject=Data%20deletion%20request';
+
   var form = document.getElementById('deleteForm');
   var btn = document.getElementById('submitBtn');
   var sink = document.getElementById('deleteSink');
   var okMsg = document.getElementById('okMsg');
   var errMsg = document.getElementById('errMsg');
   var userId = document.getElementById('userId');
+  var reason = document.getElementById('reason');
   var submitted = false;
+
+  var configured = FORM_ID.indexOf('REPLACE') === -1 &&
+                   USERID_ENTRY.indexOf('REPLACE') === -1;
+
+  if (configured) {
+    form.action = 'https://docs.google.com/forms/d/e/' + FORM_ID + '/formResponse';
+    userId.name = USERID_ENTRY;
+    if (REASON_ENTRY && REASON_ENTRY.indexOf('REPLACE') === -1) {
+      reason.name = REASON_ENTRY;
+    } else {
+      // No question to post it into. Asking for an answer we would throw away
+      // is the same lie as the false success message this replaced.
+      reason.removeAttribute('name');
+      reason.closest('.field').style.display = 'none';
+    }
+  }
 
   userId.addEventListener('input', function () {
     userId.value = userId.value.toUpperCase();
@@ -124,6 +158,20 @@
   userId.addEventListener('invalid', function () {
     userId.setCustomValidity('Enter the ID exactly as shown in the app, e.g. GW-A3F9-C21B');
   });
+
+  // Until the form IDs are in, the POST would 404 at Google and the iframe would
+  // still fire load, which used to show "Request received" for a request that was
+  // never received. Say so instead of lying about it.
+  if (!configured) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errMsg.innerHTML = 'The form is not connected yet. Email your ID to ' +
+        '<a href="' + MAILTO + '">info@digitalwellbeingapp.com</a> ' +
+        'and we will process it exactly the same way, within 30 days.';
+      errMsg.className = 'msg err';
+    });
+    return;
+  }
 
   form.addEventListener('submit', function () {
     submitted = true;
@@ -147,7 +195,7 @@
         btn.disabled = false;
         btn.textContent = 'Delete my data';
         errMsg.innerHTML = 'We could not send the request. Please email your ID to ' +
-          '<a href="mailto:info@digitalwellbeingapp.com?subject=Data%20deletion%20request">info@digitalwellbeingapp.com</a>.';
+          '<a href="' + MAILTO + '">info@digitalwellbeingapp.com</a>.';
         errMsg.className = 'msg err';
       }
     }, 15000);

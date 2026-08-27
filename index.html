@@ -653,6 +653,28 @@
     .privacy-note p{ margin-top: 16px; }
   }
 
+
+  /* iOS waitlist form, task 9. Posts straight at a Google Form, no backend. */
+  .wait{ display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+  /* Field sits above the button, founder's call 2026-08-27. */
+  .wait-row{ display:flex; flex-direction:column; gap:10px; align-items:stretch; width:260px; }
+  .wait input[type=email]{
+    padding: 12px 18px; border-radius: 100px;
+    font-family:'Comfortaa', sans-serif; font-size:14px;
+    border: 1px solid var(--line-2); background: rgba(255,255,255,.03);
+    color: var(--ink); width: 100%;
+  }
+  .wait .btn{ justify-content:center; }
+  .wait input[type=email]::placeholder{ color: var(--ink-3); }
+  .wait input[type=email]:focus{ outline:none; border-color: var(--accent); background: rgba(255,255,255,.06); }
+  .wait .wait-msg{ display:none; font-size:14px; color: var(--ink-2); max-width: 320px; line-height:1.6; }
+  .wait .wait-msg.on{ display:block; }
+  .wait .wait-msg.err{ color:#ff8f8f; }
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+            overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+  @media (max-width: 560px){
+    .wait, .wait-row{ width:100%; }
+  }
 </style>
 </head>
 <body data-titans-quick-view-extension-id="eefljgmhgaidffapnppcmmafobefjece" style="">
@@ -937,7 +959,17 @@ Within 4 weeks, we help you adopt new healthier habits.</p>
           <span>Scan to install</span>
         </a>
       </div>
-      <a class="btn" href="mailto:hello@digitalwellbeingapp.com?subject=iOS%20waitlist">Join iOS waitlist</a>
+      <div class="wait">
+        <form id="waitForm" class="wait-row" target="waitSink" method="POST"
+              action="https://docs.google.com/forms/d/e/1FAIpQLSezIkTz8kY4QtnucxyVA3wC0aHklZqmkE3VtLkswk3wGEK4mg/formResponse">
+          <label for="waitEmail" class="sr-only">Your email</label>
+          <input type="email" id="waitEmail" name="entry.1406486002"
+                 placeholder="you@email.com" required autocomplete="email" spellcheck="false">
+          <button type="submit" class="btn" id="waitBtn">Join iOS waitlist</button>
+        </form>
+        <p class="wait-msg" id="waitMsg"></p>
+      </div>
+      <iframe name="waitSink" id="waitSink" title="waitlist target" style="display:none" tabindex="-1" aria-hidden="true"></iframe>
     </div>
 
   </div>
@@ -1087,6 +1119,46 @@ Within 4 weeks, we help you adopt new healthier habits.</p>
   }
   header.querySelectorAll('nav.menu a').forEach(function(a){
     a.addEventListener('click', function(){ header.classList.remove('menu-open'); });
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var form = document.getElementById('waitForm');
+  var sink = document.getElementById('waitSink');
+  var btn  = document.getElementById('waitBtn');
+  var msg  = document.getElementById('waitMsg');
+  if(!form || !sink) return;
+  var sent = false;
+
+  form.addEventListener('submit', function(){
+    sent = true;
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    msg.className = 'wait-msg';
+  });
+
+  // The response is cross-origin and unreadable, so the iframe's load event
+  // after a submit is the only success signal available.
+  sink.addEventListener('load', function(){
+    if(!sent) return;
+    form.style.display = 'none';
+    msg.textContent = "You're on the list. We'll email you the moment iOS is live.";
+    msg.className = 'wait-msg on';
+  });
+
+  // If the POST never lands, hand back the email address instead of hanging.
+  form.addEventListener('submit', function(){
+    setTimeout(function(){
+      if(btn.disabled && form.style.display !== 'none'){
+        btn.disabled = false;
+        btn.textContent = 'Join iOS waitlist';
+        msg.innerHTML = 'That did not send. Email us at ' +
+          '<a href="mailto:hello@digitalwellbeingapp.com?subject=iOS%20waitlist">hello@digitalwellbeingapp.com</a> instead.';
+        msg.className = 'wait-msg on err';
+      }
+    }, 15000);
   });
 })();
 </script>
