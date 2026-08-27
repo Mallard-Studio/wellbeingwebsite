@@ -636,6 +636,23 @@
     }
   }
 
+
+  /* ---- privacy note under #loop (task 7) ---- */
+  .privacy-note{
+    margin-top: 56px; max-width: 900px;
+    display:flex; align-items:center; gap: 22px;
+    padding: 22px 34px;
+    border:1px solid var(--line); border-radius: 100px;
+    background: rgba(255,255,255,0.02);
+  }
+  .privacy-note .eyebrow{ flex-shrink:0; }
+  .privacy-note p{ font-size: 15px; line-height: 1.6; color: var(--ink-3); }
+  .privacy-note strong{ color: var(--ink-2); font-weight: 600; }
+  @media(max-width: 880px){
+    .privacy-note{ display:block; border-radius: var(--radius); padding: 26px 28px; }
+    .privacy-note p{ margin-top: 16px; }
+  }
+
 </style>
 </head>
 <body data-titans-quick-view-extension-id="eefljgmhgaidffapnppcmmafobefjece" style="">
@@ -705,7 +722,6 @@
     </div>
     <div class="research-grid">
       <div class="r-panel r-lead">
-        <span class="r-badge"><i></i>Validated in alpha · 2026</span>
         <div class="r-sub">We helped users reduce doomscrolling down with</div>
         <div class="r-big"><span class="count" data-to="63">63</span><span>%</span></div>
         <div class="r-swap"><em>6.4 hrs</em> → <b>2.2 hrs</b><small>avg per day, on social media and short-form video</small></div>
@@ -894,13 +910,20 @@ Within 4 weeks, we help you adopt new healthier habits.</p>
       </div>
     </div>
 
+    <div class="privacy-note">
+      <span class="eyebrow"><span class="dot"></span>Privacy</span>
+      <p>
+        Wellbeing <strong>ONLY</strong> sees what you allow it to see: when apps are opened and closed.<br>
+        Wellbeing <strong>NEVER</strong> sees what is on your screen, what you type, or any phone data.
+      </p>
+    </div>
+
   </div>
 </section>
 
 <section id="download" class="cta-section">
   <div class="wrap">
-    <span class="eyebrow"><span class="dot"></span>Get the app</span>
-    <h2 style="margin-top: 22px;">Less screen.<div>Better mood.</div></h2>
+    <h2>Less screen.<div>Better mood.</div></h2>
     <p class="sub" style="">Download Wellbeing on Android today. iOS launching soon — join the waitlist and we'll let you know the moment it's live.</p>
     <div class="cta-block">
       <div class="cta-play">

@@ -1,7 +1,7 @@
 # v2 landing page rebuild
 
 Rebuild of `index.html` to serve one job: **get the Google Play install.**
-Deadline: live by **2026-09-04**. Started 2026-08-24. Last updated 2026-08-26.
+Deadline: live by **2026-09-04**. Started 2026-08-24. Last updated 2026-08-27.
 
 Changes on this page are for the marketing team, not a dev request.
 
@@ -170,6 +170,35 @@ Two layout bugs fixed on the way, both the same root cause, a flex row with no `
 
 The `.coming-soon` CSS was deleted too, four rules, on the founder's call 2026-08-26: "if it's useless it goes". Zero `coming-soon` references left in `index.html`. `investors.html` keeps its own copy, it still uses the footnote.
 
+**Task 7 done 2026-08-27, and it is not what the brief asked for.** Shipped as a two-line disclaimer capsule at the end of `#loop`, above `#download`. Not a section.
+
+The brief's premise failed verification. Both source docs build task 7 around the Accessibility permission and the app does not use it, see "What the Android source actually says" below. Before rebuilding, the founder asked for proof that the task belonged on the landing page at all rather than in `privacy-policy.html`. It does: brief Part 3 row 7 is inside a table of page blocks, target "Plain-language block naming the Accessibility permission head-on", and GTM section 8 "Landing page, structure top to bottom" lists "Privacy, up front and plain" as item 6 of 9, sitting between "Not a blocker" and the install block. `privacy-policy.html` appears nowhere in the v2 marketing docs; its only hits are the unrelated mood-data publication check that blocks task 10.
+
+Three versions were built. Keeping all three because the rejections are the useful part:
+
+| # | What | Why it died |
+|---|---|---|
+| 1 | Full `#privacy` section: three permission cards on the `.flow`/`.step` grid, a "What it never reads" panel, a footnote naming location and notifications | "so overwhelming, it should be just two lines". Cost 2,417 px at 360 |
+| 2 | Two lines naming Usage Access | **The rule worth keeping:** "what if we have iOS version also? are we still going to tell iOS users about the USAGE ACCESS!" Naming an Android permission dates the page the moment iOS ships |
+| 3 | Founder's own copy, shipped | |
+
+**So the standing rule is: describe what the app sees, never which platform permission grants it.**
+
+The shipped copy, his:
+
+```
+Wellbeing ONLY sees what you allow it to see: when apps are opened and closed.
+Wellbeing NEVER sees what is on your screen, what you type, or any phone data.
+```
+
+Markup is a flex row inside `.privacy-note`: the house `.eyebrow` chip with its green dot reading "Privacy", then the two lines. Capsule is `border-radius:100px`, max-width 900px, 900x94 at desktop. Below 880px it stacks and the radius drops to `var(--radius)` 18px, because a 100px radius on a six-line block bulges.
+
+`index.html` 58,380 -> 59,352 bytes, so the whole task cost 972 bytes. Height at 360px 11,132 -> 11,459 px. Backup: `_review/index.html.pre-task7-2026-08-26.bak`. Screenshots: `_review/task7-privacy-note-desktop.jpg`, `_review/task7-privacy-note-360.jpg`.
+
+**Typos are now fixed silently, not flagged.** His copy shipped with "Wellbing" and "what you allows it to see", both flagged rather than corrected, per the old rule. His answer: "come on man! fix my typos.. don't make me look stupid!" Mechanical errors get corrected on the way in from now on. Meaning, wording and register are still proposals. This narrows the 2026-08-26 no-silent-copy-edits rule, it does not cancel it.
+
+**Two capsules removed 2026-08-27**, founder's call. The green `.r-badge` "Validated in alpha · 2026" at the top of the `#research` lead panel, and the `.eyebrow` "Get the app" above the `#download` headline. The `#download` h2 lost its `margin-top:22px` with it, that gap only existed to clear the capsule. Both CSS rules stay: `.eyebrow` is now used only by the privacy capsule, `.r-badge` is still used by `investors.html`. `index.html` 59,352 -> 59,185 bytes. Screenshots: `_review/capsules-removed-research.jpg`, `_review/capsules-removed-download.jpg`.
+
 ---
 
 ## Not started
@@ -177,13 +206,13 @@ The `.coming-soon` CSS was deleted too, four rules, on the founder's call 2026-0
 | # | Task | Priority |
 |---|---|---|
 | 6 | Hero video, **blocked**, no source footage exists | P1 |
-| 7 | Privacy section naming the Accessibility permission | P1 |
 | 8 | "Not a blocker" comparison table | P1 |
 | 9 | Real iOS waitlist form, **unblocked**, needs Google Form IDs | P1 |
 | 10 | Mood chart as proof, **blocked**, needs real anonymized data | P1 |
 | 12 | FAQ block, six questions | P2 |
 | 13 | Domain split, **closed, as-designed** | P2 |
 | 11 | QR for desktop, **done 2026-08-26**, see above | P2 |
+| 7 | Privacy, **done 2026-08-27**, see above. Shipped as a disclaimer capsule, not a section | P1 |
 
 ### Task 9 is no longer blocked on the tech
 
@@ -203,11 +232,27 @@ So every deletion request submitted from that page has failed since 2026-08-16, 
 
 To get both pages working the founder creates the Google Forms and sends the IDs. To read them: open the live form, view source, find `FB_PUBLIC_LOAD_DATA_`, the `entry.NNNNNNN` numbers are in there. The form id is the `/d/e/<id>/viewform` segment of its share URL.
 
-### Task 7 can be verified, not guessed
+### What the Android source actually says, verified 2026-08-27
 
-The Android source is on this machine at `D:\anas\Work\GW\dev\gamerswellbeing`. `app/src/main/AndroidManifest.xml` is the ground truth for the privacy block the brief asks for, and the brief is explicit that only true claims go on the page. What it declares today: `SYSTEM_ALERT_WINDOW`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_SPECIAL_USE`, `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`, `PACKAGE_USAGE_STATS`, `QUERY_ALL_PACKAGES`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK`, `SCHEDULE_EXACT_ALARM`, `POST_NOTIFICATIONS` and **`ACCESS_COARSE_LOCATION`**.
+Kept because task 7 is done but every other privacy or permission claim on any surface has to match this. Source at `D:\anas\Work\GW\dev\gamerswellbeing`.
 
-Two things to settle before writing a word of that section. The manifest grep turned up no `BIND_ACCESSIBILITY_SERVICE` service declaration, so **whether the app actually uses the Accessibility permission at all still has to be confirmed** against `services/AppDetectionService` and the res XML. And **`ACCESS_COARSE_LOCATION` needs an answer for the page**: a privacy block that names the scary permission but omits location is the kind of omission that costs more than it saves.
+**The app does not use the Accessibility permission.** No class extends `AccessibilityService` anywhere in the Kotlin. No `BIND_ACCESSIBILITY_SERVICE`, no service declaration in `AndroidManifest.xml`, no `res/xml` accessibility config. `AppDetectionService.kt:44` extends `BaseForegroundService`. The brief and the GTM plan both build task 7 around this permission and both are wrong about it.
+
+**The accessibility strings are dead code.** `res/values/strings.xml` and `res/values-ar/strings.xml` carry a full set, including a Google Play prominent-disclosure block written for the policy requirement. Nothing references them. If the Play listing still declares an Accessibility service, the listing and the APK disagree, which is the founder's to check.
+
+**Foreground detection is Usage Access.** `PACKAGE_USAGE_STATS`, polled in `UsageStatsPoller.kt:97` through `queryEvents`. That yields the foreground package name and how long it has been open, nothing more.
+
+**The other permissions that touch the page's claims:**
+
+| Permission | What it is for | Where |
+|---|---|---|
+| `PACKAGE_USAGE_STATS` | which app is open, for how long | `UsageStatsPoller.kt:97` |
+| `QUERY_ALL_PACKAGES` | list installed apps so the user picks what to track | manifest |
+| `SYSTEM_ALERT_WINDOW` | draws the butterfly over other apps | manifest |
+| `ACCESS_COARSE_LOCATION` | **marketplace only**, city level | `RewardsFragment.kt:188`, `GpsCitySource.kt` |
+| `POST_NOTIFICATIONS` | delivering the signal | manifest |
+
+**Check-ins do not stay on the device.** `EmotionRepository.kt:131` writes them to the Firestore `emotionLogs` collection. The app also ships Firebase Analytics, Crashlytics, Auth, Storage, Config and Functions. So "nothing leaves your phone" is not a claim this page can make.
 
 ### Blocked on the founder
 
@@ -257,6 +302,10 @@ Python **`qrcode`** is installed and generated the QR. **`opencv-python-headless
 ---
 
 ## Open, not yet decided
+
+- **The privacy line says Wellbeing never sees "any phone data", and `ACCESS_COARSE_LOCATION` ships today.** It is requested in `RewardsFragment.kt:188` for a marketplace that is not live. Either the permission comes out of the app until the marketplace ships, or the clause narrows. Raised 2026-08-27, undecided. This is a claim on a live page, not a style question.
+- **`investors.html` still carries "Validated in alpha · 2026".** The capsule was removed from `index.html` only. That breaks the rule that both pages carry an identical `#research`. Deliberate for now, since the alpha claim is investor material, but it needs a yes or no. Raised 2026-08-27.
+- **The Play listing may still declare an Accessibility service** the APK does not have. Founder's to check. Raised 2026-08-27.
 
 - **The blue pill vs the Play badge.** Only `#download` uses the official badge. The hero, the nav and the sticky mobile bar are still the blue "Get the app" pill. Google's guidelines want the badge wherever the page points at Play. Raised 2026-08-26, undecided: swap all four, or keep the pill above the fold for contrast against the dark palette.
 - **A dev tweaks panel is still shipped in `index.html`.** `aside.wb-tweaks`, "Tweaks / Screens row", a photo-align segmented control and a lift slider with about 60 lines of JS behind it, sitting between `</main>` and the footer. It is live on `digitalwellbeing.xyz`. Not on any task list, found 2026-08-26. Ask before cutting it, it may still be how the founder nudges the `#inside` phone row.
