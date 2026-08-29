@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wellbeing — How do you feel?</title>
+<style>
+  /* ── Promo frame 2: home screen → doomscroll app → butterfly → check-in ──
+     Butterfly geometry copied from ButterflyOverlayView.kt:
+       icon 56dp · default x = W - 56 - 16 · default y = H * 0.5
+       entrance: bezier from the delete-zone spot, 300ms, alpha over first 20%
+       bubble: left of the icon, 8dp gap, dark #1C171D at the 0.8 the system caps
+     The check-in itself is the axis check-in from web/axis-checkin/index.html,
+     ported into the phone screen. 1 CSS px inside .canvas == 1 dp. */
+
+  :root {
+    --frame-w: 424px;                 /* frame.png is 557x1080 */
+    --screen-w: 380px;                /* == 499/557 of the frame */
+    --screen-h: 701px;                /* == 921/1080 of the frame */
+    --bubble-bg: rgba(28, 23, 29, .8);
+
+    --bg: #1C171D;
+    --primary: #384CAE;
+    --gutter: 28px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: radial-gradient(120% 90% at 50% 0%, #241d2a 0%, #14101a 60%, #0c0910 100%);
+    color: #fff;
+    font-family: Comfortaa, ui-rounded, "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .stage { transform-origin: center center; }
+
+  .phone { position: relative; width: var(--frame-w); aspect-ratio: 557 / 1080; }
+  .phone .bezel {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    z-index: 6;
+    pointer-events: none;
+  }
+  .screen {
+    position: absolute;
+    left: 5.0269%;                    /* 28/557  */
+    top: 7.5926%;                     /* 82/1080 */
+    width: 89.5871%;                  /* 499/557 */
+    height: 85.2778%;                 /* 921/1080 */
+    overflow: hidden;
+    background: #000;
+  }
+  .canvas {
+    position: absolute;
+    left: 0; top: 0;
+    width: var(--screen-w);
+    height: var(--screen-h);
+    transform-origin: top left;
+  }
+
+  .layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .45s ease;
+  }
+  .layer.on { opacity: 1; visibility: visible; }
+
+  /* ── home screen ───────────────────────────────────────────────────── */
+  .home {
+    background:
+      radial-gradient(90% 60% at 30% 15%, #3a2f56 0%, transparent 60%),
+      linear-gradient(180deg, #201b2c 0%, #120f19 100%);
+  }
+  .home .app-icon {
+    position: absolute;
+    left: 50%; top: 46%;
+    width: 76px;
+    margin-left: -38px;
+    transform: translateY(-50%);
+    text-align: center;
+    cursor: pointer;
+  }
+  .home .app-icon .glyph {
+    width: 76px; height: 76px;
+    border-radius: 22px;
+    background: linear-gradient(150deg, #ff3b6b 0%, #7a30d6 55%, #23c7d9 100%);
+    box-shadow: 0 10px 22px rgba(0,0,0,.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* an infinite-scroll glyph: two chevrons chasing each other down */
+  .home .app-icon .glyph svg { width: 42px; height: 42px; }
+  .home .app-icon .label {
+    margin-top: 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,.9);
+    text-shadow: 0 1px 3px rgba(0,0,0,.7);
+  }
+  /* the tap the demo performs for you, one second in */
+  .home .app-icon.opening .glyph { animation: press .28s ease-out; }
+  @keyframes press {
+    0%   { transform: scale(1); }
+    45%  { transform: scale(.9); }
+    100% { transform: scale(1); }
+  }
+  .home .dock {
+    position: absolute;
+    left: 20px; right: 20px; bottom: 26px;
+    height: 74px;
+    border-radius: 26px;
+    background: rgba(255,255,255,.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 14px;
+  }
+  .home .dock i {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.16);
+  }
+
+  /* ── the doomscroll app, frozen and blurred ────────────────────────── */
+  /* the whole still is blurred together, shapes included */
+  .doom { background: #000; filter: blur(7px) saturate(1.15); }
+  .doom .still {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #7b3fa0, #d94f6a 55%, #ffb56b);
+  }
+  .doom .head {
+    position: absolute;
+    left: 50%; top: 32%;
+    width: 130px; height: 130px;
+    margin-left: -65px;
+    border-radius: 50%;
+    background: rgba(255, 224, 196, .85);
+  }
+  .doom .torso {
+    position: absolute;
+    left: 50%; top: 54%;
+    width: 210px; height: 260px;
+    margin-left: -105px;
+    border-radius: 90px 90px 0 0;
+    background: rgba(20, 20, 30, .55);
+  }
+  .doom .caption {
+    position: absolute;
+    left: 18px; bottom: 120px;
+    width: 230px; height: 13px;
+    border-radius: 7px;
+    background: rgba(255,255,255,.8);
+    box-shadow: 0 24px 0 rgba(255,255,255,.65), 0 48px 0 rgba(255,255,255,.45);
+  }
+  .doom .rail {
+    position: absolute;
+    right: 16px; bottom: 130px;
+    width: 42px; height: 190px;
+    border-radius: 21px;
+    background: rgba(255,255,255,.35);
+  }
+
+  .chrome {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    font-size: 11px;
+    color: rgba(255,255,255,.85);
+    transition: opacity .3s ease;
+  }
+  .chrome .clock { position: absolute; left: 18px; top: 10px; font-weight: 700; }
+  .chrome .icons { position: absolute; right: 18px; top: 10px; letter-spacing: 2px; }
+  .chrome .navbar {
+    position: absolute;
+    left: 50%; bottom: 9px;
+    width: 120px; height: 4px;
+    margin-left: -60px;
+    border-radius: 2px;
+    background: rgba(255,255,255,.55);
+  }
+
+  /* ── the butterfly ─────────────────────────────────────────────────── */
+  .butterfly {
+    position: absolute;
+    left: 0; top: 0;
+    width: 56px; height: 56px;         /* ICON_SIZE_DP */
+    opacity: 0;
+    z-index: 5;
+    cursor: pointer;
+    pointer-events: none;              /* only a message-bearing butterfly is tappable */
+    will-change: transform, opacity;
+    transition: opacity .5s ease;
+  }
+  .butterfly img { width: 100%; height: 100%; display: block; pointer-events: none; }
+  .butterfly.tappable { pointer-events: auto; }
+  .butterfly.tappable::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.55);
+    animation: ping 1.6s ease-out infinite;
+  }
+  @keyframes ping {
+    0%   { transform: scale(.85); opacity: .8; }
+    100% { transform: scale(1.35); opacity: 0; }
+  }
+
+  .bubble {
+    position: absolute;
+    right: 0; top: 0;
+    transform: translateY(-50%);       /* centred on the icon, no measuring */
+    max-width: 190px;                  /* CHAT_MAX_WIDTH_FRACTION = 1/2 */
+    padding: 12px;                     /* CHAT_PADDING_DP */
+    border-radius: 16px;               /* CHAT_CORNER_RADIUS_DP */
+    background: var(--bubble-bg);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.35;
+    box-shadow: 0 6px 14px rgba(0,0,0,.45);
+    opacity: 0;
+    z-index: 4;
+    pointer-events: none;              /* FLAG_NOT_TOUCHABLE — touches pass through */
+    white-space: pre-line;
+    transition: opacity .5s ease;
+  }
+  .bubble.on { opacity: 1; }
+
+  /* ── retry layer ───────────────────────────────────────────────────── */
+  .retry {
+    z-index: 7;
+    background: rgba(12, 9, 16, .82);
+    backdrop-filter: blur(3px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    text-align: center;
+    padding: 28px;
+  }
+  .retry p { font-size: 15px; color: rgba(255,255,255,.75); line-height: 1.4; }
+  .retry button {
+    height: 50px;
+    padding: 0 34px;
+    border: 0;
+    border-radius: 25px;
+    background: var(--primary);
+    color: #fff;
+    font: inherit;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  /* ══ the axis check-in — ported from web/axis-checkin/index.html ═════ */
+  .mm { background: var(--bg); z-index: 2; }
+
+  .mm-app {
+    position: absolute;
+    inset: 0;
+    padding: 0 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    color: #fff;
+  }
+
+  /* The Settings switch stays in the markup the script expects, but this
+     promo shows one grid size only. */
+  .detail-switch { display: none; }
+
+  .mm .top { padding-top: 34px; text-align: center; flex: none; }
+  .mm .logo { width: 84px; height: 84px; margin: 0 auto; display: block; }
+  .mm .title { margin-top: 14px; font-size: 22px; font-weight: 700; line-height: 1.25; }
+
+  .mm .middle {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+  }
+
+  /* Holds the square plot plus a left and a bottom strip for the axis
+     titles, so "Energy" and "Happiness" never sit over the emotions. */
+  .plotwrap { position: relative; width: 100%; height: 100%; }
+
+  .axis-title {
+    position: absolute;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .axis-title.energy { writing-mode: vertical-rl; transform: rotate(180deg); }
+
+  .plot { position: absolute; top: 0; touch-action: none; }
+  .plot canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .field { position: absolute; top: 0; left: var(--gutter); overflow: hidden; }
+
+  .chip {
+    position: absolute;
+    top: 0; left: 0;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    text-align: center;
+    border: 3px solid transparent;
+    opacity: 0;
+    transition: opacity .25s ease, border-color .15s ease;
+    will-change: transform, opacity;
+  }
+  .chip.hero { border-color: #fff; }
+  .chip .emoji { font-size: 22px; line-height: 1.1; }
+  .chip .name { font-size: 11px; font-weight: 700; line-height: 1.1; padding: 0 3px; }
+  .chip.small { border-radius: 14px; }
+  .chip.small .emoji { font-size: 17px; }
+  .chip.small .name { font-size: 9px; padding: 0 2px; }
+
+  .lvl {
+    position: absolute;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 3px 8px;
+    pointer-events: none;
+  }
+
+  .hidden { display: none !important; }
+
+  /* ── action slot ───────────────────────────────────────────────── */
+  .actions {
+    flex: none;
+    width: 100%;
+    height: 62px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Compact card: the emotion on the left, the tick on the right, one row.
+     The description is one line and truncates — the name is what identifies
+     the answer, and a growing card pushed the plot around. */
+  .card {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 31px;
+    background: var(--primary);
+    color: #fff;
+    font: inherit;
+    padding: 0 7px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .card .text { min-width: 0; }
+  .card .who { display: block; font-size: 15px; font-weight: 700; line-height: 1.25; }
+  .card .desc {
+    display: block;
+    font-size: 12px;
+    line-height: 1.3;
+    color: rgba(255,255,255,.75);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .card .tick {
+    flex: none;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--primary);
+    font-size: 21px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* embedded on the landing page: the standalone slate label is hidden */
+  .caption-note {
+    display: none;
+    position: fixed;
+    left: 0; right: 0; bottom: 14px;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255,255,255,.35);
+    letter-spacing: .5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="canvas" id="canvas">
+
+        <!-- home screen -->
+        <div class="layer home" id="homeLayer">
+          <div class="app-icon" id="appIcon">
+            <div class="glyph">
+              <svg viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="4"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 15 L24 27 L36 15"/>
+                <path d="M12 29 L24 41 L36 29"/>
+              </svg>
+            </div>
+            <div class="label">Doomscroll</div>
+          </div>
+          <div class="dock"><i></i><i></i><i></i><i></i></div>
+        </div>
+
+        <!-- the app, frozen and blurred -->
+        <div class="layer doom" id="doomLayer">
+          <div class="still"></div>
+          <div class="head"></div>
+          <div class="torso"></div>
+          <div class="caption"></div>
+          <div class="rail"></div>
+        </div>
+
+        <!-- the axis check-in -->
+        <div class="layer mm" id="mmLayer">
+          <div class="mm-app">
+            <div class="top">
+              <img class="logo" src="assets/butterfly-logo.webp" alt="Wellbeing">
+              <h1 class="title">How do you feel?</h1>
+              <button class="detail-switch" id="detailBtn" type="button">
+                <span>Show all emotions:</span>
+                <span class="track"><span class="thumb"></span></span>
+              </button>
+            </div>
+
+            <div class="middle">
+              <div class="plotwrap" id="plotwrap">
+                <div class="axis-title energy" id="energyTitle">Energy</div>
+                <div class="axis-title mood" id="moodTitle">Happiness</div>
+                <div class="plot" id="plot">
+                  <canvas id="axes"></canvas>
+                  <div class="field" id="field"></div>
+                  <div class="lvl hidden" id="energyLabel"></div>
+                  <div class="lvl hidden" id="moodLabel"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="card hidden" id="confirmBtn" type="button">
+                <span class="text">
+                  <span class="who" id="confirmWho"></span>
+                  <span class="desc" id="confirmDesc"></span>
+                </span>
+                <span class="tick">&#10004;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="chrome" id="chrome">
+          <div class="clock">21:47</div>
+          <div class="icons">▮▮▮ ▰</div>
+          <div class="navbar"></div>
+        </div>
+
+        <div class="bubble" id="bubble"></div>
+        <div class="butterfly" id="butterfly"><img src="assets/butterfly-logo.webp" alt="Wellbeing butterfly"></div>
+
+        <div class="layer retry" id="retryLayer">
+          <p>That is the whole check-in.<br>One tap, five seconds.</p>
+          <button type="button" id="retryBtn">Retry?</button>
+        </div>
+
+      </div>
+    </div>
+    <img class="bezel" src="assets/frame.webp" alt="">
+  </div>
+</div>
+
+<div class="caption-note">Wellbeing — how do you feel?</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   Part 1 — the axis check-in, ported from web/axis-checkin/index.html.
+   Same maths, same gestures. Three things differ, all because it lives in
+   a fake phone on a promo page:
+     · the grid-size switch is hidden, so only the 36 basics are ever shown
+     · chip colours are darker, so the names read at this size
+     · it calls onSubmit instead of drawing its own done screen
+   ══════════════════════════════════════════════════════════════════════ */
+var MoodMeter = (function () {
+  "use strict";
+
+  var FALLBACK_EMOTIONS = [
+    { n: "Enraged",      e: "☠️", x: -6, y:  6, c: "red", b: true },
+    { n: "Stressed",     e: "😣", x: -3, y:  5, c: "red", b: true },
+    { n: "Annoyed",      e: "😠", x: -2, y:  5, c: "red", b: true },
+    { n: "Jealous",      e: "😒", x: -6, y:  3, c: "red", b: true },
+    { n: "Scared",       e: "😨", x: -5, y:  3, c: "red", b: true },
+    { n: "Angry",        e: "😡", x: -4, y:  3, c: "red", b: true },
+    { n: "Confused",     e: "😵‍💫", x: -1, y: 3, c: "red", b: true },
+    { n: "Embarrassed",  e: "🫣", x: -3, y:  2, c: "red", b: true },
+    { n: "Nervous",      e: "😥", x: -3, y:  1, c: "red", b: true },
+
+    { n: "Thrilled",     e: "🤩", x:  4, y:  6, c: "yellow", b: true },
+    { n: "Ecstatic",     e: "🤣", x:  6, y:  6, c: "yellow", b: true },
+    { n: "Excited",      e: "🤩", x:  1, y:  5, c: "yellow", b: true },
+    { n: "Determined",   e: "🧐", x:  2, y:  5, c: "yellow", b: true },
+    { n: "Proud",        e: "😎", x:  6, y:  4, c: "yellow", b: true },
+    { n: "Happy",        e: "😄", x:  4, y:  3, c: "yellow", b: true },
+    { n: "Confident",    e: "😏", x:  4, y:  2, c: "yellow", b: true },
+    { n: "Playful",      e: "😜", x:  2, y:  1, c: "yellow", b: true },
+    { n: "Accomplished", e: "🏅", x:  6, y:  1, c: "yellow", b: true },
+
+    { n: "Bored",        e: "🙄", x: -1, y: -1, c: "blue", b: true },
+    { n: "Ashamed",      e: "🫣", x: -5, y: -2, c: "blue", b: true },
+    { n: "Meh",          e: "😐", x: -2, y: -2, c: "blue", b: true },
+    { n: "Tired",        e: "😪", x: -1, y: -2, c: "blue", b: true },
+    { n: "Sad",          e: "😢", x: -2, y: -3, c: "blue", b: true },
+    { n: "Guilty",       e: "😣", x: -6, y: -4, c: "blue", b: true },
+    { n: "Alienated",    e: "👽", x: -4, y: -5, c: "blue", b: true },
+    { n: "Apathetic",    e: "😑", x: -1, y: -5, c: "blue", b: true },
+    { n: "Helpless",     e: "😶", x: -1, y: -6, c: "blue", b: true },
+
+    { n: "Calm",         e: "😌", x:  1, y: -1, c: "green", b: true },
+    { n: "Respected",    e: "🫡", x:  4, y: -1, c: "green", b: true },
+    { n: "Good",         e: "🙂", x:  1, y: -2, c: "green", b: true },
+    { n: "Loved",        e: "❤️‍🔥", x: 5, y: -2, c: "green", b: true },
+    { n: "Relaxed",      e: "🧘", x:  1, y: -3, c: "green", b: true },
+    { n: "Grateful",     e: "🙏", x:  6, y: -3, c: "green", b: true },
+    { n: "Peaceful",     e: "🕊️", x: 2, y: -5, c: "green", b: true },
+    { n: "Relieved",     e: "😮‍💨", x: 4, y: -6, c: "green", b: true },
+    { n: "Satisfied",    e: "☺️", x:  5, y: -6, c: "green", b: true }
+  ];
+
+  // Darker than the app's own chips (#ff0606 / #ffca29 / #81d05f): white
+  // names on the bright originals wash out at this size.
+  var CHIP_COLORS = {
+    red: "#a81f2e", yellow: "#8f6a12", blue: "#2e3f92", green: "#3f7538"
+  };
+
+  function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  /** No grid has a 0 row or column, so -1 and 1 are neighbours. */
+  function compress(g) { return g > 0 ? g - 0.5 : (g < 0 ? g + 0.5 : 0); }
+
+  var ENERGY_LABELS_5 = ["Very high", "High", "Normal", "Low", "Very low"];
+  var MOOD_LABELS_5 = ["Very sad", "Unhappy", "Normal", "Happy", "Very happy"];
+  var ENERGY_LABELS_7 = ["Extremely high", "Very high", "High", "Normal", "Low", "Very low", "Extremely low"];
+  var MOOD_LABELS_7 = ["Depressed", "Very sad", "Unhappy", "Normal", "Happy", "Very happy", "Extremely happy"];
+
+  function makeGrid(options) {
+    var g = {
+      id: options.id,
+      levelCount: options.levelCount,
+      levelCoords: options.levelCoords,
+      placements: options.placements,
+      energyLabels: options.energyLabels,
+      moodLabels: options.moodLabels,
+      chipSize: options.chipSize,
+      spacing: options.spacing
+    };
+    g.minLevel = -Math.floor(g.levelCount / 2);
+    g.maxLevel = Math.floor(g.levelCount / 2);
+
+    var xs = g.placements.map(function (p) { return p.x; });
+    var ys = g.placements.map(function (p) { return p.y; });
+    g.minX = Math.min.apply(null, xs);
+    g.maxX = Math.max.apply(null, xs);
+    g.minY = Math.min.apply(null, ys);
+    g.maxY = Math.max.apply(null, ys);
+
+    g.coordForLevel = function (level) {
+      return g.levelCoords[clamp(level - g.minLevel, 0, g.levelCount - 1)];
+    };
+    g.levelForCoord = function (coord) {
+      var best = 0, bestDistance = Infinity;
+      for (var l = g.minLevel; l <= g.maxLevel; l++) {
+        var d = Math.abs(g.coordForLevel(l) - coord);
+        if (d < bestDistance) { bestDistance = d; best = l; }
+      }
+      return best;
+    };
+    g.bandIndex = function (fraction) {
+      return clamp(Math.floor(fraction * g.levelCount), 0, g.levelCount - 1);
+    };
+    g.energyLevelForFraction = function (f) { return g.maxLevel - g.bandIndex(f); };
+    g.moodLevelForFraction = function (f) { return g.bandIndex(f) + g.minLevel; };
+    g.energyLabelIndex = function (level) { return g.maxLevel - level; };
+    g.moodLabelIndex = function (level) { return level - g.minLevel; };
+    g.energyBandCentreFraction = function (level) {
+      return (g.energyLabelIndex(level) + 0.5) / g.levelCount;
+    };
+    g.moodBandCentreFraction = function (level) {
+      return (g.moodLabelIndex(level) + 0.5) / g.levelCount;
+    };
+    g.energyLabel = function (level) { return g.energyLabels[g.energyLabelIndex(level)]; };
+    g.moodLabel = function (level) { return g.moodLabels[g.moodLabelIndex(level)]; };
+    return g;
+  }
+
+  /** The 36 basics packed 3x3 per quadrant, sorted by energy then pleasantness. */
+  function buildBasicGrid(emotions) {
+    var cellsPerSide = 3;
+    var basics = emotions.filter(function (em) { return em.b !== false; });
+    var out = [];
+
+    [false, true].forEach(function (rightHalf) {
+      [true, false].forEach(function (topHalf) {
+        var quadrant = basics.filter(function (em) {
+          return (em.x > 0) === rightHalf && (em.y > 0) === topHalf;
+        }).sort(function (a, b) { return b.y - a.y; });
+
+        for (var row = 0; row * cellsPerSide < quadrant.length; row++) {
+          var rowEmotions = quadrant
+            .slice(row * cellsPerSide, (row + 1) * cellsPerSide)
+            .sort(function (a, b) { return a.x - b.x; });
+          // Rows run away from the middle in both halves, so the strongest
+          // feelings stay furthest out.
+          var gridY = topHalf ? cellsPerSide - row : -(row + 1);
+          rowEmotions.forEach(function (em, column) {
+            var gridX = rightHalf ? column + 1 : -(cellsPerSide - column);
+            out.push({ em: em, x: compress(gridX), y: compress(gridY) });
+          });
+        }
+      });
+    });
+
+    return makeGrid({
+      id: "less",
+      levelCount: 5,
+      levelCoords: [-2.5, -1.5, 0, 1.5, 2.5],
+      placements: out,
+      energyLabels: ENERGY_LABELS_5,
+      moodLabels: MOOD_LABELS_5,
+      chipSize: 70,
+      spacing: 86
+    });
+  }
+
+  /** Every emotion on its own 12x12 coordinate. */
+  function buildFullGrid(emotions) {
+    return makeGrid({
+      id: "full",
+      levelCount: 7,
+      // +-1/+-2/+-3 land on every other cell of the six per side.
+      levelCoords: [-5.5, -3.5, -1.5, 0, 1.5, 3.5, 5.5],
+      placements: emotions.map(function (em) {
+        return { em: em, x: compress(em.x), y: compress(em.y) };
+      }),
+      energyLabels: ENERGY_LABELS_7,
+      moodLabels: MOOD_LABELS_7,
+      chipSize: 56,
+      spacing: 66
+    });
+  }
+
+  /** Where an emotion sits on a grid, or null when that grid lacks it. */
+  function placementOf(target, emotion) {
+    for (var i = 0; i < target.placements.length; i++) {
+      var em = target.placements[i].em;
+      if (em === emotion || (em.id && emotion.id && em.id === emotion.id) || em.n === emotion.n) {
+        return target.placements[i];
+      }
+    }
+    return null;
+  }
+
+  /** The closest stand-in, judged on the emotions' own coordinates. */
+  function nearestPlacementByFeeling(target, emotion) {
+    var best = null, bestDistance = Infinity;
+    target.placements.forEach(function (p) {
+      var dx = p.em.x - emotion.x, dy = p.em.y - emotion.y;
+      var d = dx * dx + dy * dy;
+      if (d < bestDistance) { bestDistance = d; best = p; }
+    });
+    return best;
+  }
+
+  // ── axis colours: generated from each scale's two ends through white ──
+  var RED = [255, 23, 68], BLUE = [41, 98, 255], AMBER = [255, 196, 0], GREEN = [0, 230, 118];
+  var WHITE = [255, 255, 255];
+
+  function mix(a, b, t) {
+    return "rgb(" + Math.round(a[0] + (b[0] - a[0]) * t) + "," +
+                    Math.round(a[1] + (b[1] - a[1]) * t) + "," +
+                    Math.round(a[2] + (b[2] - a[2]) * t) + ")";
+  }
+  function ramp(start, end, index) {
+    var middle = (grid.levelCount - 1) / 2;
+    if (index < middle) return mix(start, WHITE, index / middle);
+    if (index > middle) return mix(WHITE, end, (index - middle) / middle);
+    return "rgb(255,255,255)";
+  }
+  function energyBand(index) { return ramp(RED, BLUE, index); }
+  function moodBand(index) { return energyLevel > 0 ? ramp(RED, AMBER, index) : ramp(BLUE, GREEN, index); }
+
+  // ── knobs worth playing with ─────────────────────────────────────────
+  var AXIS_BAND_WIDTH = 1.75;  // thickness of the two axis bars, px
+  var AXIS_BAND_ALPHA = 0.21;  // 0 invisible, 1 solid
+  var DIM_OTHERS = 0.45;       // how lit the emotions around the guess are
+  var UNSET_DIM = 0.45;        // how lit they all are before either axis is set
+
+  // ── geometry (CSS px, matching the Android dp values) ────────────────
+  var GUTTER = 28, MARKER_R = 11, TOUCH_BAND = 24;
+  var OVERSCROLL = 48;
+  // Strips outside the plot for the two axis titles. The bottom one is deeper:
+  // it also has to hold the mood level label, which parks under its own bar.
+  var TITLE_PAD_LEFT = 24, TITLE_PAD_BOTTOM = 46;
+
+  // ── state ────────────────────────────────────────────────────────────
+  var allEmotions = [];
+  var grids = null;              // { less, full }
+  var grid = null;               // the one on screen
+  var energyLevel = 0, moodLevel = 0;
+  var anchorEnergy = 0, anchorMood = 0;
+  var energyTouched = false, moodTouched = false;
+  var pan = { x: 0, y: 0 };
+  var fieldDragging = false;
+  var selected = null;           // emotion the user tapped, overrides the guess
+  var focused = null;            // placement in the middle of the field
+  var chipEls = [];
+  var side = 0, span = 0;
+  var onSubmit = null;
+  var started = false;
+
+  // ── elements ─────────────────────────────────────────────────────────
+  var plotwrap = document.getElementById("plotwrap");
+  var plot = document.getElementById("plot");
+  var field = document.getElementById("field");
+  var canvasEl = document.getElementById("axes");
+  var ctx = canvasEl.getContext("2d");
+  var energyTitleEl = document.getElementById("energyTitle");
+  var moodTitleEl = document.getElementById("moodTitle");
+  var energyLabelEl = document.getElementById("energyLabel");
+  var moodLabelEl = document.getElementById("moodLabel");
+  var confirmBtn = document.getElementById("confirmBtn");
+  var confirmWho = document.getElementById("confirmWho");
+  var confirmDesc = document.getElementById("confirmDesc");
+  var detailBtn = document.getElementById("detailBtn");
+
+  function buildChips() {
+    chipEls.forEach(function (el) { el.remove(); });
+    chipEls = grid.placements.map(function (placed) {
+      var el = document.createElement("div");
+      el.className = "chip" + (grid.chipSize < 70 ? " small" : "");
+      el.style.width = grid.chipSize + "px";
+      el.style.height = grid.chipSize + "px";
+      el.style.background = CHIP_COLORS[placed.em.c] || CHIP_COLORS.blue;
+      el.innerHTML = '<span class="emoji"></span><span class="name"></span>';
+      el.querySelector(".emoji").textContent = placed.em.e;
+      el.querySelector(".name").textContent = placed.em.n;
+      el.__placed = placed;
+      field.appendChild(el);
+      return el;
+    });
+  }
+
+  /**
+   * Moves to the other grid size. What carries across is the EMOTION, not the
+   * levels: the user answered with a feeling, so switching how many feelings
+   * are on offer must not change the one they picked.
+   */
+  function applyGrid(next, keepEmotion) {
+    grid = next;
+
+    var placed = null;
+    if (keepEmotion) {
+      placed = placementOf(grid, keepEmotion) || nearestPlacementByFeeling(grid, keepEmotion);
+    }
+
+    if (placed) {
+      moodLevel = grid.levelForCoord(placed.x);
+      energyLevel = grid.levelForCoord(placed.y);
+      anchorMood = moodLevel;
+      anchorEnergy = energyLevel;
+      // A level's coordinate is its band centre, which can be half a cell off
+      // the emotion itself. Pan that gap out so it sits exactly in the middle.
+      pan.x = (grid.coordForLevel(anchorMood) - placed.x) * grid.spacing;
+      pan.y = (placed.y - grid.coordForLevel(anchorEnergy)) * grid.spacing;
+      selected = selected ? placed.em : null;
+    } else {
+      energyLevel = 0; moodLevel = 0;
+      anchorEnergy = 0; anchorMood = 0;
+      pan.x = 0; pan.y = 0;
+      selected = null;
+    }
+
+    buildChips();
+    detailBtn.classList.toggle("on", grid.id === "full");
+  }
+
+  detailBtn.addEventListener("click", function () {
+    applyGrid(grid.id !== "full" ? grids.full : grids.less, selected || (focused && focused.em));
+  });
+
+  // ── what the emotions area is showing ────────────────────────────────
+  function axesSet() { return energyTouched && moodTouched; }
+  function draggingAxis() { return mode === "energy" || mode === "mood"; }
+
+  function targetX() { return grid.coordForLevel(anchorMood); }
+  function targetY() { return grid.coordForLevel(anchorEnergy); }
+
+  // Pan is bounded by how far the MIDDLE of the frame may travel over the
+  // grid, plus OVERSCROLL, which is what makes every level reachable.
+  function panBounds() {
+    var s = grid.spacing;
+    return {
+      minX: (targetX() - grid.maxX) * s - OVERSCROLL,
+      maxX: (targetX() - grid.minX) * s + OVERSCROLL,
+      minY: (grid.minY - targetY()) * s - OVERSCROLL,
+      maxY: (grid.maxY - targetY()) * s + OVERSCROLL
+    };
+  }
+  function clampPan() {
+    var b = panBounds();
+    pan.x = clamp(pan.x, b.minX, b.maxX);
+    pan.y = clamp(pan.y, b.minY, b.maxY);
+  }
+
+  /**
+   * Where the guess is read from. While an axis is being dragged the field has
+   * not moved yet, so read straight off the two markers — that is what keeps
+   * the submit button in step with the finger.
+   */
+  function guessPoint() {
+    if (draggingAxis()) {
+      return { x: grid.coordForLevel(moodLevel), y: grid.coordForLevel(energyLevel) };
+    }
+    return focusPoint();
+  }
+
+  /** The point in grid coordinates sitting in the middle of the frame. */
+  function focusPoint() {
+    return {
+      x: clamp(targetX() - pan.x / grid.spacing, grid.minX, grid.maxX),
+      y: clamp(targetY() + pan.y / grid.spacing, grid.minY, grid.maxY)
+    };
+  }
+  function nearestPlacement(point) {
+    var best = null, bestDistance = Infinity;
+    grid.placements.forEach(function (p) {
+      var dx = p.x - point.x, dy = p.y - point.y;
+      var d = dx * dx + dy * dy;
+      if (d < bestDistance) { bestDistance = d; best = p; }
+    });
+    return best;
+  }
+
+  /** Reads the axes off the emotion sitting in the middle of the frame. */
+  function applyFocusToLevels() {
+    var best = nearestPlacement(focusPoint());
+    if (best) {
+      moodLevel = grid.levelForCoord(best.x);
+      energyLevel = grid.levelForCoord(best.y);
+    }
+  }
+
+  /**
+   * How lit an emotion is, by how far it sits from the middle of the field.
+   * focus is 0 while dragging and 1 at rest.
+   */
+  function fieldAlpha(distance, focus) {
+    var s = grid.spacing;
+    var inner = lerp(s * 1.0, s * 1.2, focus);
+    var outer = lerp(s * 2.6, s * 3.2, focus);
+    if (distance <= inner) return 1;
+    if (distance >= outer) return 0;
+    return 1 - (distance - inner) / (outer - inner);
+  }
+
+  // ── layout ───────────────────────────────────────────────────────────
+  // offsetWidth/offsetHeight, not getBoundingClientRect: the whole phone is
+  // CSS-scaled to fit the window, and every number in here is a device dp.
+  function measure() {
+    side = Math.floor(Math.min(
+      plotwrap.offsetWidth - TITLE_PAD_LEFT,
+      plotwrap.offsetHeight - TITLE_PAD_BOTTOM
+    ));
+    if (side <= GUTTER) side = GUTTER + 1;
+    span = side - GUTTER;
+
+    // The phone is taller than the plot needs, so the whole thing is centred in
+    // what is left rather than pinned to the top of it.
+    var top = Math.max(0, (plotwrap.offsetHeight - (side + TITLE_PAD_BOTTOM)) / 2);
+
+    plot.style.left = TITLE_PAD_LEFT + "px";
+    plot.style.top = top + "px";
+    plot.style.width = side + "px";
+    plot.style.height = side + "px";
+    field.style.width = span + "px";
+    field.style.height = span + "px";
+
+    energyTitleEl.style.left = "0px";
+    energyTitleEl.style.top = top + "px";
+    energyTitleEl.style.width = TITLE_PAD_LEFT + "px";
+    energyTitleEl.style.height = span + "px";
+    // Sits at the bottom of its strip, leaving the top of it for the mood label.
+    moodTitleEl.style.left = (TITLE_PAD_LEFT + GUTTER) + "px";
+    moodTitleEl.style.top = (top + side + TITLE_PAD_BOTTOM - 20) + "px";
+    moodTitleEl.style.width = span + "px";
+    moodTitleEl.style.height = "20px";
+
+    var dpr = window.devicePixelRatio || 1;
+    canvasEl.width = Math.round(side * dpr);
+    canvasEl.height = Math.round(side * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  // ── drawing ──────────────────────────────────────────────────────────
+  function drawAxisBands(startX, startY, length, vertical, colorFor) {
+    var band = length / grid.levelCount;
+    var gap = 3;
+    ctx.lineWidth = AXIS_BAND_WIDTH;
+    ctx.lineCap = "butt";
+    for (var i = 0; i < grid.levelCount; i++) {
+      var from = i * band + gap / 2;
+      var to = (i + 1) * band - gap / 2;
+      ctx.strokeStyle = colorFor(i);
+      ctx.globalAlpha = AXIS_BAND_ALPHA;
+      ctx.beginPath();
+      if (vertical) {
+        ctx.moveTo(startX, startY + from);
+        ctx.lineTo(startX, startY + to);
+      } else {
+        ctx.moveTo(startX + from, startY);
+        ctx.lineTo(startX + to, startY);
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawMarker(cx, cy, color) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, MARKER_R, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+  }
+
+  /** Two chevrons drifting away from the marker that still needs moving. */
+  function drawHint(cx, cy, vertical, time) {
+    var progress = (time % 1600) / 1600;
+    var fade = Math.sin(progress * Math.PI);
+    var drift = progress * 10;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 14 + progress * 16, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255,255,255," + (0.30 * (1 - progress)) + ")";
+    ctx.fill();
+
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    for (var i = 0; i < 2; i++) {
+      var distance = 34 + i * 22 + drift;
+      var alpha = clamp(fade * (1 - i * 0.4), 0, 1);
+      ctx.strokeStyle = "rgba(255,255,255," + alpha + ")";
+      [-1, 1].forEach(function (sign) {
+        ctx.beginPath();
+        if (vertical) {
+          var tipY = cy + sign * distance;
+          ctx.moveTo(cx - 14, tipY - sign * 11);
+          ctx.lineTo(cx, tipY);
+          ctx.lineTo(cx + 14, tipY - sign * 11);
+        } else {
+          var tipX = cx + sign * distance;
+          ctx.moveTo(tipX - sign * 11, cy - 14);
+          ctx.lineTo(tipX, cy);
+          ctx.lineTo(tipX - sign * 11, cy + 14);
+        }
+        ctx.stroke();
+      });
+    }
+    ctx.restore();
+  }
+
+  // Reading offsetWidth forces a layout, so only do it when the wording
+  // actually changed rather than on every frame.
+  function labelSize(el, text) {
+    if (el.__text !== text) {
+      el.textContent = text;
+      el.__text = text;
+      el.__w = el.offsetWidth;
+      el.__h = el.offsetHeight;
+    }
+    return { w: el.__w, h: el.__h };
+  }
+
+  function placeLabel(el, anchorX, anchorY, toTheRight) {
+    var w = el.__w || 0, h = el.__h || 0;
+    if (toTheRight) {
+      el.style.left = (anchorX + 16) + "px";
+      el.style.top = (anchorY - h / 2) + "px";
+      return;
+    }
+    // The mood label parks under its own bar, where nothing covers it. While
+    // the finger is on that bar it would sit under the hand, so it steps above
+    // the bar for the length of the drag and drops back when the finger lifts.
+    el.style.left = (anchorX - w / 2) + "px";
+    el.style.top = (mode === "mood" ? anchorY - 18 - h : anchorY + 16) + "px";
+  }
+
+  // ── render ───────────────────────────────────────────────────────────
+  function render(time) {
+    var energyMarkerY = grid.energyBandCentreFraction(energyLevel) * span;
+    var moodMarkerX = GUTTER + grid.moodBandCentreFraction(moodLevel) * span;
+    var energyAxisX = GUTTER / 2;
+    var moodAxisY = span + GUTTER / 2;
+
+    // axes
+    ctx.clearRect(0, 0, side, side);
+    drawAxisBands(energyAxisX, 0, span, true, energyBand);
+    drawMarker(energyAxisX, energyMarkerY, energyBand(grid.energyLabelIndex(energyLevel)));
+    drawAxisBands(GUTTER, moodAxisY, span, false, moodBand);
+    drawMarker(moodMarkerX, moodAxisY, moodBand(grid.moodLabelIndex(moodLevel)));
+
+    // level labels
+    if (energyTouched) {
+      energyLabelEl.classList.remove("hidden");
+      labelSize(energyLabelEl, grid.energyLabel(energyLevel));
+      energyLabelEl.style.color = energyBand(grid.energyLabelIndex(energyLevel));
+      placeLabel(energyLabelEl, energyAxisX, energyMarkerY, true);
+    } else {
+      energyLabelEl.classList.add("hidden");
+    }
+    if (moodTouched) {
+      moodLabelEl.classList.remove("hidden");
+      labelSize(moodLabelEl, grid.moodLabel(moodLevel));
+      moodLabelEl.style.color = moodBand(grid.moodLabelIndex(moodLevel));
+      placeLabel(moodLabelEl, moodMarkerX, moodAxisY, false);
+    } else {
+      moodLabelEl.classList.add("hidden");
+    }
+
+    // drag chevrons on whichever marker is still waiting
+    var hintVertical = !energyTouched ? true : (!moodTouched ? false : null);
+    if (hintVertical !== null) {
+      drawHint(
+        hintVertical ? energyAxisX : moodMarkerX,
+        hintVertical ? energyMarkerY : moodAxisY,
+        hintVertical,
+        time
+      );
+    }
+
+    // emotions
+    focused = nearestPlacement(guessPoint());
+    var hero = selected || (focused && focused.em);
+    var centre = span / 2;
+    var tx = targetX(), ty = targetY();
+    var answered = axesSet();
+    var focus = fieldDragging ? 0 : 1;
+    var chip = grid.chipSize, spacing = grid.spacing;
+
+    chipEls.forEach(function (el) {
+      var p = el.__placed;
+      var x = centre + (p.x - tx) * spacing + pan.x;
+      var y = centre - (p.y - ty) * spacing + pan.y;
+      var isHero = answered && p.em === hero;
+      var distance = Math.hypot(x - centre, y - centre);
+      // Before either axis is touched the whole field sits back, so the eye
+      // goes to the axes. Once both readings are in, the guess our system
+      // would log comes up to full and the rest stay dim behind it.
+      var alpha = isHero ? 1
+        : fieldAlpha(distance, focus) * (answered ? DIM_OTHERS : UNSET_DIM);
+
+      el.style.transform = "translate3d(" + (x - chip / 2) + "px," + (y - chip / 2) + "px,0)";
+      el.style.opacity = alpha;
+      el.style.pointerEvents = alpha > 0.05 ? "auto" : "none";
+      el.classList.toggle("hero", isHero);
+    });
+
+    // Submit stays out of the way until the user has actually said something —
+    // both axes moved, or the emotions dragged, which sets both.
+    confirmBtn.classList.toggle("hidden", !answered || !hero);
+    if (answered && hero) {
+      confirmWho.textContent = hero.e + "  " + hero.n;
+      // The emotion's own words when Firestore has them, otherwise spell the
+      // two readings back to the user.
+      confirmDesc.textContent = hero.d ||
+        ("You feel " + grid.moodLabel(moodLevel).toLowerCase() +
+         ", with " + grid.energyLabel(energyLevel).toLowerCase() + " energy.");
+    }
+  }
+
+  function frame(time) {
+    if (grid) render(time);
+    requestAnimationFrame(frame);
+  }
+
+  // ── gestures ─────────────────────────────────────────────────────────
+  // One handler for the whole plot: a touch on either axis grabs that marker,
+  // anything else pans the emotions.
+  var mode = null;          // "energy" | "mood" | "field"
+  var axisPosition = 0;
+  var startPoint = null, lastPoint = null, moved = false, startChip = null;
+
+  /** Undoes the phone's CSS scale so pointer deltas stay in device dp. */
+  function localPoint(event) {
+    var box = plot.getBoundingClientRect();
+    var scale = plot.offsetWidth ? box.width / plot.offsetWidth : 1;
+    return {
+      x: (event.clientX - box.left) / scale,
+      y: (event.clientY - box.top) / scale
+    };
+  }
+
+  function axisAt(point) {
+    var moodAxisY = span + GUTTER / 2;
+    var onEnergy = point.x <= GUTTER + TOUCH_BAND;
+    var onMood = point.y >= moodAxisY - TOUCH_BAND;
+    if (onEnergy && onMood) {
+      var energyMarkerY = grid.energyBandCentreFraction(energyLevel) * span;
+      var moodMarkerX = GUTTER + grid.moodBandCentreFraction(moodLevel) * span;
+      var toEnergy = Math.hypot(point.x - GUTTER / 2, point.y - energyMarkerY);
+      var toMood = Math.hypot(point.x - moodMarkerX, point.y - moodAxisY);
+      return toEnergy <= toMood ? "energy" : "mood";
+    }
+    if (onEnergy) return "energy";
+    if (onMood) return "mood";
+    return null;
+  }
+
+  function releaseAxis() {
+    if (mode === "energy") energyTouched = true; else moodTouched = true;
+    anchorEnergy = energyLevel;
+    anchorMood = moodLevel;
+    pan.x = 0; pan.y = 0;
+    selected = null;
+    if (axesSet()) applyFocusToLevels();
+  }
+
+  plot.addEventListener("pointerdown", function (event) {
+    plot.setPointerCapture(event.pointerId);
+    startPoint = lastPoint = localPoint(event);
+    moved = false;
+    var chipEl = event.target.closest ? event.target.closest(".chip") : null;
+    startChip = chipEl ? chipEl.__placed.em : null;
+
+    mode = axisAt(startPoint) || "field";
+    if (mode === "energy") axisPosition = grid.energyBandCentreFraction(energyLevel) * span;
+    if (mode === "mood") axisPosition = grid.moodBandCentreFraction(moodLevel) * span;
+  });
+
+  plot.addEventListener("pointermove", function (event) {
+    if (!mode) return;
+    var point = localPoint(event);
+    var dx = point.x - lastPoint.x, dy = point.y - lastPoint.y;
+    lastPoint = point;
+
+    if (!moved && Math.hypot(point.x - startPoint.x, point.y - startPoint.y) > 6) {
+      moved = true;
+      if (mode === "field") {
+        // Dragging the emotions skips the axis steps: both readings now come
+        // from whatever sits in the middle of the field.
+        energyTouched = true;
+        moodTouched = true;
+        fieldDragging = true;
+      }
+    }
+    if (!moved) return;
+
+    if (mode === "field") {
+      pan.x += dx; pan.y += dy;
+      clampPan();
+      applyFocusToLevels();
+    } else if (mode === "energy") {
+      axisPosition = clamp(axisPosition + dy, 0, span);
+      energyTouched = true;
+      energyLevel = grid.energyLevelForFraction(axisPosition / span);
+    } else {
+      axisPosition = clamp(axisPosition + dx, 0, span);
+      moodTouched = true;
+      moodLevel = grid.moodLevelForFraction(axisPosition / span);
+    }
+  });
+
+  function endGesture() {
+    if (!mode) return;
+    var point = lastPoint;
+
+    if (!moved) {
+      if (mode === "energy") {
+        energyTouched = true;
+        energyLevel = grid.energyLevelForFraction(clamp(point.y / span, 0, 1));
+        releaseAxis();
+      } else if (mode === "mood") {
+        moodTouched = true;
+        moodLevel = grid.moodLevelForFraction(clamp((point.x - GUTTER) / span, 0, 1));
+        releaseAxis();
+      } else if (startChip) {
+        selected = startChip;
+      }
+    } else if (mode === "energy" || mode === "mood") {
+      releaseAxis();
+    } else {
+      fieldDragging = false;
+    }
+
+    mode = null;
+    startChip = null;
+  }
+
+  plot.addEventListener("pointerup", endGesture);
+  plot.addEventListener("pointercancel", endGesture);
+
+  confirmBtn.addEventListener("click", function () {
+    if (onSubmit) onSubmit(selected || (focused && focused.em));
+  });
+
+  function reset() {
+    energyLevel = moodLevel = anchorEnergy = anchorMood = 0;
+    energyTouched = moodTouched = false;
+    pan.x = 0; pan.y = 0;
+    fieldDragging = false;
+    selected = null;
+    mode = null;
+    confirmBtn.classList.add("hidden");
+  }
+
+  function start(emotions) {
+    allEmotions = emotions;
+    grids = { less: buildBasicGrid(emotions), full: buildFullGrid(emotions) };
+    applyGrid(grids.less, null);
+    started = true;
+    measure();
+    requestAnimationFrame(frame);
+  }
+
+  // emotions-all.json carries all 144 plus the isBasic flag. Opened straight
+  // off disk the fetch is blocked, so fall back to the built-in 36.
+  if (window.fetch) {
+    fetch("../axis-checkin/emotions-all.json", { cache: "no-cache" })
+      .then(function (response) {
+        if (!response.ok) throw new Error(response.status);
+        return response.json();
+      })
+      .then(function (data) {
+        var list = data && data.emotions;
+        start(list && list.length ? list : FALLBACK_EMOTIONS);
+      })
+      .catch(function () { start(FALLBACK_EMOTIONS); });
+  } else {
+    start(FALLBACK_EMOTIONS);
+  }
+
+  return {
+    reset: reset,
+    measure: function () { if (started) measure(); },
+    onSubmit: function (fn) { onSubmit = fn; }
+  };
+})();
+
+/* ══════════════════════════════════════════════════════════════════════
+   Part 2 — the promo flow: home → app → butterfly → check-in → thank you
+   ══════════════════════════════════════════════════════════════════════ */
+(function () {
+  "use strict";
+
+  var SCREEN_W = 380, SCREEN_H = 701;
+  var ICON = 56, MARGIN = 16, BUBBLE_GAP = 8;
+  var DELETE_MARGIN_BOTTOM = 48, DELETE_SIZE = 56;
+  var ENTRANCE_MS = 300;
+  var OPEN_APP_AFTER = 1000;   // the demo opens the app itself
+
+  var stage = document.getElementById("stage");
+  var butterfly = document.getElementById("butterfly");
+  var bubble = document.getElementById("bubble");
+  var chrome = document.getElementById("chrome");
+  var homeLayer = document.getElementById("homeLayer");
+  var doomLayer = document.getElementById("doomLayer");
+  var mmLayer = document.getElementById("mmLayer");
+  var retryLayer = document.getElementById("retryLayer");
+  var appIcon = document.getElementById("appIcon");
+  var retryBtn = document.getElementById("retryBtn");
+
+  function fit() {
+    var frameH = 424 * 1080 / 557;
+    var scale = Math.min(1, (window.innerHeight - 12) / frameH, (window.innerWidth - 12) / 424);
+    stage.style.transform = "scale(" + scale + ")";
+  }
+  window.addEventListener("resize", function () { fit(); MoodMeter.measure(); });
+  fit();
+
+  // ── butterfly placement (ButterflyOverlayView.defaultX/defaultY) ──────
+  function defaultX() { return SCREEN_W - ICON - MARGIN; }
+  function defaultY() { return SCREEN_H * 0.5; }
+
+  function place(x, y) {
+    butterfly.style.transform = "translate3d(" + x + "px," + y + "px,0)";
+    // Past EDGE_THRESHOLD_DP the bubble sits to the LEFT of the icon, vertically
+    // centred on it. Anchored by its right edge so the text can grow leftwards
+    // without the bubble ever having to be measured.
+    bubble.style.right = (SCREEN_W - x + BUBBLE_GAP) + "px";
+    bubble.style.top = (y + ICON / 2) + "px";
+  }
+
+  // Every step bumps this. A butterfly that was still flying in when the step
+  // changed must not deliver its message on top of the next screen — which is
+  // exactly what happens when the browser stalls the frame loop in a background
+  // tab and the entrance finishes late.
+  var step = 0;
+
+  /** The show() entrance: quadratic bezier from the delete-zone spot. */
+  function flyIn(done) {
+    var mine = step;
+    var startX = (SCREEN_W - ICON) / 2;
+    var startY = SCREEN_H - DELETE_MARGIN_BOTTOM - DELETE_SIZE;
+    var endX = defaultX(), endY = defaultY();
+    var ctrlX = SCREEN_W * 0.1, ctrlY = SCREEN_H * 0.1;
+    var t0 = performance.now();
+
+    var landed = false;
+    function land() {
+      if (landed) return;
+      landed = true;
+      butterfly.style.transition = "";
+      butterfly.style.opacity = 1;
+      place(endX, endY);
+      if (done && mine === step) done();
+    }
+
+    butterfly.style.transition = "none";
+    requestAnimationFrame(function tick(now) {
+      if (landed) return;
+      var t = Math.min(1, (now - t0) / ENTRANCE_MS);
+      var e = (Math.cos((t + 1) * Math.PI) / 2) + 0.5;   // AccelerateDecelerate
+      var u = 1 - e;
+      var x = u * u * startX + 2 * u * e * ctrlX + e * e * endX;
+      var y = u * u * startY + 2 * u * e * ctrlY + e * e * endY;
+      butterfly.style.opacity = Math.min(1, e / 0.2);
+      place(x, y);
+      if (t < 1) requestAnimationFrame(tick); else land();
+    });
+
+    // The overlay's own safety net (ButterflyOverlayView, "Animation blocked"):
+    // if the frame loop never ran — a background tab freezes it — put the
+    // butterfly on its spot anyway and carry on with the message.
+    setTimeout(land, ENTRANCE_MS + 200);
+  }
+
+  function say(text) {
+    bubble.textContent = text;
+    bubble.classList.add("on");
+    // Same safety the overlay has on device: if the frame loop was blocked,
+    // a message still puts the butterfly at its default spot, fully visible.
+    butterfly.style.opacity = 1;
+    place(defaultX(), defaultY());
+  }
+
+  function hideButterfly() {
+    butterfly.style.opacity = 0;
+    butterfly.classList.remove("tappable");
+    bubble.classList.remove("on");
+  }
+
+  function show(layer, on) { layer.classList.toggle("on", on); }
+
+  // ── the flow ─────────────────────────────────────────────────────────
+  var timers = [];
+  function after(ms, fn) { timers.push(setTimeout(fn, ms)); }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+  var state = "home";
+
+  function goHome() {
+    clearTimers();
+    state = "home";
+    step++;
+    MoodMeter.reset();
+    hideButterfly();
+    bubble.textContent = "";
+    appIcon.classList.remove("opening");
+    show(homeLayer, true);
+    show(doomLayer, false);
+    show(mmLayer, false);
+    show(retryLayer, false);
+    chrome.style.opacity = 1;
+
+    // Nothing for the viewer to do here: the demo taps the app itself.
+    after(OPEN_APP_AFTER, openApp);
+  }
+
+  function openApp() {
+    if (state !== "home") return;
+    state = "doom";
+    step++;
+    appIcon.classList.add("opening");
+    after(220, function () {
+      show(homeLayer, false);
+      show(doomLayer, true);
+    });
+
+    // The check-in butterfly arrives a beat after the app is up.
+    after(1300, function () {
+      flyIn(function () {
+        say("How do you feel?\ntap me..");
+        butterfly.classList.add("tappable");
+      });
+    });
+  }
+
+  function openCheckIn() {
+    if (state !== "doom") return;
+    state = "checkin";
+    step++;
+    hideButterfly();
+    after(300, function () {
+      show(mmLayer, true);
+      chrome.style.opacity = 0;
+      MoodMeter.measure();
+    });
+  }
+
+  function thankYou() {
+    if (state !== "checkin") return;
+    state = "thanks";
+    step++;
+    show(mmLayer, false);
+    chrome.style.opacity = 1;
+
+    after(400, function () {
+      flyIn(function () {
+        say("Thank you\nYou make the digital space a better place ❤️");
+        after(3200, function () {
+          hideButterfly();
+          after(700, function () {
+            state = "retry";
+            show(retryLayer, true);
+          });
+        });
+      });
+    });
+  }
+
+  appIcon.addEventListener("click", openApp);
+  butterfly.addEventListener("click", openCheckIn);
+  retryBtn.addEventListener("click", goHome);
+  MoodMeter.onSubmit(thankYou);
+
+  goHome();
+})();
+</script>
+</body>
+</html>

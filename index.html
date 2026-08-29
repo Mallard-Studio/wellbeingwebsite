@@ -675,6 +675,81 @@
   @media (max-width: 560px){
     .wait, .wait-row{ width:100%; }
   }
+
+  /* ── the two phone-demo sections, 2026-08-29 ──────────────────────────
+     THE SOLUTION and HOW IT WORKS are both copy on the left, a live phone
+     demo on the right. The demos are separate documents in promo/, iframed
+     so their own reset, body gradient and viewport scaler cannot reach this
+     page. Each one scales itself to whatever box it is given, so the stage
+     only has to be the right shape. */
+  .demo-split{
+    display:grid; grid-template-columns: 1fr 380px; gap: 56px;
+    align-items:center;
+  }
+  .demo-copy .section-head{ margin-bottom: 0; max-width: none; }
+  /* the full clamp() is a hero size and wraps to four lines in half a page */
+  .demo-split .section-head h2{ font-size: clamp(30px, 3vw, 42px); }
+  .demo-split .section-head p{ max-width: 620px; }
+
+  .demo-stage{
+    border-radius: var(--radius); overflow:hidden;
+    border:1px solid var(--line); background: #0c0910;
+    box-shadow: 0 30px 60px rgba(0,0,0,.5);
+  }
+  .demo-stage iframe{
+    display:block; width:100%; aspect-ratio: 424 / 834;
+    border:0; background: transparent;
+  }
+
+  /* stacked steps: icon beside the text, not above it, so three of them fit
+     the height of the phone next to them. The 01/02/03 labels are gone. */
+  .flow.stacked{
+    display:flex; flex-direction:column; gap: 14px;
+    margin-top: 34px;
+  }
+  .flow.stacked .step{
+    display:flex; align-items:flex-start; gap: 18px;
+    padding: 20px 22px;
+  }
+  .flow.stacked .step .icon-blob{
+    width: 40px; height: 40px; border-radius: 12px;
+    margin-bottom: 0; flex: 0 0 40px;
+  }
+  .flow.stacked .step .icon-blob svg{ width: 21px; height: 21px; }
+  .flow.stacked .step .icon-blob::after{ border-radius: 11px; }
+  .flow.stacked .step h3{ font-size: 19px; margin-bottom: 6px; }
+  .flow.stacked .step p{ font-size: 14px; color: var(--ink-2); }
+
+  /* One column below 980, and the demo moves up between the heading and the
+     list. His call: on a phone the animation is the thing worth arriving at,
+     and it should not sit under three blocks of text. `display:contents` drops
+     .demo-copy out of the box tree so its heading and its list become grid
+     items in their own right, which is what makes them orderable around the
+     stage. Their margin-top goes because the grid gap is doing that job now. */
+  @media(max-width: 980px){
+    .demo-split{ grid-template-columns: 1fr; gap: 34px; }
+    .demo-copy{ display: contents; }
+    .demo-copy .section-head{ order: 1; }
+    .demo-stage{ order: 2; width:100%; max-width: 380px; justify-self:center; }
+    .demo-copy .flow.stacked,
+    .demo-copy .cap-list{ order: 3; margin-top: 0; }
+  }
+  /* the three captions from the old screenshot row, stacked down the left
+     column instead of sitting under three phones. Plain blocks with a hairline
+     between them, so this section does not read as a second copy of the
+     panel cards in THE SOLUTION. */
+  .cap-list{ margin-top: 38px; }
+  .cap-list .screen-cap{ text-align:left; max-width: 560px; padding: 20px 0; }
+  .cap-list .screen-cap:first-child{ padding-top: 0; }
+  .cap-list .screen-cap:last-child{ padding-bottom: 0; }
+  .cap-list .screen-cap + .screen-cap{ border-top: 1px solid var(--line); }
+
+  /* on a phone the icon beside the text leaves about 200px for the copy,
+     which runs each step to nine lines. Icon back on top, full width for text. */
+  @media(max-width: 600px){
+    .flow.stacked .step{ display:block; padding: 24px 22px; }
+    .flow.stacked .step .icon-blob{ margin-bottom: 16px; }
+  }
 </style>
 </head>
 <body data-titans-quick-view-extension-id="eefljgmhgaidffapnppcmmafobefjece" style="">
@@ -820,83 +895,87 @@
 
 <section id="solution">
   <div class="wrap">
-    <div class="moat-hero" style="margin-bottom: 40px;">
-      <div class="section-head" style="max-width: 620px; margin-bottom: 0;">
-        <span class="mono">THE SOLUTION</span>
-        <h2 style="margin-top: 18px;">You need an exit sign!</h2>
-        <p style="margin-top: 22px;">Not all scrolling is bad, too much scrolling is definitely bad.</p>
+    <div class="demo-split">
+      <div class="demo-copy">
+        <div class="section-head">
+          <span class="mono">THE SOLUTION</span>
+          <h2>You get the exit sign before screentime turns bad.</h2>
+          <p>Not all scrolling is bad, too much scrolling is definitely bad.</p>
+        </div>
+
+        <div class="flow stacked">
+          <div class="step">
+            <div class="icon-blob">
+              <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 28C16 28 4 20.5 4 12.5C4 8.36 7.36 5 11.5 5C13.5 5 15.4 6 16 7.5C16.6 6 18.5 5 20.5 5C24.64 5 28 8.36 28 12.5C28 20.5 16 28 16 28Z"></path></svg>
+            </div>
+            <div class="step-text">
+              <h3>Reads the mood</h3>
+              <p>You pick the apps to track. Wellbeing watches how your mood moves inside each one, app by app.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="icon-blob">
+              <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 5C9.37 5 4 9.03 4 14C4 16.62 5.5 18.98 7.9 20.63L6.8 26L12.9 22.75C13.9 22.92 14.94 23 16 23C22.63 23 28 18.97 28 14C28 9.03 22.63 5 16 5Z"></path></svg>
+            </div>
+            <div class="step-text">
+              <h3>Asks how you feel</h3>
+              <p>The butterfly turns up and asks. One tap: angry, energized, calm, or down. That is the whole check-in.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="icon-blob">
+              <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M6 4H16V7H9V25H16V28H6V4Z M18 10L26 16L18 22V17.5H12V14.5H18V10Z"></path></svg>
+            </div>
+            <div class="step-text">
+              <h3>Sends the exit sign</h3>
+              <p>When your mood starts dropping mid-session, you get the sign. It never locks you out. You decide whether to leave.</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="moat-gif">
-        <img src="assets/solution-exit-sign.webp" alt="Keep Doomscrolling or Real Wellbeing, highway exit sign" width="1020" height="569" loading="lazy" decoding="async">
+
+      <div class="demo-stage">
+        <iframe data-src="promo/1-stop-sign.html" loading="lazy"
+                title="Wellbeing on a phone: the butterfly interrupts a doomscroll and says take a break"></iframe>
       </div>
     </div>
-
-    <div class="flow" style="margin-top: 0;">
-      <div class="step">
-        <div class="icon-blob">
-          <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 28C16 28 4 20.5 4 12.5C4 8.36 7.36 5 11.5 5C13.5 5 15.4 6 16 7.5C16.6 6 18.5 5 20.5 5C24.64 5 28 8.36 28 12.5C28 20.5 16 28 16 28Z"></path></svg>
-        </div>
-        <div class="num">01 / Notice</div>
-        <h3 style="">Reads the mood</h3>
-        <p style="">You pick the apps to track. Wellbeing watches how your mood moves inside each one, app by app.</p>
-      </div>
-      <div class="step">
-        <div class="icon-blob">
-          <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 5C9.37 5 4 9.03 4 14C4 16.62 5.5 18.98 7.9 20.63L6.8 26L12.9 22.75C13.9 22.92 14.94 23 16 23C22.63 23 28 18.97 28 14C28 9.03 22.63 5 16 5Z"></path></svg>
-        </div>
-        <div class="num">02 / Ask</div>
-        <h3 style="">Asks how you feel</h3>
-        <p style="">The butterfly turns up and asks. One tap: angry, energized, calm, or down. That is the whole check-in.</p>
-      </div>
-      <div class="step">
-        <div class="icon-blob">
-          <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M6 4H16V7H9V25H16V28H6V4Z M18 10L26 16L18 22V17.5H12V14.5H18V10Z"></path></svg>
-        </div>
-        <div class="num">03 / Signal</div>
-        <h3>Sends the exit sign</h3>
-        <p style="">When your mood starts dropping mid-session, you get the sign. It never locks you out. You decide whether to leave.</p>
-      </div>
-    </div>
-
   </div>
 </section>
 
 <section id="inside" class="showcase">
   <div class="wrap">
-    <div class="section-head">
-      <span class="mono">HOW IT WORKS</span>
-      <h2 style="">How do you feel?</h2>
-      <p style="width: 730px;">The butterfly helps you map your emotional states: angry, energized, calm, or down. Your feelings input helps us predict where you should stop scrolling.&nbsp;
-Within 4 weeks, we help you adopt new healthier habits.</p>
-    </div>
+    <div class="demo-split">
+      <div class="demo-copy">
+        <div class="section-head">
+          <span class="mono">HOW IT WORKS</span>
+          <h2>How do you feel?</h2>
+          <p>Try it now in the web demo.</p>
+        </div>
 
-    <div class="screens-row">
-      <div class="screen-col">
-        <div class="screen-frame"><img src="assets/screen-03.webp" alt="Emotion check-in" width="640" height="1240" loading="lazy" decoding="async"></div>
-        <div class="screen-cap">
-          <div class="label">Emotional Check-in</div>
-          <h4>How are you, really?</h4>
-          <p>Mark your emotions on the butterfly. We learn your patterns, app by app.</p>
+        <div class="cap-list">
+          <div class="screen-cap">
+            <div class="label">Emotional Check-in</div>
+            <h4>How are you, really?</h4>
+            <p>One tap on the butterfly: angry, energized, calm, or down. We learn your patterns, app by app.</p>
+          </div>
+          <div class="screen-cap">
+            <div class="label">Exit Signal</div>
+            <h4>Caught before the spiral.</h4>
+            <p>Your feelings input helps us predict where you should stop scrolling. When mood drops, we send you a clear signal.</p>
+          </div>
+          <div class="screen-cap">
+            <div class="label">App Tracking</div>
+            <h4>Your rules.</h4>
+            <p>Decide which apps to track and how often we check on you. Within 4 weeks, we help you adopt new healthier habits.</p>
+          </div>
         </div>
       </div>
-      <div class="screen-col">
-        <div class="screen-frame"><img src="assets/screen-05.webp" alt="Take a break exit signal" width="640" height="1240" loading="lazy" decoding="async"></div>
-        <div class="screen-cap">
-          <div class="label">Exit Signal</div>
-          <h4>Caught before the spiral.</h4>
-          <p>When mood drops, we send you a clear signal. You should take a break.</p>
-        </div>
-      </div>
-      <div class="screen-col">
-        <div class="screen-frame"><img src="assets/screen-02.webp" alt="Apps to track" width="488" height="946" loading="lazy" decoding="async"></div>
-        <div class="screen-cap">
-          <div class="label">App Tracking</div>
-          <h4>Your rules.</h4>
-          <p>Decide which apps to track and how often we check on you.</p>
-        </div>
+
+      <div class="demo-stage">
+        <iframe data-src="promo/2-how-do-you-feel.html" loading="lazy"
+                title="Interactive demo: open the app, the butterfly appears, and you mark how you feel"></iframe>
       </div>
     </div>
-
   </div>
 </section>
 
@@ -1098,6 +1177,35 @@ Within 4 weeks, we help you adopt new healthier habits.</p>
     <a href="investors.html" style="color:var(--ink-3); font-size:12px;">Investors</a>
   </div>
 </footer>
+
+<script>
+(function(){
+  // The two phone demos start when their section is actually reached, not on
+  // page load: both loop from the first frame, and the butterfly flying in is
+  // the whole point of frame 1. The iframe carries data-src until then, so
+  // nothing is fetched or run for a visitor who never scrolls this far.
+  var stages = document.querySelectorAll('.demo-stage iframe[data-src]');
+  if(!stages.length) return;
+
+  function start(f){
+    if(f.getAttribute('src')) return;
+    f.setAttribute('src', f.getAttribute('data-src'));
+    f.removeAttribute('data-src');
+  }
+
+  if(!('IntersectionObserver' in window)){
+    Array.prototype.forEach.call(stages, start);
+    return;
+  }
+  // 35% of the stage on screen means the section is being read, not passed.
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ start(e.target); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.35 });
+  Array.prototype.forEach.call(stages, function(f){ io.observe(f); });
+})();
+</script>
 
 <script>
 (function(){

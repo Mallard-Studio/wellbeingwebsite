@@ -410,6 +410,130 @@ Kept because task 7 is done but every other privacy or permission claim on any s
 
 Cleared since this list was written: task 9 needed Google Form IDs and now has them, task 10 needed a mood chart and was skipped.
 
+### THE SOLUTION and HOW IT WORKS are live phone demos now, 2026-08-29
+
+His instruction. Both sections are copy on the left, a running phone demo on the right.
+This closes "his own idea, not on the brief" below, and it went further than that note
+described: it took THE SOLUTION as well, not only HOW IT WORKS.
+
+**The demos are two documents he wrote**, from `dev/gamerswellbeing/web/promo/`:
+
+| Section | Demo | What it does |
+|---|---|---|
+| THE SOLUTION | `promo/1-stop-sign.html` | Loops. A blurred doomscroll feed, then the butterfly flies in and says take a break |
+| HOW IT WORKS | `promo/2-how-do-you-feel.html` | **Interactive.** Home screen, tap the app, the butterfly appears, tap it, mark how you feel on the axis grid |
+
+**Iframed, not inlined.** Both are complete documents with their own `*` reset, an
+`html,body{height:100%}` rule, a body background gradient and a `fit()` that scales the
+phone to `window.innerHeight`. Inlining any of that would have collided with the page
+stylesheet, and file 2 is 55 KB with a 966-line script. In an iframe their `fit()` reads
+the iframe box instead of the window, so each demo scales itself to whatever size the
+stage is given and no size has to be hardcoded. The stage is `aspect-ratio: 424/834`,
+which is the phone frame plus a little slack, so it stays right at every width with no
+media query. Both iframes are `loading="lazy"`.
+
+**Three edits to the copies in `promo/`, none to his originals in the dev repo:**
+1. PNG srcs to WebP.
+2. `.caption-note` set to `display:none`. That is the standalone slate label at the
+   bottom, "Wellbeing — the stop sign". It is a demo watermark, not page copy, and it
+   carries an em dash. **Flagged to him.**
+3. The `fit()` insets went from `-60`/`-24` to `-12`/`-12`, since the slate that the 60px
+   was leaving room for is gone.
+
+**Assets, `promo/assets/`, 85.6 KB of PNG to 17.9 KB of WebP (-79%).** `butterfly-logo`
+was 540px for an 84px display, rebuilt at 176px per the repo's 2x rule. `frame.png`
+46 KB to 6.6 KB.
+
+**THE SOLUTION, what he asked for and what it now is:**
+- Title was "You need an exit sign!", the same line as the hero h1. He gave
+  "An exit sign before screentime turns bad.", then took the full-sentence version:
+  **"You get the exit sign before screentime turns bad."** A fragment read soft sitting
+  under a hero that is a full sentence, and this one answers "YOU NEED AN EXIT SIGN."
+- The drifting-car image (`solution-exit-sign.webp`) is gone, replaced by demo 1.
+- The three steps are stacked in one column, icon beside the text, `.flow.stacked`.
+- Icons 64px to 40px, radius 18 to 12, the glyph 32 to 21.
+- The `01 / Notice`, `02 / Ask`, `03 / Signal` labels are deleted. The `.step .num` CSS
+  stays, `investors.html` still uses it.
+- Step head and body copy are unchanged, his words.
+
+**HOW IT WORKS:** the three `.screens-row` screenshot columns are gone, replaced by
+demo 2.
+
+**The subtitle became an invite, and its content moved into the captions.** His call,
+2026-08-29: the captions were repeating the subtitle, so the subtitle's better wording
+went into them and the subtitle itself is now **"Try it now in the web demo."** That
+line is doing a job the old one could not: demo 2 is interactive and nothing was telling
+anyone to touch it.
+
+The old subtitle, now retired: "The butterfly helps you map your emotional states: angry,
+energized, calm, or down. Your feelings input helps us predict where you should stop
+scrolling. Within 4 weeks, we help you adopt new healthier habits."
+
+| Caption | Was | Is |
+|---|---|---|
+| Emotional Check-in | "Mark your emotions on the butterfly. We learn your patterns, app by app." | "**One tap on the butterfly: angry, energized, calm, or down.** We learn your patterns, app by app." |
+| Exit Signal | "When mood drops, we send you a clear signal. **You should take a break.**" | "**Your feelings input helps us predict where you should stop scrolling.** When mood drops, we send you a clear signal." |
+| App Tracking | "Decide which apps to track and how often we check on you." | "Decide which apps to track and how often we check on you. **Within 4 weeks, we help you adopt new healthier habits.**" |
+
+Bold is what moved in from the subtitle. Every phrase is his, from one place or the other.
+Two notes on the seams:
+- "Mark your emotions" was abstract where the subtitle was concrete, so the four emotions
+  replaced it. The voice guide asks for the concrete one.
+- **"You should take a break." was dropped**, the only phrase that did not survive the
+  merge. It is the in-app string, and "we send you a clear signal" in the same sentence
+  was already saying it. Say the word and it goes back.
+- **"Within 4 weeks" still has no source.** It had none in the subtitle either, so this
+  changes nothing, but the voice guide's rule is that every number carries a source or
+  comes off. It had no natural caption and App Tracking was the only one about the
+  ongoing relationship, so that is where it landed. Raised, not decided.
+
+**On a phone the demo sits between the heading and the list**, in both sections. His
+call. `.demo-copy` gets `display: contents` below 980px, which drops it out of the box
+tree so the heading and the list become grid items of `.demo-split` in their own right,
+and `order` can then place the stage between them. Order verified at narrow width:
+heading, stage, list, in THE SOLUTION and HOW IT WORKS both. Desktop is untouched, the
+grid is still `748px 380px`.
+
+**The three caption blocks are back, his call the same day.** They were deleted with the
+screenshot columns they belonged to, flagged, and he said bring them back and set them
+vertical. They are now a `.cap-list` down the left column under the section paragraph,
+byte-identical copy from the backup: "Emotional Check-in / How are you, really?",
+"Exit Signal / Caught before the spiral.", "App Tracking / Your rules."
+
+They keep the `.screen-cap` class, so if the screenshots ever come back the CSS is
+already shared. Inside `.cap-list` they are left-aligned instead of centred, and
+separated by a hairline rather than wrapped in panel cards, so HOW IT WORKS does not
+read as a second copy of the three cards in THE SOLUTION.
+
+This fixes the balance: the HOW IT WORKS left column went from 219px to **580px** of
+copy against the 746px phone, which now matches THE SOLUTION's 602px.
+
+**The demos start when their section is reached, not on page load.** His instruction.
+Each iframe carries `data-src` and an `IntersectionObserver` at `threshold: 0.35` swaps
+it to `src` the first time the stage is a third on screen, then unobserves. Verified:
+at the top of the page there are zero network requests to `promo/`; at THE SOLUTION only
+`1-stop-sign.html` has loaded; `2-how-do-you-feel.html` loads only on reaching HOW IT
+WORKS. Without this both demos ran from page load and a visitor arrived mid-sequence,
+which for demo 2 meant missing the home screen and the app tap that set it up. No
+`IntersectionObserver` means both start immediately, which is the old behaviour.
+
+**Open question 6 is closed by this.** The HOW IT WORKS paragraph's hardcoded
+`width: 730px` at the old `index.html:869` is gone. At 360 the only element still wider
+than the viewport is `.who-card.users`, which is in another section and pre-existing.
+
+**Two things are now dead code**, both left alone because open question 4 says ask first:
+the `.screens-row` / `.screen-col` / `.screen-frame` / `.screen-cap` rules, and the dev
+tweaks panel's "Screens row" slider and photo-align control, which drove `--shift-3rd`
+and `data-photoalign` on a row that no longer exists.
+
+**Also now unreferenced by `index.html`:** `solution-exit-sign.webp` and
+`screen-02/03/05.webp`. Not deleted, and `screen-*.png` sources stay per the assets table.
+
+`index.html` 62,377 -> 66,710 bytes. Height at 360px 11,459 -> 11,221 px, so the page is
+still shorter than it was even with the captions restored. Backup: `_review/index.html.pre-demos-2026-08-29.bak`. Harnesses:
+`_review/harness-demos.html` (desktop, both sections side by side at 1400px scaled) and
+`_review/harness-demos-360.html`.
+
 ### His own idea, not on the brief
 
 Replace the screenshots in **HOW IT WORKS** with a walkthrough built from the check-in mockup at `dev/gamerswellbeing/web/axis-checkin/index.html`: butterfly appears, user taps it, user picks an emotion, butterfly says there is a drop in your mood, take a break. Raised 2026-08-27. Not started, not scoped, no decision yet.
@@ -464,7 +588,9 @@ Small things. None of them block anything. Each one has been raised and none has
 | 3 | Three of the four Play links are still the blue "Get the app" pill | Only the download block uses the official Google Play badge. Google's guidelines want the badge everywhere the page points at Play. Swap all four, or keep the pill above the fold because it looks better on the dark background. Raised 2026-08-26 |
 | 4 | A developer tweaks panel is still shipped and live on `digitalwellbeing.xyz` | `aside.wb-tweaks`, "Tweaks / Screens row", a photo-align control and a slider with about 60 lines of JS, sitting between `</main>` and the footer. Not on any task list, found 2026-08-26. It may still be how he nudges the phone row in HOW IT WORKS, so ask before cutting |
 | 5 | Em dash in the download block sub copy | "iOS launching soon **—** join the waitlist". His no-em-dash rule says it goes, but it is his sentence, so it stays until he says otherwise. Raised 2026-08-26, he answered about the form instead |
-| 6 | One paragraph in HOW IT WORKS has a hardcoded `width: 730px` at `index.html:869` | On a phone the whole page scrolls sideways. Pre-existing, not caused by any task. One line to fix: `max-width:730px; width:100%`. Raised 2026-08-27 |
+| 6 | ~~One paragraph in HOW IT WORKS has a hardcoded `width: 730px`~~ | **Closed 2026-08-29.** The paragraph was rewritten into the new two-column HOW IT WORKS and the hardcoded width went with it |
+| 7 | ~~Three caption blocks deleted with the HOW IT WORKS screenshots~~ | **Closed 2026-08-29.** He said bring them back and set them vertical. Done, copy unchanged |
+| 8 | The demo files carry a slate label, "Wellbeing — the stop sign" / "— how do you feel?" | Hidden in the embedded copies. It reads as a standalone-demo watermark and it has an em dash, but it is his text, so say so. Raised 2026-08-29 |
 
 ---
 

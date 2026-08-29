@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wellbeing — The stop sign</title>
+<style>
+  /* ── Promo frame 1: the butterfly interrupts a doomscroll ──────────────
+     Butterfly geometry copied from ButterflyOverlayView.kt:
+       icon 56dp · default x = W - 56 - 16 · default y = H * 0.5
+       entrance: bezier from the delete-zone spot, 300ms, alpha over first 20%
+       bubble: left of the icon, 8dp gap, dark #1C171D at the 0.8 the system caps
+     1 CSS px inside .canvas == 1 dp on the device. */
+
+  :root {
+    --frame-w: 424px;                 /* frame.png is 557x1080 */
+    --screen-w: 380px;                /* == 499/557 of the frame */
+    --screen-h: 701px;                /* == 921/1080 of the frame */
+    --bubble-bg: rgba(28, 23, 29, .8);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    background: radial-gradient(120% 90% at 50% 0%, #241d2a 0%, #14101a 60%, #0c0910 100%);
+    color: #fff;
+    font-family: Comfortaa, ui-rounded, "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .stage { transform-origin: center center; }
+
+  .phone {
+    position: relative;
+    width: var(--frame-w);
+    aspect-ratio: 557 / 1080;
+  }
+  .phone .bezel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .screen {
+    position: absolute;
+    left: 5.0269%;                    /* 28/557  */
+    top: 7.5926%;                     /* 82/1080 */
+    width: 89.5871%;                  /* 499/557 */
+    height: 85.2778%;                 /* 921/1080 */
+    overflow: hidden;
+    background: #000;
+  }
+  /* Everything inside is laid out in device dp. */
+  .canvas {
+    position: absolute;
+    left: 0; top: 0;
+    width: var(--screen-w);
+    height: var(--screen-h);
+    transform-origin: top left;
+  }
+
+  /* ── the doomscroll behind the glass ───────────────────────────────── */
+  .feed {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    filter: blur(7px) saturate(1.15);
+  }
+  .reel-track {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    /* real doomscrolling: rest on one reel, flick to the next, rest again */
+    animation: scroll-reels 12s infinite;
+  }
+  .reel {
+    position: relative;
+    width: var(--screen-w);
+    height: var(--screen-h);
+  }
+  .reel .body { position: absolute; inset: 0; }
+  .reel:nth-child(1) .body { background: linear-gradient(160deg, #7b3fa0, #d94f6a 55%, #ffb56b); }
+  .reel:nth-child(2) .body { background: linear-gradient(200deg, #14586e, #3fa08c 50%, #e8e36b); }
+  .reel:nth-child(3) .body { background: linear-gradient(150deg, #2b2f7a, #a0407d 60%, #ff8a5c); }
+  /* same as the first: the track jumps back to 0 here, and this hides it */
+  .reel:nth-child(4) .body { background: linear-gradient(160deg, #7b3fa0, #d94f6a 55%, #ffb56b); }
+
+  /* rough shapes, so the blur reads as a person plus UI, not a flat wash */
+  .reel .head {
+    position: absolute;
+    left: 50%; top: 32%;
+    width: 130px; height: 130px;
+    margin-left: -65px;
+    border-radius: 50%;
+    background: rgba(255, 224, 196, .85);
+  }
+  .reel .torso {
+    position: absolute;
+    left: 50%; top: 54%;
+    width: 210px; height: 260px;
+    margin-left: -105px;
+    border-radius: 90px 90px 0 0;
+    background: rgba(20, 20, 30, .55);
+  }
+  .reel .caption {
+    position: absolute;
+    left: 18px; bottom: 120px;
+    width: 230px; height: 13px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, .8);
+    box-shadow: 0 24px 0 rgba(255,255,255,.65), 0 48px 0 rgba(255,255,255,.45);
+  }
+  .reel .rail {
+    position: absolute;
+    right: 16px; bottom: 130px;
+    width: 42px; height: 190px;
+    border-radius: 21px;
+    background: rgba(255, 255, 255, .35);
+  }
+  /* 12s / 4 reels = 3s a reel: ~2.5s still, then a 0.5s flick. The last reel
+     repeats the first, so the jump back to the start is invisible. */
+  @keyframes scroll-reels {
+    0%, 20%   { transform: translateY(0); animation-timing-function: cubic-bezier(.32,.72,0,1); }
+    25%, 45%  { transform: translateY(calc(-1 * var(--screen-h))); animation-timing-function: cubic-bezier(.32,.72,0,1); }
+    50%, 70%  { transform: translateY(calc(-2 * var(--screen-h))); animation-timing-function: cubic-bezier(.32,.72,0,1); }
+    75%, 100% { transform: translateY(calc(-3 * var(--screen-h))); }
+  }
+
+  /* status and nav chrome, unblurred so the phone still reads as a phone */
+  .chrome {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    font-size: 11px;
+    color: rgba(255,255,255,.85);
+  }
+  .chrome .clock { position: absolute; left: 18px; top: 10px; font-weight: 700; }
+  .chrome .icons { position: absolute; right: 18px; top: 10px; letter-spacing: 2px; }
+  .chrome .navbar {
+    position: absolute;
+    left: 50%; bottom: 9px;
+    width: 120px; height: 4px;
+    margin-left: -60px;
+    border-radius: 2px;
+    background: rgba(255,255,255,.55);
+  }
+
+  /* ── the butterfly ─────────────────────────────────────────────────── */
+  .butterfly {
+    position: absolute;
+    left: 0; top: 0;
+    width: 56px;                       /* ICON_SIZE_DP */
+    height: 56px;
+    opacity: 0;
+    z-index: 5;
+    will-change: transform, opacity;
+  }
+  .butterfly img { width: 100%; height: 100%; display: block; }
+
+  .bubble {
+    position: absolute;
+    right: 0; top: 0;
+    transform: translateY(-50%);      /* centred on the icon, no measuring */
+    max-width: 190px;                  /* CHAT_MAX_WIDTH_FRACTION = 1/2 */
+    padding: 12px;                     /* CHAT_PADDING_DP */
+    border-radius: 16px;               /* CHAT_CORNER_RADIUS_DP */
+    background: var(--bubble-bg);
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.35;
+    box-shadow: 0 6px 14px rgba(0,0,0,.45);
+    opacity: 0;
+    z-index: 4;
+    white-space: pre-line;
+    transition: opacity .18s ease;
+  }
+  .bubble.on { opacity: 1; }
+
+  /* the whole overlay fades out together at the end of the loop */
+  .overlay-fade { transition: opacity .6s ease; }
+  .overlay-fade.gone { opacity: 0 !important; }
+
+  /* Between runs the whole screen goes to black — .screen is already black,
+     so fading the contents out is the blackout. */
+  .canvas { transition: opacity .8s ease; }
+  .canvas.blackout { opacity: 0; }
+
+  /* embedded on the landing page: the standalone slate label is hidden */
+  .caption-note {
+    display: none;
+    position: fixed;
+    left: 0; right: 0; bottom: 14px;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255,255,255,.35);
+    letter-spacing: .5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="canvas" id="canvas">
+        <div class="feed">
+          <div class="reel-track">
+            <div class="reel"><div class="body"></div><div class="head"></div><div class="torso"></div><div class="caption"></div><div class="rail"></div></div>
+            <div class="reel"><div class="body"></div><div class="head"></div><div class="torso"></div><div class="caption"></div><div class="rail"></div></div>
+            <div class="reel"><div class="body"></div><div class="head"></div><div class="torso"></div><div class="caption"></div><div class="rail"></div></div>
+            <div class="reel"><div class="body"></div><div class="head"></div><div class="torso"></div><div class="caption"></div><div class="rail"></div></div>
+          </div>
+        </div>
+
+        <div class="chrome">
+          <div class="clock">21:47</div>
+          <div class="icons">▮▮▮ ▰</div>
+          <div class="navbar"></div>
+        </div>
+
+        <div class="bubble overlay-fade" id="bubble"></div>
+        <div class="butterfly overlay-fade" id="butterfly"><img src="assets/butterfly.webp" alt="Wellbeing butterfly"></div>
+      </div>
+    </div>
+    <img class="bezel" src="assets/frame.webp" alt="">
+  </div>
+</div>
+
+<div class="caption-note">Wellbeing — the stop sign</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ── device metrics, in dp: the numbers ButterflyOverlayView works in ──
+  var SCREEN_W = 380, SCREEN_H = 701;
+  var ICON = 56, MARGIN = 16, BUBBLE_GAP = 8;
+  var DELETE_MARGIN_BOTTOM = 48, DELETE_SIZE = 56;
+  var ENTRANCE_MS = 300;
+
+  var stage = document.getElementById("stage");
+  var canvas = document.getElementById("canvas");
+  var track = document.querySelector(".reel-track");
+  var butterfly = document.getElementById("butterfly");
+  var bubble = document.getElementById("bubble");
+
+  // ── fit the phone to the window ──────────────────────────────────────
+  function fit() {
+    var frameH = 424 * 1080 / 557;
+    var scale = Math.min(1, (window.innerHeight - 12) / frameH, (window.innerWidth - 12) / 424);
+    stage.style.transform = "scale(" + scale + ")";
+  }
+  window.addEventListener("resize", fit);
+  fit();
+
+  // ── butterfly placement (ButterflyOverlayView.defaultX/defaultY) ──────
+  function defaultX() { return SCREEN_W - ICON - MARGIN; }
+  function defaultY() { return SCREEN_H * 0.5; }
+
+  function place(x, y) {
+    butterfly.style.transform = "translate3d(" + x + "px," + y + "px,0)";
+    // Past EDGE_THRESHOLD_DP the bubble sits to the LEFT of the icon, vertically
+    // centred on it. Anchored by its right edge so the text can grow leftwards
+    // without the bubble ever having to be measured.
+    bubble.style.right = (SCREEN_W - x + BUBBLE_GAP) + "px";
+    bubble.style.top = (y + ICON / 2) + "px";
+  }
+
+  /** The show() entrance: quadratic bezier from the delete-zone spot. */
+  function flyIn(done) {
+    var startX = (SCREEN_W - ICON) / 2;
+    var startY = SCREEN_H - DELETE_MARGIN_BOTTOM - DELETE_SIZE;
+    var endX = defaultX(), endY = defaultY();
+    var ctrlX = SCREEN_W * 0.1, ctrlY = SCREEN_H * 0.1;
+    var t0 = performance.now();
+
+    var landed = false;
+    function land() {
+      if (landed) return;
+      landed = true;
+      butterfly.style.transition = "";
+      butterfly.style.opacity = 1;
+      place(endX, endY);
+      if (done) done();
+    }
+
+    // The fade-out transition must not fight the per-frame opacity below.
+    butterfly.style.transition = "none";
+    requestAnimationFrame(function tick(now) {
+      if (landed) return;
+      var t = Math.min(1, (now - t0) / ENTRANCE_MS);
+      // AccelerateDecelerate, the same curve the Android interpolator uses
+      var e = (Math.cos((t + 1) * Math.PI) / 2) + 0.5;
+      var u = 1 - e;
+      var x = u * u * startX + 2 * u * e * ctrlX + e * e * endX;
+      var y = u * u * startY + 2 * u * e * ctrlY + e * e * endY;
+      butterfly.style.opacity = Math.min(1, e / 0.2);
+      place(x, y);
+      if (t < 1) requestAnimationFrame(tick); else land();
+    });
+
+    // The overlay's own safety net (ButterflyOverlayView, "Animation blocked"):
+    // if the frame loop never ran — a background tab freezes it — put the
+    // butterfly on its spot anyway and carry on with the messages.
+    setTimeout(land, ENTRANCE_MS + 200);
+  }
+
+  function say(text) {
+    bubble.textContent = text;
+    bubble.classList.add("on");
+    // Same safety the overlay has on device: if the frame loop was blocked,
+    // a message still puts the butterfly at its default spot, fully visible.
+    butterfly.style.opacity = 1;
+    place(defaultX(), defaultY());
+  }
+
+  // ── the sequence, paced like ButterflySequences (LENGTH_SHORT) ────────
+  var MESSAGES = [
+    "You spent 15 minutes on social media",
+    "You should take a break",
+    "Otherwise your mood may drop."
+  ];
+  var HOLD = 3000;          // ButterflyDurations.LENGTH_SHORT
+  var LINGER = 5000;        // butterfly stays put after the last message
+  var BLACKOUT = 800;       // the screen fading to black
+  var GAP = 700;            // black held before the run starts over
+
+  var timers = [];
+  function after(ms, fn) { timers.push(setTimeout(fn, ms)); }
+
+  function loop() {
+    timers.forEach(clearTimeout);
+    timers = [];
+
+    // Back to the top of the reel feed, so every run looks the same.
+    track.style.animation = "none";
+    void track.offsetWidth;
+    track.style.animation = "";
+
+    canvas.classList.remove("blackout");
+    butterfly.classList.remove("gone");
+    bubble.classList.remove("gone", "on");
+    bubble.textContent = "";
+    butterfly.style.opacity = 0;
+
+    after(900, function () {
+      flyIn(function () {
+        MESSAGES.forEach(function (text, i) {
+          after(i * HOLD, function () { say(text); });
+        });
+        // Last message said: the butterfly holds the screen for a beat before
+        // the whole thing goes dark and starts over.
+        after(MESSAGES.length * HOLD + LINGER, function () {
+          canvas.classList.add("blackout");
+          after(BLACKOUT + GAP, loop);
+        });
+      });
+    });
+  }
+
+  loop();
+})();
+</script>
+</body>
+</html>
