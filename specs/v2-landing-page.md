@@ -1,9 +1,11 @@
 # v2 landing page rebuild
 
 Rebuild of `index.html` to serve one job: **get the Google Play install.**
-Deadline: live by **2026-09-04**. Started 2026-08-24. Last updated 2026-08-27.
+Deadline: live by **2026-09-04**. Started 2026-08-24. Last updated 2026-08-29.
 
-**Where things stand:** 13 of the 14 brief tasks are closed. Task 6, the hero video, is the only one left and it is waiting on footage that does not exist yet. Three tasks were rejected or skipped by Anas, see the decisions table. Six small questions still need a yes or no from him.
+**Where things stand:** 13 of the 14 brief tasks are closed. Task 6, the hero video, is the only one left and it is waiting on footage that does not exist yet. Three tasks were rejected or skipped by Anas, see the decisions table. Five small questions still need a yes or no from him, down from six. **The one worth answering first is question 4:** a developer tweaks panel is shipped and live on the public site, and as of 2026-08-29 it controls nothing at all, so the reason it was left alone no longer exists.
+
+**Newest work, 2026-08-29, not on the brief at all:** THE SOLUTION and HOW IT WORKS are now live phone demos, copy on the left and a running animation on the right, both approved. Nothing about it came from the marketing brief, so it belongs in the report under "done completely differently by the PM". Detail is in "THE SOLUTION and HOW IT WORKS are live phone demos now".
 
 Changes on this page are for the marketing team, not a dev request.
 
@@ -62,6 +64,20 @@ Newest last. Every row is his call, not mine. The reason column is why he made i
 | 17 | A report is owed to the marketing team once the remaining work closes. Four buckets: done as briefed, done with a change from him, done completely differently by him, and rejected. | He is the PM. The marketing team wrote the brief and has not seen how much of it changed. |
 | 18 | Every update and decision gets written down with its reason, including the ones that postpone or kill something. | His instruction, 2026-08-27. This section is that. |
 
+### 2026-08-29
+
+All approved by him the same day, in one pass, after seeing the screenshots.
+
+| # | Decision | Why |
+|---|---|---|
+| 19 | **THE SOLUTION and HOW IT WORKS are live phone demos.** Copy left, a running demo right, iframed from `promo/`. | His instruction. It closes the "his own idea" note below and goes past it: that note only covered HOW IT WORKS. |
+| 20 | Hero headline stays locked, but THE SOLUTION's h2 is now **"You get the exit sign before screentime turns bad."** | It was "You need an exit sign!", the hero h1 word for word. He offered "An exit sign before screentime turns bad.", then took the full-sentence version: a fragment reads soft under a hero that is a full sentence, and this one answers it. Decision 5 is untouched, the hero itself did not move. |
+| 21 | **The HOW IT WORKS subtitle is "Try it now in the web demo."** The old subtitle's wording moved down into the three captions. | The captions were repeating the subtitle. Demo 2 is interactive and nothing on the page was telling anyone to touch it. |
+| 22 | **"You should take a break." is dropped.** The only phrase that did not survive the subtitle-into-captions merge. | It is the in-app string, but "we send you a clear signal" in the same sentence was already saying it. Approved 2026-08-29 after being flagged. Reversible, the sentence is in this file and in the backup. |
+| 23 | **"Within 4 weeks, we help you adopt new healthier habits." stays, on the App Tracking caption, still without a source.** | It had no source in the subtitle either, so this carries the claim forward rather than creating it. App Tracking was the only caption about the ongoing relationship, so it was the only place it fit. Flagged against the voice guide's "every number carries a source or comes off" rule and approved anyway. **If that number is ever challenged, this is the line to pull.** |
+| 24 | **On a phone the demo sits between the heading and the list**, in both sections. | His call. On a phone the animation is the thing worth arriving at, and it should not sit under three blocks of text. |
+| 25 | **The demos start when their section is reached, not on page load.** | His call. Running from page load meant a visitor arrived mid-sequence. For demo 2 that meant missing the home screen and the app tap that set it up. |
+
 ### Section names to use with him
 
 | HTML id | Say this |
@@ -98,7 +114,9 @@ Find out which app drops your mood.
 
 ## Where the site stands right now
 
-**`index.html`, 58.4 KB.** Sections in order: hero, `#research`, `#problem`, `#solution`, `#inside`, `#loop`, `#download`. Nav is four links (The data, Problem & Solution, The app, Our Hero) plus the Play CTA and the docked QR. Footer carries Terms, Privacy, EULA, Investors. Sticky install bar fixed to the bottom below 820px. Seven Play links, all UTM-tagged: four buttons on `utm_medium=site` and three QR codes on `utm_medium=qr`. 177 KB of images, 43 KB of it above the fold.
+**`index.html`, 65.1 KB.** Sections in order: hero, `#research`, `#problem`, `#solution`, `#inside`, `#loop`, `#download`. Nav is four links (The data, Problem & Solution, The app, Our Hero) plus the Play CTA and the docked QR. Footer carries Terms, Privacy, EULA, Investors. Sticky install bar fixed to the bottom below 820px. Seven Play links, all UTM-tagged: four buttons on `utm_medium=site` and three QR codes on `utm_medium=qr`.
+
+`#solution` and `#inside` are two-column since 2026-08-29: copy left, an iframed phone demo right, each demo deferred until its section is on screen. That took `solution-exit-sign.webp` and the three `screen-*.webp` out of the page, about 119 KB of images, and put back 87 KB of demo (two HTML documents plus 17.9 KB of WebP) that only loads for a visitor who scrolls that far. Nothing above the fold changed.
 
 Title and meta description, set 2026-08-26:
 
@@ -166,7 +184,7 @@ The long session is.
 
 Old 01 carried detect **and** signal, so it was re-split across 01 and 03. It also lost "Backed by scientific research", an unsourced claim standing right below `#research`, which now carries the real alpha numbers. Trophy and coin icons swapped for a speech bubble and an exit-door arrow, both inline paths, no new assets.
 
-`#solution` cannot borrow the brief's "real screenshots" instruction: `#inside` already is that section. `#solution` stays the text mechanism, `#inside` stays the screenshots.
+`#solution` cannot borrow the brief's "real screenshots" instruction: `#inside` already is that section. `#solution` stays the text mechanism, `#inside` stays the screenshots. **Overtaken 2026-08-29:** neither section has a screenshot any more. Both carry a phone demo, and `#solution` kept its text mechanism beside one. Decision 19.
 
 Also cut: the `and earn rewards*` tail on the `#inside` intro, and `Real rewards.*` from the `#download` headline, which is now two lines, `Less screen.` / `Better mood.`
 
@@ -270,7 +288,7 @@ This kills the only sanctioned home for the marketplace line. Brief Part 6 says 
 
 It also drops the only place the page answered "is my data sold". The Firestore and location question in "Open, not yet decided" stops being a copy blocker and stays a factual one.
 
-**A report to the marketing team is owed** once the remaining tasks close, sorted four ways: done as briefed, done with a change from the PM, done completely differently by the PM, and rejected. Tasks 8 and 12 are the first two entries under rejected.
+**A report to the marketing team is owed** once the remaining tasks close, sorted four ways: done as briefed, done with a change from the PM, done completely differently by the PM, and rejected. Tasks 8 and 12 are the first two entries under rejected. **The 2026-08-29 phone demos go under "done completely differently by the PM":** the brief asked for real screenshots in both blocks, and both blocks now carry a running demo instead, from files the PM wrote himself.
 
 ### Task 9 done, 2026-08-27. Both forms work.
 
@@ -404,17 +422,20 @@ Kept because task 7 is done but every other privacy or permission claim on any s
 ### Waiting on Anas
 
 - **Task 6, the hero video.** Needs 6 to 10 seconds of screen capture, the butterfly appearing over a real TikTok or Instagram scroll. Nothing like it exists in any repo. He knows, and said it will take time.
-- **THE SOLUTION screenshots.** He is making a new butterfly screenshot.
 - **Does the Play Store listing link to `delete_my_data/`?** Nothing on either HTML page links to it, so its only traffic comes from the listing or the app. Worth knowing now that the page works.
 - **A "Why are you leaving?" question on the deletion form.** The form has one question. Until a second one exists, that field on the page stays hidden rather than collecting an answer with nowhere to put it.
 
-Cleared since this list was written: task 9 needed Google Form IDs and now has them, task 10 needed a mood chart and was skipped.
+Cleared since this list was written: task 9 needed Google Form IDs and now has them, task 10 needed a mood chart and was skipped, and **THE SOLUTION no longer needs the new butterfly screenshot he was making, because that section has no screenshot in it any more.** It has demo 1 instead. Same for the three screenshots HOW IT WORKS used to carry.
 
 ### THE SOLUTION and HOW IT WORKS are live phone demos now, 2026-08-29
 
-His instruction. Both sections are copy on the left, a running phone demo on the right.
-This closes "his own idea, not on the brief" below, and it went further than that note
-described: it took THE SOLUTION as well, not only HOW IT WORKS.
+**Approved and finished.** Both sections are copy on the left, a running phone demo on
+the right. Built across one day in four passes, each one his instruction: the demos went
+in, the captions came back, the subtitle became an invite, and the demos were made to
+wait for their section. Decisions 19 to 25 carry the reasons.
+
+This closes "his own idea, not on the brief" below, and went past it: that note only
+covered HOW IT WORKS, and this took THE SOLUTION as well.
 
 **The demos are two documents he wrote**, from `dev/gamerswellbeing/web/promo/`:
 
@@ -429,14 +450,13 @@ phone to `window.innerHeight`. Inlining any of that would have collided with the
 stylesheet, and file 2 is 55 KB with a 966-line script. In an iframe their `fit()` reads
 the iframe box instead of the window, so each demo scales itself to whatever size the
 stage is given and no size has to be hardcoded. The stage is `aspect-ratio: 424/834`,
-which is the phone frame plus a little slack, so it stays right at every width with no
-media query. Both iframes are `loading="lazy"`.
+the phone frame plus a little slack, so it stays right at every width with no media query.
 
 **Three edits to the copies in `promo/`, none to his originals in the dev repo:**
 1. PNG srcs to WebP.
 2. `.caption-note` set to `display:none`. That is the standalone slate label at the
-   bottom, "Wellbeing — the stop sign". It is a demo watermark, not page copy, and it
-   carries an em dash. **Flagged to him.**
+   bottom, "Wellbeing — the stop sign". A demo watermark, not page copy, and it carries
+   an em dash. Flagged twice, approved hidden. His originals still show it.
 3. The `fit()` insets went from `-60`/`-24` to `-12`/`-12`, since the slate that the 60px
    was leaving room for is gone.
 
@@ -444,28 +464,38 @@ media query. Both iframes are `loading="lazy"`.
 was 540px for an 84px display, rebuilt at 176px per the repo's 2x rule. `frame.png`
 46 KB to 6.6 KB.
 
-**THE SOLUTION, what he asked for and what it now is:**
-- Title was "You need an exit sign!", the same line as the hero h1. He gave
+#### THE SOLUTION
+
+- Title was "You need an exit sign!", the hero h1 word for word. He offered
   "An exit sign before screentime turns bad.", then took the full-sentence version:
   **"You get the exit sign before screentime turns bad."** A fragment read soft sitting
   under a hero that is a full sentence, and this one answers "YOU NEED AN EXIT SIGN."
+  Decision 20. The hero itself did not move, decision 5 stands.
 - The drifting-car image (`solution-exit-sign.webp`) is gone, replaced by demo 1.
 - The three steps are stacked in one column, icon beside the text, `.flow.stacked`.
+  Each step body is wrapped in a new `.step-text` so the icon can sit beside it.
 - Icons 64px to 40px, radius 18 to 12, the glyph 32 to 21.
 - The `01 / Notice`, `02 / Ask`, `03 / Signal` labels are deleted. The `.step .num` CSS
   stays, `investors.html` still uses it.
 - Step head and body copy are unchanged, his words.
 
-**HOW IT WORKS:** the three `.screens-row` screenshot columns are gone, replaced by
-demo 2.
+#### HOW IT WORKS
 
-**The subtitle became an invite, and its content moved into the captions.** His call,
-2026-08-29: the captions were repeating the subtitle, so the subtitle's better wording
-went into them and the subtitle itself is now **"Try it now in the web demo."** That
-line is doing a job the old one could not: demo 2 is interactive and nothing was telling
-anyone to touch it.
+The three `.screens-row` screenshot columns are gone, replaced by demo 2.
 
-The old subtitle, now retired: "The butterfly helps you map your emotional states: angry,
+**The three captions came back**, his call after they were flagged as deleted with the
+screenshots they belonged to. They are a `.cap-list` down the left column under the
+section paragraph. They keep the `.screen-cap` class, so the CSS stays shared if the
+screenshots ever return; inside `.cap-list` they are left-aligned instead of centred and
+separated by a hairline rather than wrapped in panel cards, so this section does not read
+as a second copy of the three cards in THE SOLUTION.
+
+**Then the subtitle became an invite and its wording moved into those captions.** His
+call once the captions were back and visibly repeating the subtitle. The subtitle is now
+**"Try it now in the web demo."**, which does a job the old one could not: demo 2 is
+interactive and nothing on the page was telling anyone to touch it. Decision 21.
+
+The old subtitle, retired: "The butterfly helps you map your emotional states: angry,
 energized, calm, or down. Your feelings input helps us predict where you should stop
 scrolling. Within 4 weeks, we help you adopt new healthier habits."
 
@@ -476,67 +506,81 @@ scrolling. Within 4 weeks, we help you adopt new healthier habits."
 | App Tracking | "Decide which apps to track and how often we check on you." | "Decide which apps to track and how often we check on you. **Within 4 weeks, we help you adopt new healthier habits.**" |
 
 Bold is what moved in from the subtitle. Every phrase is his, from one place or the other.
-Two notes on the seams:
+Three notes on the seams, all three settled by him:
+
 - "Mark your emotions" was abstract where the subtitle was concrete, so the four emotions
   replaced it. The voice guide asks for the concrete one.
 - **"You should take a break." was dropped**, the only phrase that did not survive the
   merge. It is the in-app string, and "we send you a clear signal" in the same sentence
-  was already saying it. Say the word and it goes back.
-- **"Within 4 weeks" still has no source.** It had none in the subtitle either, so this
-  changes nothing, but the voice guide's rule is that every number carries a source or
-  comes off. It had no natural caption and App Tracking was the only one about the
-  ongoing relationship, so that is where it landed. Raised, not decided.
+  was already saying it. Flagged, approved. Decision 22. Reversible: the sentence is in
+  the table above and in the backup.
+- **"Within 4 weeks" carries no source**, and the voice guide's rule is that every number
+  carries a source or comes off. It had no source in the subtitle either, so this moves
+  the claim rather than creating it. App Tracking was the only caption about the ongoing
+  relationship, so that is where it fits. Flagged, approved anyway. Decision 23.
+  **If that number is ever challenged, this is the line to pull.**
+
+**Balance.** The left column was 219px of copy against a 746px phone when it held only
+the heading and the old subtitle. With the captions in and the subtitle cut to one line
+it is **561px**, against THE SOLUTION's 602px. The two sections now read as one layout.
+
+#### Behaviour
 
 **On a phone the demo sits between the heading and the list**, in both sections. His
-call. `.demo-copy` gets `display: contents` below 980px, which drops it out of the box
-tree so the heading and the list become grid items of `.demo-split` in their own right,
-and `order` can then place the stage between them. Order verified at narrow width:
-heading, stage, list, in THE SOLUTION and HOW IT WORKS both. Desktop is untouched, the
-grid is still `748px 380px`.
+call, decision 24. `.demo-copy` gets `display: contents` below 980px, which drops it out
+of the box tree so the heading and the list become grid items of `.demo-split` in their
+own right, and `order` can then place the stage between them. Verified at narrow width:
+heading, stage, list, in THE SOLUTION and HOW IT WORKS both. Desktop untouched, the grid
+is still `748px 380px`.
 
-**The three caption blocks are back, his call the same day.** They were deleted with the
-screenshot columns they belonged to, flagged, and he said bring them back and set them
-vertical. They are now a `.cap-list` down the left column under the section paragraph,
-byte-identical copy from the backup: "Emotional Check-in / How are you, really?",
-"Exit Signal / Caught before the spiral.", "App Tracking / Your rules."
+**The demos start when their section is reached, not on page load.** His instruction,
+decision 25. Each iframe carries `data-src`, and an `IntersectionObserver` at
+`threshold: 0.35` swaps it to `src` the first time the stage is a third on screen, then
+unobserves. Verified: at the top of the page, zero network requests to `promo/`; at THE
+SOLUTION, only `1-stop-sign.html` has loaded; `2-how-do-you-feel.html` loads only on
+reaching HOW IT WORKS. Without this both ran from page load and a visitor arrived
+mid-sequence, which for demo 2 meant missing the home screen and the app tap that set it
+up. A browser with no `IntersectionObserver` starts both immediately, the old behaviour.
+The iframes keep `loading="lazy"` as a second line of defence.
 
-They keep the `.screen-cap` class, so if the screenshots ever come back the CSS is
-already shared. Inside `.cap-list` they are left-aligned instead of centred, and
-separated by a hairline rather than wrapped in panel cards, so HOW IT WORKS does not
-read as a second copy of the three cards in THE SOLUTION.
-
-This fixes the balance: the HOW IT WORKS left column went from 219px to **580px** of
-copy against the 746px phone, which now matches THE SOLUTION's 602px.
-
-**The demos start when their section is reached, not on page load.** His instruction.
-Each iframe carries `data-src` and an `IntersectionObserver` at `threshold: 0.35` swaps
-it to `src` the first time the stage is a third on screen, then unobserves. Verified:
-at the top of the page there are zero network requests to `promo/`; at THE SOLUTION only
-`1-stop-sign.html` has loaded; `2-how-do-you-feel.html` loads only on reaching HOW IT
-WORKS. Without this both demos ran from page load and a visitor arrived mid-sequence,
-which for demo 2 meant missing the home screen and the app tap that set it up. No
-`IntersectionObserver` means both start immediately, which is the old behaviour.
+#### What this left behind
 
 **Open question 6 is closed by this.** The HOW IT WORKS paragraph's hardcoded
-`width: 730px` at the old `index.html:869` is gone. At 360 the only element still wider
-than the viewport is `.who-card.users`, which is in another section and pre-existing.
+`width: 730px` at the old `index.html:869` went with the paragraph. At 360 the only
+element still wider than the viewport is `.who-card.users`, in another section and
+pre-existing.
 
-**Two things are now dead code**, both left alone because open question 4 says ask first:
-the `.screens-row` / `.screen-col` / `.screen-frame` / `.screen-cap` rules, and the dev
-tweaks panel's "Screens row" slider and photo-align control, which drove `--shift-3rd`
-and `data-photoalign` on a row that no longer exists.
+**Dead CSS, now certain rather than suspected.** `.screens-row`, `.screen-col` and
+`.screen-frame` have zero markup left. `.screen-cap` is **not** dead, `.cap-list` uses it
+three times, so it stays. The dev tweaks panel still ships and still writes
+`data-photoalign` on `<body>` and a `--shift-3rd` custom property, both of which now
+target a row that does not exist, so its "Screens row" slider and photo-align control do
+nothing at all. Left in place because open question 4 says ask first. **That question is
+now decidable in a way it was not before:** it was held open because the panel "may still
+be how he nudges the phone row in HOW IT WORKS", and there is no phone row any more.
 
 **Also now unreferenced by `index.html`:** `solution-exit-sign.webp` and
-`screen-02/03/05.webp`. Not deleted, and `screen-*.png` sources stay per the assets table.
+`screen-02/03/05.webp`. Not deleted, and the `screen-*.png` sources stay per the assets
+table.
 
 `index.html` 62,377 -> 66,710 bytes. Height at 360px 11,459 -> 11,221 px, so the page is
-still shorter than it was even with the captions restored. Backup: `_review/index.html.pre-demos-2026-08-29.bak`. Harnesses:
-`_review/harness-demos.html` (desktop, both sections side by side at 1400px scaled) and
-`_review/harness-demos-360.html`.
+shorter than before the rebuild even with the captions restored. Backup:
+`_review/index.html.pre-demos-2026-08-29.bak`. Harnesses: `_review/harness-demos.html`
+(desktop, both sections side by side at 1400px, scaled to fit) and
+`_review/harness-demos-360.html`. Note the observer does not fire inside the harness
+iframes, so a harness review has to set `src` from `data-src` by hand.
 
-### His own idea, not on the brief
+### His own idea, not on the brief. Built and approved 2026-08-29
 
-Replace the screenshots in **HOW IT WORKS** with a walkthrough built from the check-in mockup at `dev/gamerswellbeing/web/axis-checkin/index.html`: butterfly appears, user taps it, user picks an emotion, butterfly says there is a drop in your mood, take a break. Raised 2026-08-27. Not started, not scoped, no decision yet.
+Raised 2026-08-27: replace the screenshots in **HOW IT WORKS** with a walkthrough built
+from the check-in mockup at `dev/gamerswellbeing/web/axis-checkin/index.html`. Butterfly
+appears, user taps it, user picks an emotion, butterfly says there is a drop in your
+mood, take a break.
+
+**Done, and it took THE SOLUTION as well.** He wrote the two demos himself in
+`dev/gamerswellbeing/web/promo/`, and demo 2 is the axis check-in ported into a phone
+frame, which is exactly the walkthrough this note described. See "THE SOLUTION and HOW IT
+WORKS are live phone demos now" above for how it was built. Approved 2026-08-29.
 
 ---
 
@@ -549,12 +593,17 @@ Referenced by a live page:
 | `exit-sign-1148.webp` | 41 KB | hero |
 | `qr-play.webp` | 456 B | hero, nav and `#download`, all desktop only |
 | `play-badge.webp` | 12 KB | `#download`, the official Google Play badge |
-| `solution-exit-sign.webp` | 39 KB | `#solution` |
-| `screen-02/03/05.webp` | 30 / 29 / 21 KB | `#inside` |
 | `logo.webp` | 2 KB | nav and footer, both pages |
 | `anas.webp` / `omnia.webp` | 5 / 5 KB | `investors.html` founder cards |
 | `firstrun_hero.gif` | 1,041 KB | `investors.html`, lazy-loaded |
 | `logo.png` | 27 KB | **`axis-checkin/index.html`**, do not delete it for being unused on the landing page |
+| `promo/assets/frame.webp` | 6.6 KB | both demos, the phone bezel |
+| `promo/assets/butterfly-logo.webp` | 6.0 KB | demo 2, the butterfly and the check-in logo |
+| `promo/assets/butterfly.webp` | 5.2 KB | demo 1, the butterfly |
+
+The `promo/` assets are WebP built from his PNGs in `dev/gamerswellbeing/web/promo/assets/`:
+85.6 KB to **17.9 KB (-79%)**. `butterfly-logo` was 540px for an 84px display and was
+rebuilt at 176px per the 2x rule. His originals in the dev repo are untouched.
 
 Kept as sources, referenced by nothing:
 
@@ -566,6 +615,8 @@ Kept as sources, referenced by nothing:
 | `screen-04.png` | 974 KB | Emotion grid. Clean. |
 | `screen-05.png` | 597 KB | "Take a break / There is a drop in your mood." The strongest asset for the exit-signal story. |
 | `solution-exit-sign.jpg` | 140 KB | Source of the hero and `#solution` WebP files. |
+| `solution-exit-sign.webp` | 39 KB | **Unreferenced since 2026-08-29.** Demo 1 replaced it in THE SOLUTION. Kept, not deleted. |
+| `screen-02/03/05.webp` | 30 / 29 / 21 KB | **Unreferenced since 2026-08-29.** Demo 2 replaced the HOW IT WORKS screenshot row. Kept, not deleted. |
 | `google-play-app.png` | 78 KB | **Outside the repo**, at `D:\anas\Work\GW\website\`. The official Play badge on a white canvas, alpha bbox (45,149)-(1160,527). Source of `play-badge.webp`. |
 | `anas.jpg` / `omnia.jpg` | 133 / 59 KB | Sources of the avatar WebP files. |
 
@@ -586,11 +637,12 @@ Small things. None of them block anything. Each one has been raised and none has
 | 1 | The privacy capsule says Wellbeing never sees "any phone data", but `ACCESS_COARSE_LOCATION` ships in the app today | Requested at `RewardsFragment.kt:188` for a marketplace that is not live. Either the permission comes out of the app, or the sentence narrows. This is a claim on a live page, not a style point. Raised 2026-08-27, now also in the dev project prompt |
 | 2 | `investors.html` still shows the green "Validated in alpha · 2026" capsule | It was removed from the landing page only. The two pages are supposed to carry an identical WHAT THE DATA SAYS block. Left on purpose for now, since the alpha claim is investor material, but it needs a decision. Raised 2026-08-27 |
 | 3 | Three of the four Play links are still the blue "Get the app" pill | Only the download block uses the official Google Play badge. Google's guidelines want the badge everywhere the page points at Play. Swap all four, or keep the pill above the fold because it looks better on the dark background. Raised 2026-08-26 |
-| 4 | A developer tweaks panel is still shipped and live on `digitalwellbeing.xyz` | `aside.wb-tweaks`, "Tweaks / Screens row", a photo-align control and a slider with about 60 lines of JS, sitting between `</main>` and the footer. Not on any task list, found 2026-08-26. It may still be how he nudges the phone row in HOW IT WORKS, so ask before cutting |
+| 4 | **The dev tweaks panel is shipped live on `digitalwellbeing.xyz` and now controls nothing.** This is the one open question the 2026-08-29 work created an answer for | `aside.wb-tweaks`, "Tweaks / Screens row", a photo-align control and a slider with about 60 lines of JS, sitting between `</main>` and the footer. Found 2026-08-26, not on any task list. It was held open because it "may still be how he nudges the phone row in HOW IT WORKS". **There is no phone row any more:** demo 2 replaced `.screens-row`, so the slider writes `--shift-3rd` and the control writes `data-photoalign` on `<body>` and neither reaches any element. The reason to keep it is gone. Cutting it removes the panel markup, its ~60 lines of JS, and the dead `.screens-row` / `.screen-col` / `.screen-frame` rules. **`.screen-cap` must stay**, `.cap-list` uses it. Needs one word from him: cut, or leave it live |
 | 5 | Em dash in the download block sub copy | "iOS launching soon **—** join the waitlist". His no-em-dash rule says it goes, but it is his sentence, so it stays until he says otherwise. Raised 2026-08-26, he answered about the form instead |
 | 6 | ~~One paragraph in HOW IT WORKS has a hardcoded `width: 730px`~~ | **Closed 2026-08-29.** The paragraph was rewritten into the new two-column HOW IT WORKS and the hardcoded width went with it |
 | 7 | ~~Three caption blocks deleted with the HOW IT WORKS screenshots~~ | **Closed 2026-08-29.** He said bring them back and set them vertical. Done, copy unchanged |
-| 8 | The demo files carry a slate label, "Wellbeing — the stop sign" / "— how do you feel?" | Hidden in the embedded copies. It reads as a standalone-demo watermark and it has an em dash, but it is his text, so say so. Raised 2026-08-29 |
+| 8 | ~~The demo files carry a slate label, "Wellbeing — the stop sign"~~ | **Closed 2026-08-29.** Flagged twice, and he approved both sections as built with it hidden. It stays `display:none` in the `promo/` copies. His originals in the dev repo still show it. |
+| 9 | ~~"You should take a break." and the unsourced "Within 4 weeks"~~ | **Closed 2026-08-29.** Both approved. Decisions 22 and 23. |
 
 ---
 
