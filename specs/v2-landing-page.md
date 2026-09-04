@@ -57,7 +57,7 @@ Newest last. Every row is his call, not mine. The reason column is why he made i
 | 10 | Both forms post to Google Forms. Not to Firebase. | The site is static on GitHub Pages, so Firebase would need the web API key sitting in the page and a collection anyone can write to. The Firestore rules are already wide open, see below. Adding a second unauthenticated write path into that database would make it worse. |
 | 11 | The iOS waitlist reuses the existing Google Form from Oct 2025 instead of a new one. | "Fine, no one signed in." The old signup list is empty, so there is nothing for the iOS list to get mixed up with. |
 | 12 | On desktop the email field sits above the Join iOS waitlist button, not beside it. | His call after seeing it side by side. He also said the mobile version reads better than the desktop one, and stacking is what mobile was already doing. |
-| 13 | The Firestore rules get handed to the dev project. Not fixed from here. | "write a prompt with your claims and marketing claims to the claude dev project. they will handle it." Website repo is the wrong place to change app security. Prompt written to `_review/dev-project-prompt.md`. |
+| 13 | The Firestore rules get handed to the dev project. Not fixed from here. | "write a prompt with your claims and marketing claims to the claude dev project. they will handle it." Website repo is the wrong place to change app security. Prompt written to `_archive/dev-project-prompt.md`. |
 | 14 | Nothing to do on the legal side. An aggregate chart over many users is safe to publish. | "The data on the landingpage is anonmous and for many users without spacifying any personal information about them." Correct. Aggregate over a group that size is anonymous data, so the privacy policy and GDPR do not reach it. His own rule stands too: a user sharing their weekly report is that user's choice, and nothing gets shared against their will. |
 | 15 | **Task 10, the mood chart, is skipped.** | Called off after the data was rendered and the numbers checked. The legal route was clear and one real chart existed. He chose not to spend the page on it. Skipped, not deferred. |
 | 16 | Sections are called by the label printed on the page, never by their HTML id. | "I don't understand when you tell me @research or #inside. that is not how I comunicate sections names with you!" He wrote the page as headings. The ids are mine to work with, not his to read. |
@@ -77,6 +77,10 @@ All approved by him the same day, in one pass, after seeing the screenshots.
 | 23 | **"Within 4 weeks, we help you adopt new healthier habits." stays, on the App Tracking caption, still without a source.** | It had no source in the subtitle either, so this carries the claim forward rather than creating it. App Tracking was the only caption about the ongoing relationship, so it was the only place it fit. Flagged against the voice guide's "every number carries a source or comes off" rule and approved anyway. **If that number is ever challenged, this is the line to pull.** |
 | 24 | **On a phone the demo sits between the heading and the list**, in both sections. | His call. On a phone the animation is the thing worth arriving at, and it should not sit under three blocks of text. |
 | 25 | **The demos start when their section is reached, not on page load.** | His call. Running from page load meant a visitor arrived mid-sequence. For demo 2 that meant missing the home screen and the app tap that set it up. |
+| 26 | **The 66% on `investors.html` is correct as published. Closed, do not raise it again.** | The marketing handoff flagged that the before side is the OS clock and the after side is the in-app timer. 2026-09-04: "OS clock against app time is fine. dev team knows about it and they approve it's correct. don't talk about it again." No page note, no asterisk, no caveat line, and it is not an open question. |
+| 27 | **"And we understand doomscrolling better than anyone else" stands as written.** | Flagged twice as an unprovable superlative, approved both times, most recently 2026-09-04: "we are 'better than anyone else'." Not an open flag. Do not re-raise. |
+| 28 | **No em dashes anywhere, including copy he wrote or approved himself.** | 2026-09-04: "just remove the hyphens. it's a sign of AI slop." Applied without asking from now on. Colon where the dash introduced an answer or a restatement, comma where it was an aside, middot in title separators. Both pages are at zero; keep them there. |
+| 29 | **Below 560px the founder cards stack and centre, photo on top, and Omnia comes first.** | 2026-09-04, his call, "ladies first". Side by side the text column fell to about 120px at 360 and clipped both email addresses. Desktop keeps the two-column card and now shows Omnia on the left. |
 
 ### Section names to use with him
 
@@ -127,7 +131,7 @@ Title and meta description, set 2026-08-26:
 
 The old title was "The Wellbeing App — Trade screentime for wellness", the marketplace framing, and there was no description tag at all.
 
-**`investors.html`, 47.6 KB.** Footer-linked, never in the nav. Order: intro, **Why now**, `#research` data, `#moat` (the model), `#investors` funding ask with founder avatar cards. Self-contained: it carries its own copy of the site head and stylesheet, so there is no shared CSS file to keep in sync. No sticky bar, it is not part of the install funnel.
+**`investors.html`, 51.1 KB.** Footer-linked, never in the nav. Its header bar carries the page name: brand left, **`For investors`** centred as a plain `.nav-page` label, CTA right, on a `1fr auto 1fr` grid. Order: hero (h1 "The story behind the app.", the founder story, product screenshot right), **Why now**, `#research` data, `#moat` ("Business model: B2B2C"), `#investors` funding ask with founder avatar cards. Self-contained: it carries its own copy of the site head and stylesheet, so there is no shared CSS file to keep in sync. No sticky bar, it is not part of the install funnel. Full copy pass on 2026-09-04 from the marketing handoff, see the CHANGELOG: every eyebrow and mono capsule on the page is gone, the alpha badge with them, 63 became 66, and the CTA points at `info@`.
 
 ---
 
@@ -135,13 +139,13 @@ The old title was "The Wellbeing App — Trade screentime for wellness", the mar
 
 **Task 1 — adblock CSS stripped.** `index.html` 1,876,271 -> 57,478 bytes (-97%). Twelve injected `<style>` blocks from a browser ad-blocker extension, saved into the file when the page was exported from a browser. The range held zero site content. The missing `</body></html>` was also restored.
 
-**Task 2 — sticky install bar.** `.install-bar` is `display:none` by default and `position:fixed` bottom below 820px, matching the hamburger breakpoint. Full-width `.btn.primary`, `env(safe-area-inset-bottom)` padding for iOS, `body{padding-bottom}` on mobile so it never covers the footer. No JS, so it is visible at every scroll position by construction. Verified at 360px top/mid/bottom and hidden at 1536px. Screenshot: `_review/sticky-bar-360-top-mid-bottom.jpg`.
+**Task 2 — sticky install bar.** `.install-bar` is `display:none` by default and `position:fixed` bottom below 820px, matching the hamburger breakpoint. Full-width `.btn.primary`, `env(safe-area-inset-bottom)` padding for iOS, `body{padding-bottom}` on mobile so it never covers the footer. No JS, so it is visible at every scroll position by construction. Verified at 360px top/mid/bottom and hidden at 1536px. Screenshot: `_archive/sticky-bar-360-top-mid-bottom.jpg`.
 
 **Task 3 — UTM tags.** All four Play links (nav, hero, `#download`, sticky bar) carry the canonical landing-page tag:
 `&referrer=utm_source%3Dweb%26utm_medium%3Dsite`.
 The brief writes `?referrer=...` but `?id=` is already in the URL, so the separator is `&`. The hero's first tag was missing `utm_medium%3Dsite` and was normalized.
 
-**Task 4 — investor content cut.** `#moat` and `#investors` removed from the landing page, and `#research` too until the founder put it back on 2026-08-26, see below. The cut took the page from 58,820 to 52,457 bytes and its height at 360px from 15,194 to 10,025 px. Nav lost "The Win" and "Rewards", both pointing at cut sections. Footer lost the Strategy 2031 line and gained the Investors link. All of it moved into the new `investors.html`, where the empty fifth `value-list` item and the empty `matrix-wrap` were dropped, the moat eyebrow became "The model" instead of "Coming Soon", and the plain `.contacts` list became `.f-card` avatars so the emails appear once instead of twice. Screenshots: `_review/task4-360-landing-and-investors.jpg`, `_review/task4-investors-desktop-founders.jpg`.
+**Task 4 — investor content cut.** `#moat` and `#investors` removed from the landing page, and `#research` too until the founder put it back on 2026-08-26, see below. The cut took the page from 58,820 to 52,457 bytes and its height at 360px from 15,194 to 10,025 px. Nav lost "The Win" and "Rewards", both pointing at cut sections. Footer lost the Strategy 2031 line and gained the Investors link. All of it moved into the new `investors.html`, where the empty fifth `value-list` item and the empty `matrix-wrap` were dropped, the moat eyebrow became "The model" instead of "Coming Soon", and the plain `.contacts` list became `.f-card` avatars so the emails appear once instead of twice. Screenshots: `_archive/task4-360-landing-and-investors.jpg`, `_archive/task4-investors-desktop-founders.jpg`.
 
 **Task 5 — images.** Every image is WebP, built at twice its real display size, with `width`/`height` on the tag and `loading="lazy"` below the fold.
 
@@ -155,13 +159,13 @@ The brief writes `?referrer=...` but `?id=` is already in the URL, so the separa
 | `logo` | 27 KB | **2 KB** | 32 px, the file was 540 px |
 | `anas` / `omnia` | 133 / 59 KB | **5 / 5 KB** | 96 px avatars on `investors.html` |
 
-Landing page images **1,689 KB -> 164 KB (-90%)**. Whole page including HTML **216 KB**, against a brief target of 500 KB. Screenshot: `_review/task5-screens-after-webp.jpg`.
+Landing page images **1,689 KB -> 164 KB (-90%)**. Whole page including HTML **216 KB**, against a brief target of 500 KB. Screenshot: `_archive/task5-screens-after-webp.jpg`.
 
 **`#research` restored, 2026-08-26.** The founder rejected cutting "What the data says": the alpha numbers are the strongest install argument on the page and read as product proof, not investor material. The section is back between the hero and `#problem`, its count-up animation intact, and the nav has a "The data" link again. Page height at 360px went 10,025 -> 11,651 px, which is the cost of keeping it.
 
 The copy inside the section is the founder's and is unchanged. I rewrote seven strings in it on the way back in and was told to revert; all seven are byte-identical to the original again on both pages.
 
-Screenshot: `_review/research-restored-360.jpg`.
+Screenshot: `_archive/research-restored-360.jpg`.
 
 **`#research` heading breaks at the full stop, 2026-08-26.** At desktop width it wrapped as "Screen time isn't the / enemy. The long session / is.", leaving "is." alone. `text-wrap: balance` alone was not enough, the founder wants one line per sentence. Each sentence is now its own `<span class="sentence">` inside the same h2, set to `display:block`, and `#research .section-head` was widened from 760px to 820px because the first sentence needs 806px at the 58px max font size. Wording untouched.
 
@@ -170,7 +174,7 @@ Screen time isn't the enemy.
 The long session is.
 ```
 
-`text-wrap: balance` stays on each sentence so that when one has to wrap on a narrow screen it splits evenly instead of dropping a single word. Two lines hold down to roughly 530px viewport width; below that each sentence takes two balanced lines, which at 360px reads "Screen time / isn't the enemy. / The long / session is." Same change on both pages, since they share the section. Screenshots: `_review/research-heading-two-lines-desktop.jpg`, `_review/research-heading-360.jpg`.
+`text-wrap: balance` stays on each sentence so that when one has to wrap on a narrow screen it splits evenly instead of dropping a single word. Two lines hold down to roughly 530px viewport width; below that each sentence takes two balanced lines, which at 360px reads "Screen time / isn't the enemy. / The long / session is." Same change on both pages, since they share the section. Screenshots: `_archive/research-heading-two-lines-desktop.jpg`, `_archive/research-heading-360.jpg`.
 
 **Task 14 — rewards, points and marketplace off the landing page, 2026-08-26.** `grep -i "reward|marketplace|redemption"` over `index.html` now returns zero content hits.
 
@@ -194,7 +198,7 @@ Also cut: the `and earn rewards*` tail on the `#inside` intro, and `Real rewards
 
 `investors.html` untouched. It keeps the marketplace story by decision 1.
 
-`index.html` 55,983 -> 54,649 bytes. Height at 360px 11,651 -> 11,132 px. Backup: `_review/index.html.pre-task14-2026-08-26.bak`. Screenshots: `_review/task14-solution-3steps-desktop.jpg`, `_review/task14-download-headline-desktop.jpg`, `_review/task14-360-solution-and-download.jpg`.
+`index.html` 55,983 -> 54,649 bytes. Height at 360px 11,651 -> 11,132 px. Backup: `_archive/index.html.pre-task14-2026-08-26.bak`. Screenshots: `_archive/task14-solution-3steps-desktop.jpg`, `_archive/task14-download-headline-desktop.jpg`, `_archive/task14-360-solution-and-download.jpg`.
 
 **Task 11 done, 2026-08-26. The QR follows the visitor, it does not sit in one place.** The brief asked for a QR beside the Play badge in `#download`. The founder asked for more: hero first, then docked to the nav on scroll, then parked under the badge at the end of the page.
 
@@ -218,7 +222,7 @@ Two layout bugs fixed on the way, both the same root cause, a flex row with no `
 1. `.hero-ctas` stretched the 145px-tall QR card onto the pill button and turned it into a circle.
 2. `.cta-block` floated "Join iOS waitlist" down beside the QR instead of beside the badge. Now `flex-start` with a 12px nudge to match the badge midline.
 
-`index.html` 54,116 -> 58,380 bytes. Backup: `_review/index.html.pre-task11-2026-08-26.bak`. Screenshots: `_review/task11-hero-qr.jpg`, `_review/task11-nav-qr-scrolled.jpg`, `_review/task11-download-badge-qr.jpg`, `_review/task11-360-hero-and-download.jpg`.
+`index.html` 54,116 -> 58,380 bytes. Backup: `_archive/index.html.pre-task11-2026-08-26.bak`. Screenshots: `_archive/task11-hero-qr.jpg`, `_archive/task11-nav-qr-scrolled.jpg`, `_archive/task11-download-badge-qr.jpg`, `_archive/task11-360-hero-and-download.jpg`.
 
 The `.coming-soon` CSS was deleted too, four rules, on the founder's call 2026-08-26: "if it's useless it goes". Zero `coming-soon` references left in `index.html`. `investors.html` keeps its own copy, it still uses the footnote.
 
@@ -245,11 +249,11 @@ Wellbeing NEVER sees what is on your screen, what you type, or any phone data.
 
 Markup is a flex row inside `.privacy-note`: the house `.eyebrow` chip with its green dot reading "Privacy", then the two lines. Capsule is `border-radius:100px`, max-width 900px, 900x94 at desktop. Below 880px it stacks and the radius drops to `var(--radius)` 18px, because a 100px radius on a six-line block bulges.
 
-`index.html` 58,380 -> 59,352 bytes, so the whole task cost 972 bytes. Height at 360px 11,132 -> 11,459 px. Backup: `_review/index.html.pre-task7-2026-08-26.bak`. Screenshots: `_review/task7-privacy-note-desktop.jpg`, `_review/task7-privacy-note-360.jpg`.
+`index.html` 58,380 -> 59,352 bytes, so the whole task cost 972 bytes. Height at 360px 11,132 -> 11,459 px. Backup: `_archive/index.html.pre-task7-2026-08-26.bak`. Screenshots: `_archive/task7-privacy-note-desktop.jpg`, `_archive/task7-privacy-note-360.jpg`.
 
 **Typos are now fixed silently, not flagged.** His copy shipped with "Wellbing" and "what you allows it to see", both flagged rather than corrected, per the old rule. His answer: "come on man! fix my typos.. don't make me look stupid!" Mechanical errors get corrected on the way in from now on. Meaning, wording and register are still proposals. This narrows the 2026-08-26 no-silent-copy-edits rule, it does not cancel it.
 
-**Two capsules removed 2026-08-27**, founder's call. The green `.r-badge` "Validated in alpha · 2026" at the top of the `#research` lead panel, and the `.eyebrow` "Get the app" above the `#download` headline. The `#download` h2 lost its `margin-top:22px` with it, that gap only existed to clear the capsule. Both CSS rules stay: `.eyebrow` is now used only by the privacy capsule, `.r-badge` is still used by `investors.html`. `index.html` 59,352 -> 59,185 bytes. Screenshots: `_review/capsules-removed-research.jpg`, `_review/capsules-removed-download.jpg`.
+**Two capsules removed 2026-08-27**, founder's call. The green `.r-badge` "Validated in alpha · 2026" at the top of the `#research` lead panel, and the `.eyebrow` "Get the app" above the `#download` headline. The `#download` h2 lost its `margin-top:22px` with it, that gap only existed to clear the capsule. Both CSS rules stay: `.eyebrow` is now used only by the privacy capsule, `.r-badge` is still used by `investors.html`. `index.html` 59,352 -> 59,185 bytes. Screenshots: `_archive/capsules-removed-research.jpg`, `_archive/capsules-removed-download.jpg`.
 
 ---
 
@@ -319,7 +323,7 @@ Rewritten with the three IDs as named constants at the top of the script and a `
 
 **Still on the founder:** check whether the Play listing links to `delete_my_data/`.
 
-`index.html` 59,185 -> 62,341 bytes. Backups: `_review/index.html.pre-task9-2026-08-27.bak`, `_review/delete_my_data.index.html.pre-task9-2026-08-27.bak`.
+`index.html` 59,185 -> 62,341 bytes. Backups: `_archive/index.html.pre-task9-2026-08-27.bak`, `_archive/delete_my_data.index.html.pre-task9-2026-08-27.bak`.
 
 **Google Forms over Firestore, decided 2026-08-27.** The site is static on GitHub Pages, so writing to Firestore needs the web API key in the page and a publicly writable collection. See the rules finding below. Forms need no key, no rules change and no cost, and the plumbing already existed.
 
@@ -375,7 +379,7 @@ This also settles the forms question above: do not add a second unauthenticated 
 
 **The deployed rules are the file.** The founder pasted his live rules on 2026-08-27 and they diff clean against `firestore.rules` apart from whitespace, so nothing about the finding changes.
 
-**Handed to the dev project, not fixed here.** Prompt at `_review/dev-project-prompt.md`, covering the rules in both stages plus the three marketing claims that depend on the Android repo: the Play listing's Accessibility declaration, `ACCESS_COARSE_LOCATION` against the "never any phone data" line, and the absence of any device-local claim. It also asks for a share control on the weekly report, which is the consent route to a single-user chart for task 10.
+**Handed to the dev project, not fixed here.** Prompt at `_archive/dev-project-prompt.md`, covering the rules in both stages plus the three marketing claims that depend on the Android repo: the Play listing's Accessibility declaration, `ACCESS_COARSE_LOCATION` against the "never any phone data" line, and the absence of any device-local claim. It also asks for a share control on the weekly report, which is the consent route to a single-user chart for task 10.
 
 **Reads cannot be closed from the rules file.** The app signs nobody in, so every request arrives unauthenticated and Firestore cannot tell the app from a stranger. Closing reads needs `signInAnonymously()` at first run plus an `ownerUid` field on the doc, which is an app change and a release. Written up as stage 2 at the bottom of the proposed file. It does not touch decision D1, the doc id stays the device hash.
 
@@ -565,9 +569,9 @@ table.
 
 `index.html` 62,377 -> 66,710 bytes. Height at 360px 11,459 -> 11,221 px, so the page is
 shorter than before the rebuild even with the captions restored. Backup:
-`_review/index.html.pre-demos-2026-08-29.bak`. Harnesses: `_review/harness-demos.html`
+`_archive/index.html.pre-demos-2026-08-29.bak`. Harnesses: `_archive/harness-demos.html`
 (desktop, both sections side by side at 1400px, scaled to fit) and
-`_review/harness-demos-360.html`. Note the observer does not fire inside the harness
+`_archive/harness-demos-360.html`. Note the observer does not fire inside the harness
 iframes, so a harness review has to set `src` from `data-src` by hand.
 
 ### His own idea, not on the brief. Built and approved 2026-08-29
@@ -635,10 +639,10 @@ Small things. None of them block anything. Each one has been raised and none has
 | # | Question | Why it is open |
 |---|---|---|
 | 1 | The privacy capsule says Wellbeing never sees "any phone data", but `ACCESS_COARSE_LOCATION` ships in the app today | Requested at `RewardsFragment.kt:188` for a marketplace that is not live. Either the permission comes out of the app, or the sentence narrows. This is a claim on a live page, not a style point. Raised 2026-08-27, now also in the dev project prompt |
-| 2 | `investors.html` still shows the green "Validated in alpha · 2026" capsule | It was removed from the landing page only. The two pages are supposed to carry an identical WHAT THE DATA SAYS block. Left on purpose for now, since the alpha claim is investor material, but it needs a decision. Raised 2026-08-27 |
+| 2 | ~~`investors.html` still shows the green "Validated in alpha · 2026" capsule~~ | **Closed 2026-09-04.** Deleted by W3 of the marketing copy handoff, along with the WHAT THE DATA SAYS mono label. The two pages carry the same block again. Marketing suggested replacing the badge with a scope line, "From 500+ early installs, 2026."; he said ship without it, so the numbers now carry no date or sample context at all |
 | 3 | Three of the four Play links are still the blue "Get the app" pill | Only the download block uses the official Google Play badge. Google's guidelines want the badge everywhere the page points at Play. Swap all four, or keep the pill above the fold because it looks better on the dark background. Raised 2026-08-26 |
 | 4 | **The dev tweaks panel is shipped live on `digitalwellbeing.xyz` and now controls nothing.** This is the one open question the 2026-08-29 work created an answer for | `aside.wb-tweaks`, "Tweaks / Screens row", a photo-align control and a slider with about 60 lines of JS, sitting between `</main>` and the footer. Found 2026-08-26, not on any task list. It was held open because it "may still be how he nudges the phone row in HOW IT WORKS". **There is no phone row any more:** demo 2 replaced `.screens-row`, so the slider writes `--shift-3rd` and the control writes `data-photoalign` on `<body>` and neither reaches any element. The reason to keep it is gone. Cutting it removes the panel markup, its ~60 lines of JS, and the dead `.screens-row` / `.screen-col` / `.screen-frame` rules. **`.screen-cap` must stay**, `.cap-list` uses it. Needs one word from him: cut, or leave it live |
-| 5 | Em dash in the download block sub copy | "iOS launching soon **—** join the waitlist". His no-em-dash rule says it goes, but it is his sentence, so it stays until he says otherwise. Raised 2026-08-26, he answered about the form instead |
+| 5 | ~~Em dash in the download block sub copy, and two others on `index.html`~~ | **Closed 2026-09-04.** "just remove the hyphens. it's a sign of AI slop." The rule now overrides copy he wrote or approved himself and gets applied without asking, no exceptions. Six removed from `investors.html`, then all three from `index.html` on his instruction. Both pages are at zero. The `#download` line now reads "iOS launching soon: join the waitlist" |
 | 6 | ~~One paragraph in HOW IT WORKS has a hardcoded `width: 730px`~~ | **Closed 2026-08-29.** The paragraph was rewritten into the new two-column HOW IT WORKS and the hardcoded width went with it |
 | 7 | ~~Three caption blocks deleted with the HOW IT WORKS screenshots~~ | **Closed 2026-08-29.** He said bring them back and set them vertical. Done, copy unchanged |
 | 8 | ~~The demo files carry a slate label, "Wellbeing — the stop sign"~~ | **Closed 2026-08-29.** Flagged twice, and he approved both sections as built with it hidden. It stays `display:none` in the `promo/` copies. His originals in the dev repo still show it. |
@@ -661,13 +665,14 @@ Small things. None of them block anything. Each one has been raised and none has
 
 ## How the work gets done
 
-- **All work happens in `index.html` directly.** The preview was signed off and merged on 2026-08-26, and `index-preview.html` was deleted. `_review/harness.html` was rebuilt on 2026-08-26 for the `#research` review and is on disk again. Pre-merge backup: `_review/index.html.pre-merge-2026-08-26.bak`, outside the repo.
-- **`_review/`** at `D:\anas\Work\GW\website\_review\` holds review screenshots and the backup. Outside the git repo, so it never gets committed.
+- **All work happens in `index.html` directly.** The preview was signed off and merged on 2026-08-26, and `index-preview.html` was deleted. `_archive/harness.html` was rebuilt on 2026-08-26 for the `#research` review and is on disk again. Pre-merge backup: `_archive/index.html.pre-merge-2026-08-26.bak`, outside the repo.
+- **`_archive/`** at `D:\anas\Work\GW\website\_archive\` holds anything durable: backups and the screenshots these docs link to. Outside the git repo, so it never gets committed.
+- **`_review/`** at `D:\anas\Work\GW\website\_review\` is scratch only. **Anas clears it after every test.** Nothing that a doc references may live there. He said so on 2026-09-04, after it was emptied with that day's backups and thirteen screenshots still in it. Both backups were rebuilt from `git show HEAD:`; the screenshots for entries before 4/9/2026 are gone and their paths in older entries no longer resolve.
 - Serve the **parent** dir so the site and any review harness share an origin: `python -m http.server 8765` in `D:\anas\Work\GW\website`. The repo's own `run-local-server.bat` uses port 8000.
 
 ### Looking at the page at phone width
 
-`resize_window` cannot do it, Chrome refuses to go below roughly 500px wide. Iframe the page instead, from a harness served on the same origin. Rebuild `_review/harness.html` when needed:
+`resize_window` cannot do it, Chrome refuses to go below roughly 500px wide. Iframe the page instead, from a harness served on the same origin. Rebuild `_archive/harness.html` when needed:
 
 ```html
 <!doctype html><meta charset="utf-8"><title>360 harness</title>

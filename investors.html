@@ -11,7 +11,7 @@
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wellbeing — For investors</title>
+<title>Wellbeing · For investors</title>
 <meta name="description" content="Wellbeing: the data behind the product, the marketplace model, and how to reach the founders.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png" sizes="32x32">
@@ -182,6 +182,18 @@
   @media(max-width: 980px){ .hero-visual{ min-height: 560px; } .float-1{ left: 5%; } .float-2{ right: 5%; } }
 
   .section-head{ max-width: 760px; margin-bottom: 64px; }
+  .hero-split{ display:grid; grid-template-columns: 1fr auto; gap: 56px; align-items:start; margin-top: 0; }
+  @media(max-width: 900px){ .hero-split{ grid-template-columns: 1fr; gap: 34px; } }
+  .hero-shot{ margin:0; border-radius: 28px; overflow:hidden; border:1px solid var(--line); background:#0a0a0d; box-shadow: 0 30px 60px rgba(0,0,0,.5); }
+  .hero-shot img{ width:100%; height:auto; display:block; }
+  /* desktop: the shot matches the height of the text beside it, never overshoots it */
+  @media(min-width: 901px){ .hero-shot img{ height: 485px; width:auto; } }
+  @media(max-width: 900px){ .hero-split{ grid-template-columns: 1fr; } .hero-shot{ max-width: 300px; } }
+  .hero-story{ max-width: 700px; margin-top: 20px; }
+  .hero-story p{ font-size: 18px; line-height: 1.65; color: var(--ink-2); margin: 0 0 16px; }
+  .hero-story p:last-child{ margin-bottom: 0; }
+  .hero-story a{ color: var(--ink-1); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  .hero-story a:hover{ color: #5b6dff; }
   .section-head h2{ margin-top: 18px; }
   .section-head p{ margin-top: 20px; font-size: 18px; max-width: 640px; }
 
@@ -604,6 +616,47 @@
   #investors .f-card br{ display:none; }
   #investors .founders-grid{ margin-top:44px; text-align:left; }
 
+  /* the header carries the page name, optically centred between the brand and the CTA.
+     A three column grid centres it on the bar; space-between would hang it off centre,
+     because the brand and the button are not the same width */
+  header.nav .row{ display:grid; grid-template-columns: 1fr auto 1fr; gap: 16px; }
+  header.nav .row .brand{ justify-self: start; }
+  header.nav .row > .btn{ justify-self: end; }
+  .nav-page{
+    font-family:'Comfortaa', sans-serif; font-weight:600; font-size:15px;
+    color: var(--ink-2); letter-spacing:.01em; white-space:nowrap;
+  }
+  @media(max-width: 560px){
+    header.nav .row{ gap: 12px; }
+    .nav-page{ font-size:13px; }
+    /* three items in a 345px bar: the CTA must not wrap, or it stacks four lines deep */
+    header.nav .row > .btn{ white-space:nowrap; padding:10px 14px; font-size:13px; }
+  }
+
+  /* the story heading is the page h1 now, set at section title size */
+  .hero-title{ margin-top:0; font-size: clamp(34px, 4.4vw, 58px); line-height:1.05; letter-spacing:-.02em; }
+
+  /* value-list: below 600px the number sits above the text instead of beside it,
+     the two-column grid left the copy about 155px wide */
+  @media(max-width: 600px){
+    .value-list li{ grid-template-columns: 1fr; gap: 10px; padding: 28px 24px; }
+    .v-num{ padding-top: 0; }
+  }
+
+  /* founder cards: below 560px the photo goes on top and the card centres.
+     Side by side, the text column fell under 240px and clipped both emails */
+  @media(max-width: 560px){
+    #investors .f-card{
+      grid-template-columns: 1fr;
+      justify-items: center;
+      text-align: center;
+      gap: 18px;
+      padding: 28px 20px;
+    }
+    #investors .f-card .role{ margin-bottom: 8px; }
+    #investors .f-card a{ overflow-wrap: anywhere; }
+  }
+
   /* ===== #research heading: one line per sentence ===== */
   #research .section-head{ max-width: 820px; }
   #research .section-head h2 .sentence{ display:block; text-wrap: balance; }
@@ -618,38 +671,48 @@
       <img src="assets/logo.webp" alt="Wellbeing logo" width="32" height="32">
       <span class="name">Wellbeing</span>
     </a>
+    <span class="name">For investors</span>
     <a class="btn" href="index.html">Back to the site</a>
   </div>
 </header>
 
 <main id="top">
 
-<section class="wrap" style="padding: 72px 0 8px;">
-  <span class="eyebrow"><span class="dot" style="background:#5b6dff; box-shadow:0 0 10px #5b6dff;"></span>For investors</span>
-  <h1 style="margin-top:22px; font-size: clamp(34px, 5vw, 62px); line-height:1.05; letter-spacing:-.02em;">The case behind the app.</h1>
-  <p class="sub" style="max-width:620px; margin-top:18px;">What our alpha data shows, why the timing is what it is, and how the app pays for itself.</p>
+<section class="wrap" style="padding: 56px 28px 88px;">
+  <div class="hero-split">
+    <div>
+  <h1 class="hero-title">The story behind the app.</h1>
+  <div class="hero-story">
+    <p>I noticed my son got irritated after some gaming sessions. I wanted to help, so I made a mood-meter board and started logging his sessions by hand. Every game: the name, how he felt before, how he felt after. We ended up with a couple of candidates causing the irritation.</p>
+    <p>The magnificent thing is that my son learned the lesson by himself. Any game that annoyed him, he stopped playing, or he limited the session when he had to play it with friends.</p>
+    <p>Later I took this further with Omnia, my co-founder. The method worked against doomscrolling and screen dependency in general.</p>
+    <p>We built the app and tested it on family, friends, and friends of friends. 500+ downloads on Google Play, with no marketing spend. They <a href="#research">cut their screen time by <strong>66%</strong></a>.</p>
+  </div>
+    </div>
+    <figure class="hero-shot">
+      <img src="assets/hero-overlay-phone.webp" alt="The Wellbeing overlay on a phone home screen, reading You are doing great." width="600" height="1287" loading="eager" decoding="async">
+    </figure>
+  </div>
 </section>
 
 <div class="wrap">
   <div class="divider"></div>
 </div>
 
-<section id="why-now" class="wrap" style="padding: 8px 0 72px;">
+<section id="why-now" class="wrap" style="padding: 88px 28px 88px;">
   <div class="section-head" style="margin-bottom:34px;">
-    <span class="mono">WHY NOW</span>
-    <h2 style="margin-top:18px;">The market moved before we did.</h2>
+    <h2 style="margin-top:0;">Why now</h2>
   </div>
   <div class="research-grid">
     <div class="r-panel">
-      <h4 style="font-size:16px; font-weight:600; margin-bottom:10px;">Money is pointing at wellbeing</h4>
-      <p style="font-size:15px; color:var(--ink-2); line-height:1.6;">The UAE published a National Wellbeing Strategy 2031, and wellbeing became a line item across health, education and workplace budgets in the region. We are not part of that strategy and we do not claim to be. We read it as timing: buyers, partners and press in this market are already primed for the category.</p>
+      <h4 style="font-size:16px; font-weight:600; margin-bottom:10px;">Demand and growth</h4>
+      <p style="font-size:15px; color:var(--ink-2); line-height:1.6;">The global wellness apps market is growing 14.9% a year and is forecast to reach $26.2 billion by 2030. The average employee wastes 12% of their working hours daily on social media.</p>
     </div>
     <div class="r-panel">
-      <h4 style="font-size:16px; font-weight:600; margin-bottom:10px;">The belief is already there</h4>
-      <p style="font-size:15px; color:var(--ink-2); line-height:1.6;">Every phone now ships a screen time dashboard, and people already suspect the scroll costs them something. Nobody has to be convinced any more. What is missing is the instrument that names which app, and when, instead of handing them a weekly total they cannot act on.</p>
+      <h4 style="font-size:16px; font-weight:600; margin-bottom:10px;">Awareness and behaviour shift</h4>
+      <p style="font-size:15px; color:var(--ink-2); line-height:1.6;">Average total screentime has reached 6h45m a day, and UAE residents average 2h58m a day on social media alone against a global average of 2h21m. 69% of US adults under 30 say they want to cut it. Governments moved first: the UAE and Saudi Arabia both run digital wellbeing initiatives.</p>
     </div>
   </div>
-  <div class="r-foot" style="margin-top:22px; text-align:left;">TIMING, NOT ENDORSEMENT</div>
 </section>
 
 <div class="wrap">
@@ -658,14 +721,12 @@
 <section id="research" class="research">
   <div class="wrap">
     <div class="section-head" style="margin-bottom:40px;">
-      <span class="mono">WHAT THE DATA SAYS</span>
-      <h2 style="margin-top:18px;"><span class="sentence">Screen time isn't the enemy.</span> <span class="sentence">The long session is.</span></h2>
+      <h2 style="margin-top:0;"><span class="sentence">Screen time isn't the enemy.</span> <span class="sentence">The long session is.</span></h2>
     </div>
     <div class="research-grid">
       <div class="r-panel r-lead">
-        <span class="r-badge"><i></i>Validated in alpha · 2026</span>
         <div class="r-sub">We helped users reduce doomscrolling down with</div>
-        <div class="r-big"><span class="count" data-to="63">63</span><span>%</span></div>
+        <div class="r-big"><span class="count" data-to="66">66</span><span>%</span></div>
         <div class="r-swap"><em>6.4 hrs</em> → <b>2.2 hrs</b><small>avg per day, on social media and short-form video</small></div>
         <div class="r-gain">4.2 hours handed back. Every day.</div>
         <div class="r-close">
@@ -704,12 +765,10 @@
 </div>
 <section id="moat">
   <div class="wrap">
-    <div style="text-align:center;"><span class="eyebrow"><span class="dot" style="background:#5b6dff; box-shadow:0 0 10px #5b6dff;"></span>The model</span></div>
     <div class="moat-hero">
       <div class="section-head" style="max-width: 620px; margin-bottom: 0;">
-        <span class="mono">WIN WIN SITUATION</span>
-        <h2 style="margin-top: 18px;">Leave the phone. Take the reward.*</h2>
-        <p style="margin-top: 22px;">Replace old digital habits, don't just block apps.</p>
+        <h2 style="margin-top: 0;">Business model: B2B2C</h2>
+        <p style="margin-top: 22px;">Leave the phone. Take the reward.*</p>
       </div>
       <div class="moat-gif">
         <img src="assets/firstrun_hero.gif" alt="Leave the mobile. Take the reward." width="320" height="183" loading="lazy" decoding="async">
@@ -720,31 +779,29 @@
       <li>
         <div class="v-num">01</div>
         <div>
-          <h4>We catch you at the right moment</h4>
-          <p>We let you discover your feelings. We help you stop unlimited scrolling while you feel refreshed and clear.</p>
+          <h4>We build resilience</h4>
+          <p>We teach users to cut screen time by showing them what screen time does to their mood. We never block an app.</p>
         </div>
       </li>
       <li>
         <div class="v-num">02</div>
         <div>
-          <h4>Reward you with offers you need.</h4>
-          <p>Every minute you save becomes points you can spend on a yoga class, a spa visit, a therapy session, a gym day pass.&nbsp;
-Real wellness.</p>
+          <h4>We keep users attached</h4>
+          <p>Time saved becomes points. Points become offers and discounts at real places. It costs the user nothing to keep the app. The points bank is live today; the marketplace where they get spent is what this round builds.</p>
         </div>
       </li>
       <li>
         <div class="v-num">03</div>
         <div>
-          <h4>Replace the habit with a better one.</h4>
-          <p>Bad digital habits need to be replaced with healthier habits.&nbsp;
-We don't block your screen, we help you change the habit.</p>
+          <h4>We fix a problem for small businesses</h4>
+          <p>Gyms, studios and spas get customers who already want to do something off screen and have already worked for their points. The merchant pays no ad spend to reach them: a fixed commission, and only after the customer walks in.</p>
         </div>
       </li>
       <li>
         <div class="v-num">04</div>
         <div>
-          <h4>It costs you nothing to use</h4>
-          <p>Free to download, free to earn, free to redeem. The wellness brands you visit are the ones who pay us, and only after you actually show up.</p>
+          <h4>We know the risks, and each one has an answer</h4>
+          <p>Users churn once the habit is fixed: the points balance is a reason to stay that outlives the fix. Users refuse subscriptions: we never ask for one. The operating systems ship their own screen-time tools: they report a weekly total. They never ask how you feel, and they never pay you.</p>
         </div>
       </li>
     </ul>
@@ -758,16 +815,24 @@ We don't block your screen, we help you change the habit.</p>
 <section id="investors" class="cta-section">
   <div class="wrap">
     <div style="margin-top: 0; padding-top: 0;">
-      <span class="eyebrow"><span class="dot" style="background:#5b6dff; box-shadow:0 0 10px #5b6dff;"></span>For investors</span>
-      <h2 style="margin-top: 22px; font-size: clamp(28px, 3.4vw, 44px);">We are seeking funding</h2>
-      <p class="sub" style="">Deck and financial model available on request.&nbsp;</p><div>We reply within 24 hours.</div><p></p>
+      <h2 style="margin-top: 0; font-size: clamp(28px, 3.4vw, 44px);">We are open for our pre-seed round.</h2>
+      <p class="sub">Deck and financial model on request.</p>
       <div class="cta-block">
-        <a class="btn primary" href="mailto:anas@digitalwellbeingapp.com?subject=Investor%20intro" style="">Talk to the founders <span class="arrow">→</span></a>
+        <a class="btn primary" href="mailto:info@digitalwellbeingapp.com?subject=Investor%20intro">Talk to the founders <span class="arrow">→</span></a>
         <a class="btn" href="index.html">Back to the site</a>
       </div>
     </div>
 
     <div class="founders-grid">
+      <div class="f-card">
+        <div class="avatar o"><img src="assets/omnia.webp" alt="Omnia Salah" loading="lazy" decoding="async" width="192" height="192"></div>
+        <div>
+          <div class="role">Co-founder</div>
+          <div class="name">Omnia Salah</div>
+          <a href="mailto:omnia@digitalwellbeingapp.com">omnia@digitalwellbeingapp.com</a><br>
+          <a href="tel:+971553731708">+971 55 373 1708</a>
+        </div>
+      </div>
       <div class="f-card">
         <div class="avatar a"><img src="assets/anas.webp" alt="Anas Alsehly" loading="lazy" decoding="async" width="192" height="192"></div>
         <div>
@@ -775,15 +840,6 @@ We don't block your screen, we help you change the habit.</p>
           <div class="name">Anas Alsehly</div>
           <a href="mailto:anas@digitalwellbeingapp.com">anas@digitalwellbeingapp.com</a><br>
           <a href="tel:+971554330923">+971 55 433 0923</a>
-        </div>
-      </div>
-      <div class="f-card">
-        <div class="avatar o"><img src="assets/omnia.webp" alt="Omnia Salah" loading="lazy" decoding="async" width="192" height="192"></div>
-        <div>
-          <div class="role">Co-founder · Community</div>
-          <div class="name">Omnia Salah</div>
-          <a href="mailto:omnia@digitalwellbeingapp.com">omnia@digitalwellbeingapp.com</a><br>
-          <a href="tel:+971553731708">+971 55 373 1708</a>
         </div>
       </div>
     </div>
