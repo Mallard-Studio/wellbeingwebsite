@@ -84,13 +84,16 @@
   }
 
   section{ padding: 88px 0 96px; }
-  .intro{ max-width: 760px; }
+
+  /* The page is one centred column: the hero and the form panel share a max-width
+     so their left edges line up, and both are centred on the page. */
+  .intro{ max-width: 860px; margin: 0 auto; }
   .intro h1{ margin-bottom: 22px; }
-  .intro .lead{ font-size: clamp(17px, 2vw, 20px); }
+  .intro .lead{ font-size: clamp(17px, 2vw, 20px); max-width: 700px; }
 
   /* Sign-up form */
   .signup{
-    margin-top: 52px; max-width: 860px;
+    margin: 52px auto 0; max-width: 860px;
     border:1px solid var(--line); border-radius: var(--radius);
     background: var(--panel); padding: 40px;
     box-shadow: 0 30px 60px rgba(0,0,0,.5);
@@ -183,9 +186,11 @@
 
 <main>
   <section>
-    <div class="wrap intro">
-      <h1>For merchants and freelancers</h1>
-      <p class="lead">The Wellbeing marketplace opens soon, and we are signing up merchants and freelancers now.</p>
+    <div class="wrap">
+      <div class="intro">
+        <h1>For merchants and freelancers</h1>
+        <p class="lead">The Wellbeing marketplace opens soon, and we are signing up merchants and freelancers now.</p>
+      </div>
     </div>
 
     <div class="wrap">
