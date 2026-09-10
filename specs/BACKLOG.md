@@ -22,7 +22,7 @@ Three different footer treatments ship today, and the two that look alike carry 
 | `eula.html` | No `<footer>` at all. A single "← Back to home" link |
 | `delete_my_data/index.html` | No `<footer>` at all. A single "← Back to home" link |
 | `axis-checkin/index.html` | Neither. No footer, no back link. URL-only page by design |
-| `emotions-grid/index.html` | Neither. No footer, no back link. URL-only page by design, added 2026-09-10 |
+| `moodmeter/index.html` | Neither. No footer, no back link. URL-only page by design, added 2026-09-10 |
 
 Consequences worth naming:
 
