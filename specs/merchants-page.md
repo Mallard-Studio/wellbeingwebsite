@@ -90,6 +90,24 @@ One real submission through the page, business name "TEST please delete", landed
 
 ---
 
+## The Arabic version
+
+**Location:** `ar/merchants/index.html`. **URL:** `https://digitalwellbeing.xyz/ar/merchants/`. Built 2026-09-10.
+
+Linked from the Arabic landing footer as `الشركاء`. `lang="ar" dir="rtl"`, Cairo, an EN switch in the header pointing back at `/merchants/`, and `hreflang` pairs on both files. The English `merchants/index.html` gained its three return tags on 2026-09-10; a one-way annotation is ignored, both sides have to declare the same set.
+
+**It posts into the same Google Form.** Every POST name, the action URL, `fvv`, `pageHistory`, the hidden iframe and the 15 second timeout are the English file's, unchanged. The build asserts each one and will not write the file if any is missing. Only labels, placeholders, hints and the three script strings are Arabic.
+
+**Verified end to end 2026-09-10, on his instruction.** Two submissions went through the Arabic page, `TEST AR please delete` and `TEST AR 2 please delete`, both with `anasmatic@gmail.com`, the phone left empty and the location prefilled in Arabic. The second one was repeated only because network tracking was not armed for the first, and the success panel is not proof: the iframe fires `load` on Google's 404 too. **The proof is the POST itself, `200` on `formResponse`.** A wrong `entry.` id answers `400`. **Both rows need deleting**, see backlog item 2.
+
+The `?city=` prefill works here too, checked with a percent encoded Arabic city. The Android app can point at either URL.
+
+**Two things to know before reading the responses.** Arabic and English sign-ups land in the same sheet with nothing marking which page they came from, and the sheet's column headers stay English while the answers may arrive in Arabic.
+
+Copy is a first draft and is not approved.
+
+---
+
 ## How this sits with the v2 landing page decisions
 
 Decisions 1 and 9 in `v2-landing-page.md` keep all marketplace language off `index.html`. This page does not change that:

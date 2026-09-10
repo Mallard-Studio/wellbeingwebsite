@@ -88,6 +88,25 @@ All approved by him the same day, in one pass, after seeing the screenshots.
 | 34 | **No `.eyebrow` capsule anywhere on the site, ever.** The bordered pill with the mono uppercase label and the green dot. | 2026-09-05, "remove the stupid capsule and never use it again". This is the third time it has been removed: the landing hero, the investors hero, then the merchants hero. The rule is site wide and covers new pages, so use a plain `.mono` line or no label at all. One survives at `index.html:1015`, the `Privacy` label in the disclaimer block from task 7, left alone because it is his own approved copy; see backlog item 5. |
 | 35 | **The merchants page is `/merchants` on the `.xyz`, not a subdomain, and its form is native HTML, not a Google embed.** | 2026-09-05. `merchants.digitalwellbeingapp.com` is already the dev team's Firebase portal, `merchants.digitalwellbeing.xyz` does not resolve, and GitHub Pages serves one custom domain per repo. The embed was rejected on style. Full reasoning in `specs/merchants-page.md`. |
 
+### 2026-09-09
+
+The Arabic version. All four are his, answered in one pass.
+
+| # | Decision | Why |
+|---|---|---|
+| 36 | **The Arabic version covers the landing page and the merchants page. `investors.html` is excluded.** | His scope call. Investor material is not what an Arabic visitor came for, and the page is the one place the marketplace and SME story lives, so translating it would double the surface that has to stay in sync for the smallest audience. |
+| 37 | **He approves the Arabic copy line by line. Nothing ships unapproved.** | Same rule as the English copy, decision 7 and the no-silent-copy-edits rule. Translation is a bigger move than a wording change, so it gets the stricter half of the rule, not the looser one. |
+| 38 | **The hero exit sign keeps its English text.** `assets/exit-sign-1148.webp` has "Keep Doomscrolling / Real Wellbeing" painted into the sign and there is no PSD in the repo. | 2026-09-09, "ignore blocker #2". Flagged before building that the Arabic hero would read half English, and he took it. Reversible: it is one image swap plus an `alt` string. |
+| 39 | **The Play listing has Arabic, so every Play link on the Arabic page carries `&hl=ar`.** | His confirmation. The canonical UTMs are copied unchanged per the marketing links file; `hl` is appended, not retyped, and nothing else about the links moved. |
+
+### 2026-09-10
+
+| # | Decision | Why |
+|---|---|---|
+| 40 | **Cairo is the Arabic face.** | 2026-09-09, his pick from the fifteen in the font panel. The panel stays in the page, gated to `?fonts=1` and localhost, so changing it later is one click and not a rebuild. |
+| 41 | **The Arabic hero is أنت / تحتاج / إشارة خروج, and إشارة replaces لافتة everywhere on the page.** | 2026-09-10, his rewrite. Decision 5 locks the English hero only; this is the Arabic line and it is his to set. |
+| 42 | **The Arabic solution heading names the product: "تطبيق يعطيك إشارة خروج قبل أن ينقلب وقت الشاشة عليك."** | 2026-09-10, his wording. It goes further than the English h2, which does not say "app" at all. Recorded because the two pages now differ in more than language at that one heading. |
+
 ### Section names to use with him
 
 | HTML id | Say this |
@@ -139,6 +158,8 @@ The old title was "The Wellbeing App — Trade screentime for wellness", the mar
 
 **`investors.html`, 49.8 KB.** Footer-linked, never in the nav. Its header bar carries the page name: brand left, **`For investors`** centred as a plain `.nav-page` label, CTA right, on a `1fr auto 1fr` grid. Order: hero (h1 "The story behind the app.", the founder story, product screenshot right), **Why now**, `#research` data, `#moat` ("Business model: B2B2C"), `#investors` funding ask with founder avatar cards. Self-contained: it carries its own copy of the site head and stylesheet, so there is no shared CSS file to keep in sync. No sticky bar, it is not part of the install funnel. Full copy pass on 2026-09-04 from the marketing handoff, see the CHANGELOG: every eyebrow and mono capsule on the page is gone, the alpha badge with them, 63 became 66, and the CTA points at `info@`.
 
+
+**`ar/index.html`, 73.8 KB.** Built 2026-09-09. The Arabic landing page, `lang="ar" dir="rtl"`, self-contained the same way `investors.html` is. Same sections, same layout, same images. Everything Arabic-specific lives in one appended `<style>` block at the end of the head: the face swap, letter-spacing off, raised line heights, and nine mirrored offsets. **Body copy approved 2026-09-10, face is Cairo.** What he did not restate is still draft: the nav, the research numbers and findings, the problem stat labels, the privacy note, the footer, the buttons and the QR captions. A font debug panel ships with it, fifteen Arabic families in a dropdown that swaps the face live, gated to `?fonts=1`, localhost and `file://` so a visitor never sees it. Reach it at `/ar/?fonts=1`. `hreflang` is done: all four pages, English and Arabic, carry the same `en`/`ar`/`x-default` set for their pair, so `index.html` and `merchants/index.html` each gained three `<link>` tags. Still open: both phone demos are still the English `promo/` files, and the Play badge image is English. The Arabic partners page is built, `ar/merchants/index.html`, see `specs/merchants-page.md`.
 
 **`merchants/index.html`, 13.7 KB.** Built 2026-09-05, footer-linked from `index.html` as **Partners**, never in the nav. Marketplace sign-up for merchants and freelancers: one line of copy, then a native HTML form in the site's dark style that POSTs into the existing Google Form. It is not an embed, and it is not on a subdomain. **Full spec, field names, the prefill contract with the Android app and the reasons behind all of it: `specs/merchants-page.md`. Read that before touching the form.** Two things it changes for this page: the `index.html` footer gained a link, and the `.eyebrow` capsule is now banned site wide, which is decision 34 below. It does not touch decisions 1 and 9: the label is "Partners", not "Marketplace", and no marketplace language reaches `index.html` itself.
 

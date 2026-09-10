@@ -22,6 +22,7 @@ Three different footer treatments ship today, and the two that look alike carry 
 | `eula.html` | No `<footer>` at all. A single "← Back to home" link |
 | `delete_my_data/index.html` | No `<footer>` at all. A single "← Back to home" link |
 | `axis-checkin/index.html` | Neither. No footer, no back link. URL-only page by design |
+| `emotions-grid/index.html` | Neither. No footer, no back link. URL-only page by design, added 2026-09-10 |
 
 Consequences worth naming:
 
@@ -42,6 +43,8 @@ Consequences worth naming:
 The merchants form was verified with one real submission, business name **"TEST please delete"**, contact name "Claude Code test", activity "ignore this row", location "Abu Dhabi, UAE", email `anasmatic@gmail.com`. It is response 1 in the form and it also fired a notification email.
 
 It was submitted on purpose: the hidden iframe reports success on Google's 404 too, so field names cannot be verified any other way. See `merchants-page.md`.
+
+**Two more rows added 2026-09-10**, testing the Arabic page on his instruction: **"TEST AR please delete"** and **"TEST AR 2 please delete"**, both `anasmatic@gmail.com`, contact "Claude Code AR test", activity "تجاهل هذا الصف", location "أبوظبي، الإمارات", phone empty. The second exists only because network tracking was not armed for the first, and the success panel alone proves nothing. **Three test rows to delete now, not one.**
 
 ---
 
