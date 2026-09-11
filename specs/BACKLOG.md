@@ -83,3 +83,36 @@ The standing rule is no capsule anywhere on the site, ever. One survives at `ind
 **Raised 2026-09-05. Open.**
 
 Responses > Get email notifications for new responses is on, and it notifies the form owner, `anasmatic@gmail.com`, and nobody else. If sign-ups should reach anyone else on the team, the form needs collaborators added, or a linked Sheet with its own notification rule.
+
+---
+
+## 7. The mood meter page has no backend until the function is deployed
+
+**Raised 2026-09-10 by the work itself. Open. Needs Anas, not code.**
+
+`moodmeter/index.html` posts to `https://us-central1-gwapp-30e03.cloudfunctions.net/submitMoodBasics`, which does not exist yet. The source is written and wired in, `functions/moodmeter.js` plus one line in `functions/index.js` in the Android repo, but nothing has been deployed. Until it is, every visitor who fills the board gets "That did not send. Check your connection and try again."
+
+```
+cd D:\anas\Work\GW\dev\gamerswellbeing
+firebase deploy --only functions:submitMoodBasics
+```
+
+No `firestore.rules` change is needed or wanted; the two new collections are covered by the deny-all fallback and the function reaches them with the Admin SDK. Full detail in `moodmeter-page.md`.
+
+**Also undecided:** whether to set a real `MOODMETER_IP_SALT` secret before the first real submission. The code falls back to a salt written in plain sight in the source, which is fine against casual abuse and useless against anyone reading the repo. Changing it later resets every quota row.
+
+---
+
+## 8. `/moodmeter/` now collects submissions while unlinked and indexable
+
+**Raised 2026-09-10, sharpened 2026-09-11. Open. Needs one decision from Anas.**
+
+Backlog item raised at the same time as entry (5) in the changelog, and the rebuild makes it matter more. When the page was a read-only grid, being unlinked and not `noindex` meant a crawler might index a developer page. It now asks strangers for 36 answers and tells them the data may be shared publicly.
+
+Three things are all still true and each is a separate call:
+
+- **Nothing links to it.** The URL is the only route in, which is deliberate, the same rule as `axis-checkin`.
+- **It is not `noindex`.** Unlinked is not unindexed. One meta tag closes it if the page is meant to stay quiet.
+- **The `.com` cannot reach it.** Porkbun strips the path, the same cause as item 3.
+
+The page also has no footer and no route back to the site except the link inside the sent panel, which is listed in item 1.

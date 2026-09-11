@@ -3,116 +3,699 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Emotions grid — all 144, basics uncoloured</title>
+<title>Pick your 36 feelings</title>
+<meta name="description" content="The mood meter holds 144 feelings. Choose the nine in each colour you would actually use.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&family=Young+Serif&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#141218; --ink:#f2eef7; --muted:#9d94ad; --line:#2c2833; }
+  :root{
+    --bg:          oklch(0.15 0.015 300);
+    --bg-lift:     oklch(0.19 0.016 300);
+    --surface:     oklch(0.22 0.016 300);
+    --line:        oklch(0.34 0.016 300);
+    --line-soft:   oklch(0.28 0.014 300);
+    --ink:         oklch(0.96 0.008 85);
+    --ink-2:       oklch(0.79 0.012 300);
+    --ink-3:       oklch(0.61 0.014 300);
+
+    --red:         oklch(77.124% 0.12028 23.905);
+    --red-ink:     oklch(61.129% 0.24784 28.954);
+    --yellow:      oklch(85.961% 0.16344 90.256);
+    --yellow-ink:  oklch(70.027% 0.13845 109.515);
+    --blue:        oklch(62.448% 0.19639 269.544);
+    --blue-ink:    oklch(36.135% 0.21038 265.907);
+    --green:       oklch(79.284% 0.22547 145.429);
+    --green-ink:   oklch(48.231% 0.15577 144.136);
+
+    --s-xs: 4px; --s-sm: 8px; --s-md: 12px; --s-lg: 16px;
+    --s-xl: 24px; --s-2xl: 32px; --s-3xl: 48px; --s-4xl: 64px;
+
+    --r-sm: 6px; --r-md: 10px; --r-lg: 18px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);
-       font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;padding:20px}
-  h1{font-size:18px;margin:0 0 4px}
-  p.sub{margin:0 0 16px;color:var(--muted)}
-  .bar{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
-  button{background:#2a2532;color:var(--ink);border:1px solid var(--line);
-         border-radius:8px;padding:7px 12px;cursor:pointer;font:inherit}
-  button:hover{background:#332d3d}
-  .counts{color:var(--muted)}
-  .counts b{color:var(--ink);font-weight:600}
-  .wrap{overflow:auto;padding-bottom:8px}
-  table{border-collapse:collapse}
-  td,th{padding:0}
-  th{color:var(--muted);font-weight:500;font-size:11px;text-align:center;padding:3px}
-  th.rowh{text-align:right;padding-right:7px}
-  .cell{width:96px;height:62px;border:1px solid var(--line);border-radius:8px;
-        margin:2px;display:flex;flex-direction:column;align-items:center;
-        justify-content:center;gap:2px;overflow:hidden}
-  .cell .em{font-size:17px;line-height:1}
-  .cell .nm{font-size:10.5px;text-align:center;padding:0 3px;
-            overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:92px}
-  .basic{background:transparent!important;color:#6d6478;border-style:dashed}
-  .seam-x{border-left:2px solid #4a4356}
-  .seam-y{border-top:2px solid #4a4356}
-  .legend{margin-top:16px;color:var(--muted);font-size:12.5px}
-  .legend span{display:inline-block;margin-right:14px}
-  .sw{display:inline-block;width:11px;height:11px;border-radius:3px;
-      vertical-align:-1px;margin-right:5px;border:1px solid var(--line)}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Comfortaa', system-ui, sans-serif;
+    font-weight:400; font-size:15px; line-height:1.65;
+    padding: clamp(20px, 4vw, 56px) clamp(16px, 4vw, 40px) 150px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .shell{max-width:1180px; margin:0 auto}
+
+  /* ---- masthead ---- */
+  .mast{
+    display:grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 0 clamp(28px, 5vw, 72px); align-items:end;
+    margin-bottom: clamp(28px, 5vw, 48px);
+  }
+  h1{
+    font-family:'Young Serif', Georgia, serif; font-weight:400;
+    font-size: clamp(30px, 5.6vw, 54px); line-height:1.04;
+    letter-spacing:-.015em; margin:0; color:var(--ink);
+  }
+  .ask{
+    margin:0 0 6px; color:var(--ink-2); line-height:1.7;
+    font-size: clamp(15px, 1.5vw, 17px); max-width:46ch;
+  }
+  .ask b{color:var(--ink); font-weight:600}
+  .notice{
+    grid-column:1 / -1; display:flex; gap:9px; align-items:flex-start;
+    margin: clamp(22px, 3.5vw, 34px) 0 0; padding-top:var(--s-lg);
+    border-top:1px solid var(--line-soft);
+    color:var(--ink-3); font-size:12.5px; line-height:1.6;
+  }
+  .notice .ico{flex:none; font-size:13px; line-height:1.55}
+  .notice p{margin:0; max-width:92ch}
+
+  /* ---- zone tabs (small screens) ---- */
+  .tabs{display:none; grid-template-columns:1fr 1fr; gap:var(--s-sm); margin-bottom: var(--s-xl)}
+  .tab{
+    min-width:0; display:flex; align-items:center; gap:var(--s-sm);
+    padding:10px var(--s-md); background:var(--bg-lift); color:var(--ink-2);
+    border:1px solid var(--line-soft); border-radius:var(--r-md);
+    font:inherit; font-size:11px; cursor:pointer; text-align:left;
+    transition: background .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease);
+  }
+  .tab .dot{width:8px; height:8px; border-radius:50%; background:var(--zc); flex:none}
+  .tab .tally{font-family:'Young Serif', serif; font-size:15px; color:var(--ink); flex:none}
+  .tab .lbl{flex:1; min-width:0; text-align:left; line-height:1.3}
+  .tab[data-c="red"]{--zc:var(--red)}
+  .tab[data-c="yellow"]{--zc:var(--yellow)}
+  .tab[data-c="blue"]{--zc:var(--blue)}
+  .tab[data-c="green"]{--zc:var(--green)}
+  .tab[aria-selected="true"]{background:var(--surface); border-color:var(--zc); color:var(--ink)}
+  .tab.done .tally, .tab.done .tally .now{color:var(--zc)}
+
+  /* ---- board ---- */
+  .board{
+    display:grid; grid-template-columns:1fr 1fr;
+    gap: clamp(18px, 2.4vw, 34px);
+  }
+  .zone{--zc:var(--ink-3); --zi:var(--bg); min-width:0}
+  .zone[data-c="red"]{--zc:var(--red);    --zi:var(--red-ink)}
+  .zone[data-c="yellow"]{--zc:var(--yellow); --zi:var(--yellow-ink)}
+  .zone[data-c="blue"]{--zc:var(--blue);   --zi:var(--blue-ink)}
+  .zone[data-c="green"]{--zc:var(--green); --zi:var(--green-ink)}
+
+  .zone-head{
+    display:flex; align-items:baseline; gap:var(--s-md);
+    padding-bottom:var(--s-sm); margin-bottom:var(--s-md);
+    border-bottom:1px solid var(--line-soft);
+    transition:border-color .3s var(--ease);
+  }
+  .zone.full .zone-head{border-bottom-color:var(--zc)}
+  .zone-name{
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    font-weight:600; color:var(--ink-2); margin:0; flex:1; min-width:0;
+  }
+  .zone-name::before{
+    content:""; display:inline-block; width:8px; height:8px; border-radius:50%;
+    background:var(--zc); margin-right:9px; vertical-align:1px;
+  }
+  .tally{
+    font-family:'Young Serif', Georgia, serif; font-size:19px; line-height:1;
+    color:var(--ink-3); white-space:nowrap; transition:color .3s var(--ease);
+  }
+  .tally .now{color:var(--ink)}
+  .zone.full .tally, .zone.full .tally .now{color:var(--zc)}
+  .tally.bump{animation:bump .4s var(--ease)}
+  @keyframes bump{0%{transform:none}30%{transform:translateX(-4px)}60%{transform:translateX(3px)}100%{transform:none}}
+  .clear{
+    background:none; border:0; padding:0 0 0 2px; font:inherit; font-size:11.5px;
+    color:var(--ink-3); cursor:pointer; text-decoration:underline;
+    text-underline-offset:3px; text-decoration-color:var(--line);
+    opacity:0; pointer-events:none; transition:opacity .2s var(--ease), color .2s var(--ease);
+  }
+  .zone.touched .clear{opacity:1; pointer-events:auto}
+  .clear:hover{color:var(--ink)}
+
+  .cells{display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:5px}
+
+  /* Every cell already wears its quadrant colour, held right down against the
+     background. Choosing one turns that same colour up to full. */
+  .cell{
+    position:relative; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:3px; padding:6px 3px;
+    min-height:64px; border-radius:var(--r-sm);
+    background:color-mix(in oklab, var(--zc) 30%, var(--bg));
+    color:var(--ink);
+    border:1px solid transparent; font:inherit; cursor:pointer; overflow:hidden;
+    transition: background .18s var(--ease), color .18s var(--ease),
+                transform .18s var(--ease), opacity .18s var(--ease);
+  }
+  .cell .em{font-size:18px; line-height:1; filter:saturate(.8) opacity(.85); transition:filter .18s var(--ease)}
+  /* Two lines, cut by height rather than a -webkit-box clamp. Long names carry
+     soft hyphens from soften() below; Chrome will not auto-hyphenate here. */
+  .cell .nm{
+    font-size:10px; line-height:1.15; text-align:center;
+    max-width:100%; max-height:2.3em; overflow:hidden;
+    overflow-wrap:break-word;
+  }
+  .cell:hover{
+    background:color-mix(in oklab, var(--zc) 45%, var(--bg));
+    color:var(--ink); transform:translateY(-1px);
+  }
+  .cell:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+  .cell[aria-pressed="true"]{
+    background:var(--zc); color:#000; font-weight:600; transform:none;
+  }
+  .cell[aria-pressed="true"] .em{filter:none}
+  .cell[aria-pressed="true"] .nm{font-weight:600}
+  .cell[aria-pressed="true"]:hover{filter:brightness(1.06)}
+  .zone.full .cell[aria-pressed="false"]{opacity:.52}
+  .zone.full .cell[aria-pressed="false"]:hover{opacity:.8; transform:none}
+  .cell.reject{animation:reject .34s var(--ease)}
+  @keyframes reject{0%{transform:none}25%{transform:translateX(-3px)}50%{transform:translateX(3px)}75%{transform:translateX(-2px)}100%{transform:none}}
+
+  .cell{opacity:0; animation:bloom .5s var(--ease) forwards; animation-delay:var(--d, 0ms)}
+  @keyframes bloom{from{opacity:0; transform:scale(.9)}to{opacity:1; transform:none}}
+
+  /* ---- definition line, inside the fixed bar so it is always in reach ---- */
+  .define{
+    max-width:1180px; margin:0 auto var(--s-md);
+    display:flex; align-items:baseline; gap:10px;
+    height:22px; overflow:hidden;
+    padding-bottom:var(--s-md); border-bottom:1px solid var(--line-soft);
+    box-sizing:content-box;
+  }
+  .define .word{font-family:'Young Serif', Georgia, serif; font-size:16px; color:var(--ink); flex:none}
+  .define .meaning{
+    color:var(--ink-2); font-size:13.5px; min-width:0;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .define .idle{color:var(--ink-3); font-size:13.5px}
+
+  /* ---- action bar ---- */
+  .bar{
+    position:fixed; left:0; right:0; bottom:0; z-index:20;
+    background:color-mix(in oklab, var(--bg) 86%, transparent);
+    backdrop-filter:blur(14px);
+    border-top:1px solid var(--line-soft);
+    padding: var(--s-md) clamp(16px, 4vw, 40px) calc(var(--s-lg) + env(safe-area-inset-bottom));
+  }
+  .bar-in{
+    max-width:1180px; margin:0 auto; display:flex; align-items:center;
+    gap:var(--s-lg); flex-wrap:wrap;
+  }
+  .status{flex:1 1 240px; min-width:0}
+  .status .count{font-family:'Young Serif', Georgia, serif; font-size:17px; color:var(--ink)}
+  .status .note{display:block; font-size:12.5px; color:var(--ink-3); line-height:1.5}
+  .status .note.warn{color:var(--yellow)}
+  .meter{display:flex; gap:3px; margin-top:7px; max-width:300px}
+  .meter i{flex:1; height:3px; border-radius:2px; background:var(--line-soft); overflow:hidden}
+  .meter i::after{
+    content:""; display:block; height:100%; width:calc(var(--p,0) * 100%);
+    background:var(--mc); transition:width .3s var(--ease);
+  }
+  .meter i:nth-child(1){--mc:var(--red)} .meter i:nth-child(2){--mc:var(--yellow)}
+  .meter i:nth-child(3){--mc:var(--blue)} .meter i:nth-child(4){--mc:var(--green)}
+
+  .actions{display:flex; gap:var(--s-md); align-items:center}
+  .btn{
+    font:inherit; font-weight:600; font-size:14px; border-radius:var(--r-md);
+    padding:11px 20px; cursor:pointer; border:1px solid var(--line);
+    background:transparent; color:var(--ink-2);
+    transition: background .2s var(--ease), color .2s var(--ease),
+                border-color .2s var(--ease), opacity .2s var(--ease);
+  }
+  .btn:hover{border-color:var(--ink-3); color:var(--ink)}
+  .btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+  .btn-go{background:var(--ink); color:oklch(0.16 0.02 300); border-color:var(--ink)}
+  .btn-go:hover{background:oklch(0.99 0.005 85); color:oklch(0.14 0.02 300); border-color:oklch(0.99 0.005 85)}
+  .btn-go[disabled]{background:transparent; color:var(--ink-3); border-color:var(--line-soft); cursor:not-allowed}
+  .btn-go[disabled]:hover{background:transparent; color:var(--ink-3); border-color:var(--line-soft)}
+  .btn.ghost{border-color:transparent; padding-left:6px; padding-right:6px}
+  .btn.ghost:hover{color:var(--ink); border-color:transparent}
+  .btn.ghost[disabled]{opacity:.4; cursor:default}
+  .btn.ghost[disabled]:hover{color:var(--ink-2)}
+
+  /* ---- sent state ---- */
+  .done-panel{max-width:70ch}
+  .done-panel h2{
+    font-family:'Young Serif', Georgia, serif; font-weight:400;
+    font-size:clamp(28px, 4.5vw, 42px); line-height:1.1; margin:0 0 var(--s-lg);
+  }
+  .done-panel p{color:var(--ink-2); margin:0 0 var(--s-md)}
+  .recap{display:grid; grid-template-columns:repeat(auto-fit, minmax(210px,1fr)); gap:var(--s-xl); margin-top:var(--s-2xl); max-width:none}
+  .recap section{--zc:var(--ink-3)}
+  .recap section[data-c="red"]{--zc:var(--red)} .recap section[data-c="yellow"]{--zc:var(--yellow)}
+  .recap section[data-c="blue"]{--zc:var(--blue)} .recap section[data-c="green"]{--zc:var(--green)}
+  .recap h3{
+    font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:600;
+    color:var(--ink-3); margin:0 0 var(--s-md); padding-bottom:var(--s-sm);
+    border-bottom:1px solid var(--zc);
+  }
+  .recap ul{list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px}
+  .recap li{
+    font-size:12.5px; padding:4px 9px; border-radius:var(--r-sm);
+    background:color-mix(in oklab, var(--zc) 26%, var(--bg)); color:var(--ink);
+  }
+
+  /* "pick me, maybe!" — only while the board is still empty */
+  .nudge{
+    position:fixed; z-index:15; pointer-events:none; opacity:0;
+    transform:translate(-50%, -100%) translateY(6px);
+    background:var(--ink); color:oklch(0.16 0.02 300);
+    font-size:12.5px; font-weight:600; letter-spacing:.01em;
+    padding:6px 12px; border-radius:13px; white-space:nowrap;
+    transition:opacity .3s var(--ease), transform .3s var(--ease);
+  }
+  .nudge::after{
+    content:""; position:absolute; left:50%; bottom:-4px;
+    width:9px; height:9px; background:var(--ink); border-radius:2px;
+    transform:translateX(-50%) rotate(45deg);
+  }
+  .nudge.on{opacity:1; transform:translate(-50%, -100%) translateY(-5px)}
+
+  [hidden]{display:none !important}
+
+  @media (max-width: 940px){
+    .mast{grid-template-columns:1fr; align-items:start; gap:var(--s-lg) 0}
+    .ask{margin-bottom:0}
+    .tabs{display:grid}
+    .board{grid-template-columns:1fr; gap:0}
+    .board .zone{display:none}
+    .board .zone.active{display:block}
+    /* the tab above already names the colour, so the head keeps only the count */
+    .zone-head{margin-bottom:var(--s-lg)}
+    .zone-name{display:none}
+    .cells{gap:6px}
+    .cell{min-height:72px}
+    .define{height:34px; align-items:flex-start}
+    .define .meaning{white-space:normal; line-height:1.3;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical}
+  }
+  @media (max-width: 420px){
+    .tabs{gap:6px}
+    .tab{padding:9px 10px; font-size:10.5px}
+    .cells{gap:4px}
+    .cell{min-height:68px; padding:5px 2px}
+    .cell .em{font-size:17px}
+    .cell .nm{font-size:9.5px}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-delay:0ms !important; transition-duration:.001ms !important}
+    .cell{opacity:1}
+  }
 </style>
 </head>
 <body>
-<h1>All 144 emotions at their real coordinates</h1>
-<p class="sub">The 36 <code>isBasic</code> emotions are drawn <b>without colour</b> (dashed outline), so the holes in the colour show how they are spread. Thick lines mark the seam — there is no row or column 0.</p>
 
-<div class="bar">
-  <button id="flip">Invert: colour the basics instead</button>
-  <span class="counts" id="counts"></span>
+<div class="shell">
+
+  <header class="mast" id="mast">
+    <h1>Which feelings do you use the most?</h1>
+    <p class="ask">Pick <b>nine in each colour</b>, the ones you would use as a reply when someone asks how you are.</p>
+    <div class="notice">
+      <span class="ico" aria-hidden="true">&#8505;&#65039;</span>
+      <p>The data will be shared with the Digital Wellbeing team, and it may be shared publicly, but your identity will remain absolutely anonymous. Two submissions per network.</p>
+    </div>
+  </header>
+
+  <div class="tabs" id="tabs" role="tablist" aria-label="Choose a colour"></div>
+
+  <div class="board" id="board"></div>
+
+  <div class="done-panel" id="donePanel" hidden></div>
+
 </div>
 
-<div class="wrap"><div id="grid"></div></div>
-
-<div class="legend">
-  <span><i class="sw" style="background:#c0392b"></i>red — unpleasant, high energy</span>
-  <span><i class="sw" style="background:#d4a017"></i>yellow — pleasant, high energy</span>
-  <span><i class="sw" style="background:#2e6da4"></i>blue — unpleasant, low energy</span>
-  <span><i class="sw" style="background:#3a8a4f"></i>green — pleasant, low energy</span>
-  <span><i class="sw" style="background:transparent;border-style:dashed"></i>isBasic</span>
+<div class="bar" id="bar">
+  <div class="define" id="define" aria-live="polite">
+    <span class="idle">Tap a feeling to read what it means.</span>
+  </div>
+  <div class="bar-in">
+    <div class="status">
+      <span class="count" id="total">0 of 36 chosen</span>
+      <span class="note" id="note">Tap to pick, tap again to drop.</span>
+      <div class="meter" id="meter"><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" id="reset" type="button">Clear the board</button>
+      <button class="btn btn-go" id="send" type="button" disabled>Send my 36</button>
+    </div>
+  </div>
 </div>
 
 <script>
 const DATA = [{"n":"Enraged","e":"☠️","x":-6,"y":6,"c":"red","b":1,"d":"made furious by something. filled with extreme anger"},{"n":"Terrified","e":"🥶","x":-5,"y":6,"c":"red","b":0,"d":"consumed by fear"},{"n":"Panicked","e":"😵","x":-4,"y":6,"c":"red","b":0,"d":"feeling frantic and overcome by fear"},{"n":"Shocked","e":"😨","x":-3,"y":6,"c":"red","b":0,"d":"experiencing extreme horror, disgust, and surprise"},{"n":"Impassioned","e":"🤦","x":-2,"y":6,"c":"red","b":0,"d":"filled with lots on emotion"},{"n":"Hyper","e":"🤸‍♀️","x":-1,"y":6,"c":"red","b":0,"d":"feeling energetic and like you want to move around"},{"n":"Surprised","e":"😮","x":1,"y":6,"c":"yellow","b":0,"d":"caught off guard by something unexpected or unusual"},{"n":"Awe","e":"😯","x":2,"y":6,"c":"yellow","b":0,"d":"feeling like you are in the presence of something vast"},{"n":"Exhilarated","e":"😃","x":3,"y":6,"c":"yellow","b":0,"d":"in high spirits; cheerful and invigorated"},{"n":"Thrilled","e":"🤩","x":4,"y":6,"c":"yellow","b":1,"d":"feeling very excited all of a sudden"},{"n":"Elated","e":"🥳","x":5,"y":6,"c":"yellow","b":0,"d":"very joyful, proud, or enthusiastic"},{"n":"Ecstatic","e":"🤣","x":6,"y":6,"c":"yellow","b":1,"d":"feeling the greatest amount of joy or happiness"},{"n":"Livid","e":"😡","x":-6,"y":5,"c":"red","b":0,"d":"feeling furious about something or someone"},{"n":"Irate","e":"🤬","x":-5,"y":5,"c":"red","b":0,"d":"feeling like your anger is almost out of control"},{"n":"Overwhelmed","e":"😖","x":-4,"y":5,"c":"red","b":0,"d":"feeling like you have been taken over by strong feelings"},{"n":"Stressed","e":"😣","x":-3,"y":5,"c":"red","b":1,"d":"Strained from too many demands and too few resources"},{"n":"Annoyed","e":"😠","x":-2,"y":5,"c":"red","b":1,"d":"bothered by something displeasing or uncomfortable"},{"n":"Pressured","e":"🗜","x":-1,"y":5,"c":"red","b":0,"d":"feeling as if an important outcome depends on you"},{"n":"Excited","e":"🤩","x":1,"y":5,"c":"yellow","b":1,"d":"enthusiastic about something in the future"},{"n":"Determined","e":"🧐","x":2,"y":5,"c":"yellow","b":1,"d":"knowing your goal and insisting on achieving it"},{"n":"Successful","e":"🏆","x":3,"y":5,"c":"yellow","b":0,"d":"feeling like you've achieved something important to you"},{"n":"Amazed","e":"🤯","x":4,"y":5,"c":"yellow","b":0,"d":"feeling lost in wonder about a particular event"},{"n":"Inspired","e":"💡","x":5,"y":5,"c":"yellow","b":0,"d":"affected powerfully in a way that motivates you"},{"n":"Empowered","e":"💪","x":6,"y":5,"c":"yellow","b":0,"d":"feeling stronger or more confident due to someone or something that happened"},{"n":"Furious","e":"😤","x":-6,"y":4,"c":"red","b":0,"d":"full of extreme or wild anger"},{"n":"Frightened","e":"😱","x":-5,"y":4,"c":"red","b":0,"d":"afraid or fearful"},{"n":"Anxious","e":"😥","x":-4,"y":4,"c":"red","b":0,"d":"worried and uneasy about an uncertain outcome"},{"n":"Apprehensive","e":"😟","x":-3,"y":4,"c":"red","b":0,"d":"unease and worry about something that might happen"},{"n":"Irritated","e":"😠","x":-2,"y":4,"c":"red","b":0,"d":"slightly angry with or annoyed by an action or event"},{"n":"Restless","e":"🫨","x":-1,"y":4,"c":"red","b":0,"d":"unable to relax due to anxiety or boredom"},{"n":"Energized","e":"⚡","x":1,"y":4,"c":"yellow","b":0,"d":"feeling like you are wide awake and ready to get up and go"},{"n":"Eager","e":"😃","x":2,"y":4,"c":"yellow","b":0,"d":"impatiently wanting to do or get something"},{"n":"Enthusiastic","e":"🤩","x":3,"y":4,"c":"yellow","b":0,"d":"highly interested in an idea or activity"},{"n":"Joyful","e":"🥳","x":4,"y":4,"c":"yellow","b":0,"d":"feeling pleasure and in high spirits"},{"n":"Productive","e":"📈","x":5,"y":4,"c":"yellow","b":0,"d":"feeling like you are accomplished your tasks or achieving your goals"},{"n":"Proud","e":"😎","x":6,"y":4,"c":"yellow","b":1,"d":"pleased with your own achievements or those of someone close to you"},{"n":"Jealous","e":"😒","x":-6,"y":3,"c":"red","b":1,"d":"Threatened that you're losing something to someone else"},{"n":"Scared","e":"😨","x":-5,"y":3,"c":"red","b":1,"d":"feeling threat or danger, whether physical or mental"},{"n":"Angry","e":"😡","x":-4,"y":3,"c":"red","b":1,"d":"strongly bothered about a perceived injustice"},{"n":"Jittery","e":"🫨","x":-3,"y":3,"c":"red","b":0,"d":"feeling on edge and jumpy"},{"n":"FOMO","e":"😬","x":-2,"y":3,"c":"red","b":0,"d":"fear of missing out"},{"n":"Confused","e":"😵‍💫","x":-1,"y":3,"c":"red","b":1,"d":"feeling unable to make sense of something"},{"n":"Cheerful","e":"😀","x":1,"y":3,"c":"yellow","b":0,"d":"full of happy feelings"},{"n":"Curious","e":"🤓","x":2,"y":3,"c":"yellow","b":0,"d":"interested in learning something"},{"n":"Upbeat","e":"🎶","x":3,"y":3,"c":"yellow","b":0,"d":"feeling energy and bubbly"},{"n":"Happy","e":"😄","x":4,"y":3,"c":"yellow","b":1,"d":"very pleased and filled with joy"},{"n":"Motivated","e":"💪","x":5,"y":3,"c":"yellow","b":0,"d":"enthusiastic about doing something"},{"n":"Optimistic","e":"🌞","x":6,"y":3,"c":"yellow","b":0,"d":"hopeful and confident about the future"},{"n":"Envious","e":"😒","x":-6,"y":2,"c":"red","b":0,"d":"feeling of desire for something that someone else has"},{"n":"Repulsed","e":"🤢","x":-5,"y":2,"c":"red","b":0,"d":"nauseated by someone or something"},{"n":"Frustrated","e":"😤","x":-4,"y":2,"c":"red","b":0,"d":"upset because you cannot do something you want to do"},{"n":"Embarrassed","e":"🫣","x":-3,"y":2,"c":"red","b":1,"d":"Self conscious and uncomfortable about how you think others are perceiving you"},{"n":"Concerned","e":"😟","x":-2,"y":2,"c":"red","b":0,"d":"wondering if someone or something is ok"},{"n":"Tense","e":"🫨","x":-1,"y":2,"c":"red","b":0,"d":"unable to relax"},{"n":"Pleasant","e":"🤩","x":1,"y":2,"c":"yellow","b":0,"d":"feeling mostly positive"},{"n":"Focused","e":"🔎","x":2,"y":2,"c":"yellow","b":0,"d":"engaged in only one idea or activity"},{"n":"Alive","e":"🌱","x":3,"y":2,"c":"yellow","b":0,"d":"filled with energy and vitality"},{"n":"Confident","e":"😏","x":4,"y":2,"c":"yellow","b":1,"d":"feeling sure of yourself"},{"n":"Engaged","e":"🔗","x":5,"y":2,"c":"yellow","b":0,"d":"paying full attention or participating fully in something"},{"n":"Challenged","e":"⚔️","x":6,"y":2,"c":"yellow","b":0,"d":"feeling pushed to reach a higher goal"},{"n":"Contempt","e":"👎","x":-6,"y":1,"c":"red","b":0,"d":"feeling a combination of anger and disgust"},{"n":"Troubled","e":"😰","x":-5,"y":1,"c":"red","b":0,"d":"feeling worried about a problem or conflict"},{"n":"Worried","e":"😟","x":-4,"y":1,"c":"red","b":0,"d":"troubled about actual or potential problems"},{"n":"Nervous","e":"😥","x":-3,"y":1,"c":"red","b":1,"d":"jumpy and worried about uncertain event"},{"n":"Peeved","e":"🙁","x":-2,"y":1,"c":"red","b":0,"d":"slightly irritated about something"},{"n":"Uneasy","e":"😬","x":-1,"y":1,"c":"red","b":0,"d":"vague sense that something is wrong"},{"n":"Pleased","e":"😌","x":1,"y":1,"c":"yellow","b":0,"d":"feeling content and happy about particular situation or person"},{"n":"Playful","e":"😜","x":2,"y":1,"c":"yellow","b":1,"d":"feeling happy and lighthearted"},{"n":"Delighted","e":"🙂","x":3,"y":1,"c":"yellow","b":0,"d":"feeling lifted by joy"},{"n":"Wishful","e":"✨","x":4,"y":1,"c":"yellow","b":0,"d":"having or showing a wish longing"},{"n":"Hopeful","e":"🤞","x":5,"y":1,"c":"yellow","b":0,"d":"optimistic that something good will happen"},{"n":"Accomplished","e":"🏅","x":6,"y":1,"c":"yellow","b":1,"d":"feeling effective and successful"},{"n":"Disgusted","e":"🤢","x":-6,"y":-1,"c":"blue","b":0,"d":"feeling a strong dislike of someone or something"},{"n":"Trapped","e":"🔒","x":-5,"y":-1,"c":"blue","b":0,"d":"feeling like there's no way out"},{"n":"Insecure","e":"🫥","x":-4,"y":-1,"c":"blue","b":0,"d":"feeling uncertain and unconfident about yourself"},{"n":"Disheartened","e":"💔","x":-3,"y":-1,"c":"blue","b":0,"d":"loss of resolve or determination"},{"n":"Down","e":"👎","x":-2,"y":-1,"c":"blue","b":0,"d":"feeling sad and like you have little energy"},{"n":"Bored","e":"🙄","x":-1,"y":-1,"c":"blue","b":1,"d":"lacking interest in something or someone"},{"n":"Calm","e":"😌","x":1,"y":-1,"c":"green","b":1,"d":"feeling free of stress, agitation, and worry"},{"n":"At ease","e":"☺️","x":2,"y":-1,"c":"green","b":0,"d":"feeling content and comfortable"},{"n":"Understood","e":"🤝","x":3,"y":-1,"c":"green","b":0,"d":"feeling that someone get you"},{"n":"Respected","e":"🫡","x":4,"y":-1,"c":"green","b":1,"d":"feeling like people think highly of you"},{"n":"Fulfilled","e":"💪","x":5,"y":-1,"c":"green","b":0,"d":"feeling like you have accomplished important personal goals"},{"n":"Blissful","e":"😇","x":6,"y":-1,"c":"green","b":0,"d":"feeling full of joy"},{"n":"Humiliated","e":"😟","x":-6,"y":-2,"c":"blue","b":0,"d":"feeling exposed and foolish in front of others"},{"n":"Ashamed","e":"🫣","x":-5,"y":-2,"c":"blue","b":1,"d":"feeling lower self worth as a result of who you are or what you did"},{"n":"Lost","e":"🤷‍♂️","x":-4,"y":-2,"c":"blue","b":0,"d":"feeling uncomfortably alone and lacking direction"},{"n":"Disappointed","e":"😥","x":-3,"y":-2,"c":"blue","b":0,"d":"sad because your expectations were not met "},{"n":"Meh","e":"😐","x":-2,"y":-2,"c":"blue","b":1,"d":"feeling uninspired or blah"},{"n":"Tired","e":"😪","x":-1,"y":-2,"c":"blue","b":1,"d":"feeling like you need to rest"},{"n":"Good","e":"🙂","x":1,"y":-2,"c":"green","b":1,"d":"feeling positive, like things are just fine"},{"n":"Thoughtful","e":"🤔","x":2,"y":-2,"c":"green","b":0,"d":"being considerate or reflective about  oneself, or something"},{"n":"Appreciated","e":"🙏","x":3,"y":-2,"c":"green","b":0,"d":"feeling recognized and worthy"},{"n":"Supported","e":"🫶","x":4,"y":-2,"c":"green","b":0,"d":"feeling like someone is there for you"},{"n":"Loved","e":"❤️‍🔥","x":5,"y":-2,"c":"green","b":1,"d":"feeling like someone cares deeply for you"},{"n":"Connected","e":"🛜","x":6,"y":-2,"c":"green","b":0,"d":"feeling close to someone or part of a community"},{"n":"Pessimistic","e":"🐦‍⬛","x":-6,"y":-3,"c":"blue","b":0,"d":"having a negative outlook and expecting the worst to happen"},{"n":"Vulnerable","e":"🤕","x":-5,"y":-3,"c":"blue","b":0,"d":"feeling like you could easily be emotionally or mentally hurt"},{"n":"Disconnected","e":"⛓️‍💥","x":-4,"y":-3,"c":"blue","b":0,"d":"feeling separate from others"},{"n":"Forlorn","e":"😞","x":-3,"y":-3,"c":"blue","b":0,"d":"feeling both sad and alone"},{"n":"Sad","e":"😢","x":-2,"y":-3,"c":"blue","b":1,"d":"feeling unhappy about something"},{"n":"Fatigued","e":"😰","x":-1,"y":-3,"c":"blue","b":0,"d":"feeling physically drained"},{"n":"Relaxed","e":"🧘","x":1,"y":-3,"c":"green","b":1,"d":"feeling casual and restful in body and mind"},{"n":"Chill","e":"😎","x":2,"y":-3,"c":"green","b":0,"d":"feeling relaxed and easygoing"},{"n":"Compassionate","e":"🙂‍↕️","x":3,"y":-3,"c":"green","b":0,"d":"showing care and concern for someone"},{"n":"Included","e":"👨‍👩‍👧‍👧","x":4,"y":-3,"c":"green","b":0,"d":"feeling like you're part of a group"},{"n":"Valued","e":"🤑","x":5,"y":-3,"c":"green","b":0,"d":"feeling like you matter"},{"n":"Grateful","e":"🙏","x":6,"y":-3,"c":"green","b":1,"d":"appreciative of something or someone"},{"n":"Guilty","e":"😣","x":-6,"y":-4,"c":"blue","b":1,"d":"feeling responsible for a specific wrongdoing"},{"n":"Numb","e":"💉","x":-5,"y":-4,"c":"blue","b":0,"d":"negative mood and loss of sensitivity to feelings"},{"n":"Excluded","e":"🚫","x":-4,"y":-4,"c":"blue","b":0,"d":"feeling left out or unwanted from a desired group"},{"n":"Spent","e":"💸","x":-3,"y":-4,"c":"blue","b":0,"d":"feeling extremely exhausted, both in body and mind"},{"n":"Discouraged","e":"😥","x":-2,"y":-4,"c":"blue","b":0,"d":"feeling a loss of confidence and enthusiasm"},{"n":"Disengaged","e":"⛓️‍💥","x":-1,"y":-4,"c":"blue","b":0,"d":"feeling like you cannot focus, disinterested"},{"n":"Sympathetic","e":"🥺","x":1,"y":-4,"c":"green","b":0,"d":"feeling sorry or sorrowful for someone else"},{"n":"Comfortable","e":"😌","x":2,"y":-4,"c":"green","b":0,"d":"feeling reassured both in mind and body"},{"n":"Empathetic","e":"🤗","x":3,"y":-4,"c":"green","b":0,"d":"understanding and temporarily sharing the feelings of someone else, whether positive or negative"},{"n":"Content","e":"😌","x":4,"y":-4,"c":"green","b":0,"d":"feeling complete and like you are enough"},{"n":"Accepted","e":"🫡","x":5,"y":-4,"c":"green","b":0,"d":"feeling acknowledged and seen"},{"n":"Moved","e":"🥹","x":6,"y":-4,"c":"green","b":0,"d":"a sudden feeling that happens after seeing something inspirational or sad"},{"n":"Depressed","e":"😒","x":-6,"y":-5,"c":"blue","b":0,"d":"extremely unhappy and dispirited"},{"n":"Hopeless","e":"😣","x":-5,"y":-5,"c":"blue","b":0,"d":"feeling completely defeated and in despair about the future"},{"n":"Alienated","e":"👽","x":-4,"y":-5,"c":"blue","b":1,"d":"feeling like you have been made a stranger to others, like they have no feelings or affection"},{"n":"Nostalgic","e":"🥹","x":-3,"y":-5,"c":"blue","b":0,"d":"a sentimental longing for the happiness felt in the past"},{"n":"Lonely","e":"🥺","x":-2,"y":-5,"c":"blue","b":0,"d":"feeling sad because you are alone or disconnected"},{"n":"Apathetic","e":"😑","x":-1,"y":-5,"c":"blue","b":1,"d":"lacking enthusiasm or interest"},{"n":"Mellow","e":"🍉","x":1,"y":-5,"c":"green","b":0,"d":"relaxed and laid back; easygoing"},{"n":"Peaceful","e":"🕊️","x":2,"y":-5,"c":"green","b":1,"d":"quiet and calm; free from disturbance"},{"n":"Balanced","e":"⚖️","x":3,"y":-5,"c":"green","b":0,"d":"feeling stable and satisfied"},{"n":"Safe","e":"🧿","x":4,"y":-5,"c":"green","b":0,"d":"feeling protected from danger"},{"n":"Secure","e":"🛡","x":5,"y":-5,"c":"green","b":0,"d":"feeling safe and protected"},{"n":"Blessed","e":"😇","x":6,"y":-5,"c":"green","b":0,"d":"feeling thankful and fortunate for what you have"},{"n":"Miserable","e":"😭","x":-6,"y":-6,"c":"blue","b":0,"d":"feeling absolutely awful"},{"n":"Despair","e":"😖","x":-5,"y":-6,"c":"blue","b":0,"d":"a feeling of complete hopelessness"},{"n":"Glum","e":"🫩","x":-4,"y":-6,"c":"blue","b":0,"d":"feeling displeased; pessimistic, about future events"},{"n":"Burned Out","e":"🔥","x":-3,"y":-6,"c":"blue","b":0,"d":"feeling exhausted from ongoing stress"},{"n":"Exhausted","e":"😩","x":-2,"y":-6,"c":"blue","b":0,"d":"feeling depleted of all energy"},{"n":"Helpless","e":"😶","x":-1,"y":-6,"c":"blue","b":1,"d":"feeling like there's nothing you can do"},{"n":"Carefree","e":"😎","x":1,"y":-6,"c":"green","b":0,"d":"feeling free of worry and lighthearted"},{"n":"Tranquil","e":"🧘","x":2,"y":-6,"c":"green","b":0,"d":"peaceful, free from tension"},{"n":"Thankful","e":"🙌","x":3,"y":-6,"c":"green","b":0,"d":"feeling pleased or appreciative"},{"n":"Relieved","e":"😮‍💨","x":4,"y":-6,"c":"green","b":1,"d":"feeling at ease after an unpleasant feeling goes away"},{"n":"Satisfied","e":"☺️","x":5,"y":-6,"c":"green","b":1,"d":"pleased with what you have or with something you did"},{"n":"Serene","e":"🌝","x":6,"y":-6,"c":"green","b":0,"d":"experiencing extreme horror, disgust, and surprise"}];
-const XS = [-6,-5,-4,-3,-2,-1,1,2,3,4,5,6];
-const YS = [6,5,4,3,2,1,-1,-2,-3,-4,-5,-6];
-const BASE = { red:[192,57,43], yellow:[212,160,23], blue:[46,109,164], green:[58,138,79] };
-let invert = false;
+
+const ENDPOINT = "https://us-central1-gwapp-30e03.cloudfunctions.net/submitMoodBasics";
+const PER_ZONE = 9;
+const SENT_KEY = "gw_moodmeter_sent";
+const MAX_PER_NETWORK = 2;
+
+// Quadrants of the mood meter. There is no row or column 0, so the sign pair
+// of a cell is its colour. Rows run high energy to low, columns unpleasant to
+// pleasant, which is the same reading order as the app's meter.
+const ZONES = [
+  { c:"red",    label:"Unpleasant, high energy", xs:[-6,-5,-4,-3,-2,-1], ys:[6,5,4,3,2,1] },
+  { c:"yellow", label:"Pleasant, high energy",   xs:[1,2,3,4,5,6],       ys:[6,5,4,3,2,1] },
+  { c:"blue",   label:"Unpleasant, low energy",  xs:[-6,-5,-4,-3,-2,-1], ys:[-1,-2,-3,-4,-5,-6] },
+  { c:"green",  label:"Pleasant, low energy",    xs:[1,2,3,4,5,6],       ys:[-1,-2,-3,-4,-5,-6] }
+];
 
 const at = {};
-DATA.forEach(e => at[e.x+","+e.y] = e);
+DATA.forEach(e => at[e.x + "," + e.y] = e);
 
-// Colour deepens with distance from the centre, like the app's mood meter.
-function tint(e){
-  const b = BASE[e.c] || [120,120,120];
-  const d = Math.min(1, Math.hypot(e.x, e.y) / 8.49);
-  const t = 0.45 + 0.55*d;
-  return "rgb(" + b.map(v => Math.round(v*t)).join(",") + ")";
+const picked = new Set();
+const counts = { red:0, yellow:0, blue:0, green:0 };
+
+const board   = document.getElementById("board");
+const tabsBox = document.getElementById("tabs");
+const define  = document.getElementById("define");
+const totalEl = document.getElementById("total");
+const noteEl  = document.getElementById("note");
+const meterEl = document.getElementById("meter");
+const sendBtn = document.getElementById("send");
+const resetBtn= document.getElementById("reset");
+const barEl   = document.getElementById("bar");
+const panel   = document.getElementById("donePanel");
+const mast    = document.getElementById("mast");
+
+let noteTimer = null;
+
+function sentCount(){
+  try { return parseInt(localStorage.getItem(SENT_KEY) || "0", 10) || 0; }
+  catch(e){ return 0; }
+}
+function rememberSent(){
+  try { localStorage.setItem(SENT_KEY, String(sentCount() + 1)); } catch(e){}
 }
 
-function draw(){
-  let h = "<table><tr><th></th>";
-  XS.forEach(x => h += "<th>" + x + "</th>");
-  h += "</tr>";
-  YS.forEach(y => {
-    h += "<tr><th class='rowh'>" + y + "</th>";
-    XS.forEach(x => {
-      const e = at[x+","+y];
-      const seamX = (x === 1) ? " seam-x" : "";
-      const seamY = (y === -1) ? " seam-y" : "";
-      if(!e){ h += "<td><div class='cell" + seamX + seamY + "'></div></td>"; return; }
-      const plain = invert ? !e.b : !!e.b;
-      const cls = "cell" + (plain ? " basic" : "") + seamX + seamY;
-      const style = plain ? "" : " style=\"background:" + tint(e) + "\"";
-      h += "<td><div class='" + cls + "'" + style + " title=\"" + e.n + " (" + e.x + "," + e.y + ")&#10;" + (e.d||"").replace(/"/g,"") + "\">"
-         + "<div class='em'>" + e.e + "</div><div class='nm'>" + e.n + "</div></div></td>";
-    });
-    h += "</tr>";
+// A name like Compassionate cannot fit a 50px cell on a phone, and breaking it
+// at the fill point reads as a typo. Chrome's hyphens:auto does nothing inside
+// these cells, so one soft hyphen goes in near the middle: after a vowel that
+// is followed by a consonant, moved past that consonant when a second one
+// follows it, which is where an English reader expects the break.
+function soften(name){
+  if (name.length < 9 || name.indexOf(" ") >= 0) return name;
+  const vowel = c => "aeiouAEIOU".indexOf(c) >= 0;
+  const mid = Math.floor(name.length / 2);
+  for (let d = 0; d < 5; d++) {
+    for (const j of [mid - d, mid + d]) {
+      if (j < 3 || j > name.length - 3) continue;
+      if (!vowel(name[j - 1]) || vowel(name[j])) continue;
+      const pair = (name[j] + name[j + 1]).toLowerCase();
+      let k;
+      if (pair === "gh" || pair === "ck") k = j + 2;       // never end a line on gh or ck
+      else if (["th","ph","sh","ch","wh"].indexOf(pair) >= 0) k = j;
+      else k = vowel(name[j + 1]) ? j : j + 1;
+      if (k < 3 || k > name.length - 3) continue;
+      return name.slice(0, k) + "­" + name.slice(k);
+    }
+  }
+  return name;
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+}
+
+// ---- build -----------------------------------------------------------
+
+ZONES.forEach(z => {
+  const sec = document.createElement("section");
+  sec.className = "zone";
+  sec.dataset.c = z.c;
+
+  const head = document.createElement("div");
+  head.className = "zone-head";
+  head.innerHTML =
+    '<h2 class="zone-name">' + z.label + '</h2>' +
+    '<span class="tally"><span class="now">0</span>/' + PER_ZONE + '</span>' +
+    '<button class="clear" type="button">clear</button>';
+  head.querySelector(".clear").addEventListener("click", () => clearZone(z.c));
+  sec.appendChild(head);
+
+  const grid = document.createElement("div");
+  grid.className = "cells";
+  z.ys.forEach(y => z.xs.forEach(x => {
+    const e = at[x + "," + y];
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "cell";
+    b.dataset.k = x + "," + y;
+    b.setAttribute("aria-pressed", "false");
+    b.style.setProperty("--d", ((Math.abs(x) + Math.abs(y)) * 13) + "ms");
+    b.innerHTML = '<span class="em" aria-hidden="true">' + e.e + '</span>' +
+                  '<span class="nm">' + esc(soften(e.n)) + '</span>';
+    b.addEventListener("click", () => toggle(b, e, z.c));
+    b.addEventListener("pointerenter", () => describe(e));
+    b.addEventListener("focus", () => describe(e));
+    grid.appendChild(b);
+  }));
+  sec.appendChild(grid);
+  board.appendChild(sec);
+
+  const tab = document.createElement("button");
+  tab.type = "button";
+  tab.className = "tab";
+  tab.dataset.c = z.c;
+  tab.setAttribute("role", "tab");
+  tab.setAttribute("aria-selected", String(z.c === "red"));
+  tab.innerHTML = '<span class="dot" aria-hidden="true"></span>' +
+                  '<span class="tally"><span class="now">0</span>/' + PER_ZONE + '</span>' +
+                  '<span class="lbl">' + z.label + '</span>';
+  tab.addEventListener("click", () => showZone(z.c));
+  tabsBox.appendChild(tab);
+});
+
+function zoneEl(c){ return board.querySelector('.zone[data-c="' + c + '"]'); }
+function tabEl(c){ return tabsBox.querySelector('.tab[data-c="' + c + '"]'); }
+
+function showZone(c){
+  ZONES.forEach(z => {
+    zoneEl(z.c).classList.toggle("active", z.c === c);
+    tabEl(z.c).setAttribute("aria-selected", String(z.c === c));
   });
-  h += "</table>";
-  document.getElementById("grid").innerHTML = h;
+}
+showZone("red");
+
+// ---- interaction -----------------------------------------------------
+
+function describe(e){
+  define.innerHTML = '<span class="word">' + esc(e.n) + '</span>' +
+                     '<span class="meaning">' + esc(e.d || "") + '</span>';
 }
 
-function counts(){
-  const q = {red:0, yellow:0, blue:0, green:0};
-  DATA.forEach(e => { if(e.b) q[e.c]++; });
-  document.getElementById("counts").innerHTML =
-    "basics per quadrant — red <b>" + q.red + "</b>, yellow <b>" + q.yellow +
-    "</b>, blue <b>" + q.blue + "</b>, green <b>" + q.green + "</b>";
+// hold keeps the message up until the next pick; a failed send should not
+// vanish on its own.
+function say(msg, warn, hold){
+  noteEl.textContent = msg;
+  noteEl.classList.toggle("warn", !!warn);
+  clearTimeout(noteTimer);
+  if (warn && !hold) noteTimer = setTimeout(paint, 2600);
 }
 
-document.getElementById("flip").onclick = function(){
-  invert = !invert;
-  this.textContent = invert ? "Invert: colour everything except the basics"
-                            : "Invert: colour the basics instead";
-  draw();
-};
+function toggle(btn, e, c){
+  const k = btn.dataset.k;
+  if (picked.has(k)) {
+    picked.delete(k);
+    counts[c]--;
+    btn.setAttribute("aria-pressed", "false");
+  } else if (counts[c] >= PER_ZONE) {
+    btn.classList.remove("reject");
+    void btn.offsetWidth;
+    btn.classList.add("reject");
+    const t = zoneEl(c).querySelector(".tally");
+    t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump");
+    say("That colour already has nine. Drop one to make room.", true);
+    describe(e);
+    return;
+  } else {
+    picked.add(k);
+    counts[c]++;
+    btn.setAttribute("aria-pressed", "true");
+  }
+  describe(e);
+  paint();
+}
 
-counts(); draw();
+function clearZone(c){
+  const z = zoneEl(c);
+  z.querySelectorAll('.cell[aria-pressed="true"]').forEach(b => {
+    picked.delete(b.dataset.k);
+    b.setAttribute("aria-pressed", "false");
+  });
+  counts[c] = 0;
+  paint();
+}
+
+function paint(){
+  let total = 0;
+  ZONES.forEach((z, i) => {
+    const n = counts[z.c];
+    total += n;
+    const sec = zoneEl(z.c);
+    sec.classList.toggle("full", n >= PER_ZONE);
+    sec.classList.toggle("touched", n > 0);
+    sec.querySelector(".tally .now").textContent = n;
+    const tab = tabEl(z.c);
+    tab.querySelector(".tally .now").textContent = n;
+    tab.classList.toggle("done", n >= PER_ZONE);
+    meterEl.children[i].style.setProperty("--p", n / PER_ZONE);
+  });
+
+  if (total > 0) stopNudging(); else startNudging();
+
+  totalEl.textContent = total + " of 36 chosen";
+  const ready = total === PER_ZONE * 4;
+  sendBtn.disabled = !ready;
+  resetBtn.disabled = total === 0;
+
+  noteEl.classList.remove("warn");
+  if (ready) {
+    noteEl.textContent = "The board is full. Send it over.";
+  } else {
+    const open = ZONES.filter(z => counts[z.c] < PER_ZONE).map(z => z.c);
+    noteEl.textContent = total === 0
+      ? "Tap to pick, tap again to drop."
+      : "Still open: " + open.join(", ") + ".";
+  }
+}
+
+// An empty board gives nothing back, so one of the feelings speaks up now and
+// then. It stops for good the moment anything is chosen, and never intercepts
+// a click.
+const nudge = document.createElement("div");
+nudge.className = "nudge";
+nudge.setAttribute("aria-hidden", "true");
+nudge.textContent = "pick me, maybe!";
+document.body.appendChild(nudge);
+
+let nudgeTimer = null;
+let nudgeHide = null;
+
+function nudgeOff(){
+  nudge.classList.remove("on");
+}
+
+function popNudge(){
+  if (picked.size || !panel.hidden) return stopNudging();
+  const room = [];
+  board.querySelectorAll(".cell").forEach(b => {
+    const r = b.getBoundingClientRect();
+    if (r.width && r.top > 80 && r.bottom < window.innerHeight - 150) room.push(r);
+  });
+  if (!room.length) return;
+  const r = room[Math.floor(Math.random() * room.length)];
+  nudge.style.top = (r.top - 6) + "px";
+  nudge.style.left = (r.left + r.width / 2) + "px";
+  // a cell on either edge would push the bubble off screen
+  const half = nudge.offsetWidth / 2;
+  const x = Math.min(Math.max(r.left + r.width / 2, half + 10),
+                     window.innerWidth - half - 10);
+  nudge.style.left = x + "px";
+  nudge.classList.add("on");
+  clearTimeout(nudgeHide);
+  nudgeHide = setTimeout(nudgeOff, 2600);
+}
+
+function stopNudging(){
+  clearInterval(nudgeTimer);
+  clearTimeout(nudgeHide);
+  nudgeTimer = null;
+  nudgeOff();
+}
+
+function startNudging(){
+  if (nudgeTimer) return;
+  nudgeTimer = setInterval(popNudge, 8000);
+  setTimeout(popNudge, 5000);
+}
+
+window.addEventListener("scroll", nudgeOff, { passive: true });
+window.addEventListener("resize", nudgeOff);
+
+resetBtn.addEventListener("click", () => {
+  board.querySelectorAll('.cell[aria-pressed="true"]').forEach(b => b.setAttribute("aria-pressed", "false"));
+  picked.clear();
+  ZONES.forEach(z => counts[z.c] = 0);
+  define.innerHTML = '<span class="idle">Tap a feeling to read what it means.</span>';
+  paint();
+});
+
+// ---- submit ----------------------------------------------------------
+
+function picksPayload(){
+  const out = [];
+  board.querySelectorAll('.cell[aria-pressed="true"]').forEach(b => {
+    const e = at[b.dataset.k];
+    out.push({ x: e.x, y: e.y, n: e.n });
+  });
+  return out;
+}
+
+function finish(title, lines, withRecap){
+  const groups = withRecap ? ZONES.map(z => {
+    const items = DATA.filter(e => picked.has(e.x + "," + e.y) && e.c === z.c)
+                      .map(e => '<li>' + e.e + ' ' + esc(e.n) + '</li>').join("");
+    return '<section data-c="' + z.c + '"><h3>' + z.label + '</h3><ul>' + items + '</ul></section>';
+  }).join("") : "";
+
+  panel.innerHTML = '<h2>' + title + '</h2>' +
+    lines.map(l => '<p>' + l + '</p>').join("") +
+    (withRecap ? '<div class="recap">' + groups + '</div>' : "") +
+    '<p style="margin-top:32px"><a href="/" style="color:var(--ink-2)">Back to digitalwellbeing.xyz</a></p>';
+
+  mast.hidden = true;
+  tabsBox.hidden = true;
+  board.hidden = true;
+  barEl.hidden = true;
+  panel.hidden = false;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function submit(){
+  sendBtn.disabled = true;
+  const label = sendBtn.textContent;
+  sendBtn.textContent = "Sending";
+  try {
+    const r = await fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ picks: picksPayload() })
+    });
+    const data = await r.json().catch(() => ({}));
+
+    if (r.status === 429) {
+      finish("Two is the limit", [
+        "This network has already sent two sets. The ones already in still count.",
+        "Thank you for taking the time."
+      ], false);
+      return;
+    }
+    if (!r.ok) throw new Error(data.error || r.status);
+
+    rememberSent();
+    const more = data.remaining > 0
+      ? "You can send one more set from this network."
+      : "That was the second and last set from this network.";
+    finish("Your 36 are in", [
+      "These are the feelings you said you would actually reach for.",
+      more
+    ], true);
+  } catch (err) {
+    sendBtn.textContent = label;
+    sendBtn.disabled = false;
+    say("That did not send. Check your connection and try again.", true, true);
+  }
+}
+
+sendBtn.addEventListener("click", submit);
+
+if (sentCount() >= MAX_PER_NETWORK) {
+  say("You have already sent two sets from this browser.");
+}
+
+paint();
 </script>
 </body>
 </html>
