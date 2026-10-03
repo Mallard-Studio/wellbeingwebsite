@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Spin the wheel</title>
+<meta name="description" content="Spin the wheel and take a kind word with you.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:       #08080a;
+    --panel:    #131318;
+    --panel-2:  #1a1a21;
+    --line:     rgba(255,255,255,0.08);
+    --line-2:   rgba(255,255,255,0.14);
+    --ink:      #f3f1ec;
+    --ink-2:    #c9c6bf;
+    --ink-3:    #84827c;
+    --accent:   #4361ff;
+    --c-red:    #ff4f4f;
+    --c-yellow: #ffd84d;
+    --c-blue:   #5b6dff;
+    --c-green:  #74d178;
+    --on-c:     #0a0a0d;
+    --glow:     var(--accent);
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  *{box-sizing:border-box}
+  html,body{overflow-x:hidden}
+  body{
+    margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+    font-family:'Comfortaa', system-ui, sans-serif; line-height:1.6;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:40px 16px 56px; -webkit-font-smoothing:antialiased;
+  }
+  /* soft light behind the wheel; takes the winner's colour */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background:radial-gradient(60vmax 45vmax at 50% 55%, color-mix(in oklab, var(--glow) 22%, transparent), transparent 70%);
+    transition:background .8s var(--ease-out);
+  }
+  .mono{font-family:'JetBrains Mono', ui-monospace, monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
+  h1{font-weight:700; font-size:clamp(28px, 5vw, 44px); letter-spacing:-.01em; margin:10px 0 28px; text-align:center}
+
+  /* ---- 3D stage ---- */
+  .stage{position:relative; width:min(460px, 100%); aspect-ratio:1; perspective:1100px}
+  .tilt{
+    position:absolute; inset:0; transform-style:preserve-3d;
+    transform:rotateX(16deg); transform-origin:50% 60%;
+  }
+  /* the wheel's thickness: a darker disc sitting under the face */
+  .base{
+    position:absolute; inset:0; border-radius:50%;
+    background:linear-gradient(#24242d, #0b0b0e);
+    transform:translateY(16px);
+    box-shadow:0 34px 60px rgba(0,0,0,.65), 0 10px 0 #070709;
+  }
+  .rim{
+    position:absolute; inset:0; border-radius:50%;
+    background:
+      radial-gradient(circle at 50% 50%, transparent 59%, rgba(0,0,0,.5) 60.5%, transparent 62%),
+      conic-gradient(from 200deg, #2c2c37, #4a4a58, #23232c, #3b3b48, #2c2c37);
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.18), inset 0 -3px 0 rgba(0,0,0,.5);
+  }
+  .bulb{
+    position:absolute; width:3.4%; aspect-ratio:1; border-radius:50%;
+    left:50%; top:50%; margin:-1.7% 0 0 -1.7%;
+    background:#fff6d8; box-shadow:0 0 6px 1px rgba(255,236,170,.55);
+    transition:background .15s, box-shadow .15s;
+  }
+  .bulb.off{background:#5a5648; box-shadow:none}
+  .wheel{
+    position:absolute; inset:5.5%; width:89%; height:89%; display:block;
+    will-change:transform;
+  }
+  .wheel text{font-family:'Comfortaa', sans-serif; font-weight:700; font-size:15px; fill:var(--on-c); paint-order:stroke}
+  .slice{transition:opacity .4s var(--ease-out), filter .4s var(--ease-out)}
+  .wheel.settled .slice:not(.win){opacity:.35; filter:saturate(.5)}
+  .wheel.settled .slice.win{animation:winpulse 1.2s var(--ease-out) 2}
+  @keyframes winpulse{50%{filter:brightness(1.18)}}
+  /* fixed shine across the face, so the wheel reads as a glossy object */
+  .gloss{
+    position:absolute; inset:5.5%; border-radius:50%; pointer-events:none;
+    background:
+      radial-gradient(120% 80% at 30% 18%, rgba(255,255,255,.28), transparent 45%),
+      radial-gradient(100% 100% at 50% 50%, transparent 62%, rgba(0,0,0,.28));
+  }
+
+  /* ---- pointer ---- */
+  .pointer{
+    position:absolute; top:-5%; left:50%; width:12%; z-index:3;
+    transform:translateX(-50%) translateZ(30px); transform-origin:50% 22%;
+    filter:drop-shadow(0 6px 5px rgba(0,0,0,.55));
+  }
+  .pointer svg{display:block; width:100%; height:auto}
+  .pointer.tick{animation:tick .14s ease-out}
+  @keyframes tick{40%{transform:translateX(-50%) translateZ(30px) rotate(-18deg)}}
+
+  /* ---- hub button ---- */
+  .hub{
+    position:absolute; top:50%; left:50%; z-index:3;
+    width:24%; aspect-ratio:1; border-radius:50%;
+    transform:translate(-50%,-50%) translateZ(24px);
+    background:radial-gradient(circle at 35% 30%, #3a3a48, var(--panel) 70%);
+    color:var(--ink); border:3px solid #4a4a58;
+    font:inherit; font-weight:700; font-size:clamp(14px, 3.6vw, 18px); letter-spacing:.08em;
+    cursor:pointer;
+    box-shadow:0 7px 0 #070709, 0 14px 24px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.15);
+    transition:transform .12s var(--ease-out), box-shadow .12s var(--ease-out), border-color .2s, color .2s;
+  }
+  .hub:hover{border-color:var(--accent)}
+  .hub:active:not([disabled]){
+    transform:translate(-50%,-50%) translateZ(24px) translateY(5px);
+    box-shadow:0 2px 0 #070709, 0 6px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.15);
+  }
+  .hub:focus-visible{outline:2px solid var(--ink); outline-offset:4px}
+  .hub[disabled]{cursor:default; color:var(--ink-3); border-color:#33333e}
+  .hub.idle{animation:breathe 2.4s ease-in-out infinite}
+  @keyframes breathe{50%{border-color:var(--accent); color:#fff}}
+
+  /* ---- result ---- */
+  .result{
+    margin-top:56px; min-height:3.4em; text-align:center;
+    font-weight:700; font-size:clamp(20px, 3.8vw, 30px);
+  }
+  .result .pill{
+    display:inline-block; padding:12px 26px; border-radius:999px;
+    background:var(--rc); color:var(--on-c);
+    box-shadow:0 6px 0 color-mix(in oklab, var(--rc) 55%, #000), 0 16px 30px rgba(0,0,0,.45);
+    animation:pop .6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .result .hint{color:var(--ink-3); font-weight:400; font-size:15px}
+  @keyframes pop{from{opacity:0; transform:scale(.5) rotate(-6deg)}to{opacity:1; transform:none}}
+
+  #confetti{position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:10}
+
+  @media (prefers-reduced-motion: reduce){
+    .hub.idle, .pointer.tick, .wheel.settled .slice.win{animation:none}
+    .result .pill{animation:none}
+  }
+</style>
+</head>
+<body>
+  <span class="mono">Digital Wellbeing</span>
+  <h1>Spin the wheel</h1>
+
+  <div class="stage">
+    <div class="tilt">
+      <div class="base"></div>
+      <div class="rim" id="rim"></div>
+      <svg class="wheel" id="wheel" viewBox="-200 -200 400 400" aria-hidden="true">
+        <defs>
+          <radialGradient id="g-green"  cx="0" cy="0" r="200" gradientUnits="userSpaceOnUse"><stop offset=".15" style="stop-color:color-mix(in oklab, var(--c-green) 55%, #fff)"/><stop offset="1" style="stop-color:var(--c-green)"/></radialGradient>
+          <radialGradient id="g-red"    cx="0" cy="0" r="200" gradientUnits="userSpaceOnUse"><stop offset=".15" style="stop-color:color-mix(in oklab, var(--c-red) 55%, #fff)"/><stop offset="1" style="stop-color:var(--c-red)"/></radialGradient>
+          <radialGradient id="g-blue"   cx="0" cy="0" r="200" gradientUnits="userSpaceOnUse"><stop offset=".15" style="stop-color:color-mix(in oklab, var(--c-blue) 55%, #fff)"/><stop offset="1" style="stop-color:var(--c-blue)"/></radialGradient>
+          <radialGradient id="g-yellow" cx="0" cy="0" r="200" gradientUnits="userSpaceOnUse"><stop offset=".15" style="stop-color:color-mix(in oklab, var(--c-yellow) 55%, #fff)"/><stop offset="1" style="stop-color:var(--c-yellow)"/></radialGradient>
+        </defs>
+        <path class="slice" d="M0 0 L0 -200 A200 200 0 0 1 200 0 Z"  fill="url(#g-green)"/>
+        <path class="slice" d="M0 0 L200 0 A200 200 0 0 1 0 200 Z"   fill="url(#g-red)"/>
+        <path class="slice" d="M0 0 L0 200 A200 200 0 0 1 -200 0 Z"  fill="url(#g-blue)"/>
+        <path class="slice" d="M0 0 L-200 0 A200 200 0 0 1 0 -200 Z" fill="url(#g-yellow)"/>
+        <g stroke="#0b0b0e" stroke-width="4" stroke-linecap="round">
+          <line x1="0" y1="0" x2="0" y2="-200"/><line x1="0" y1="0" x2="200" y2="0"/>
+          <line x1="0" y1="0" x2="0" y2="200"/><line x1="0" y1="0" x2="-200" y2="0"/>
+        </g>
+        <g id="pegs" fill="#f3f1ec" stroke="#0b0b0e" stroke-width="1.5"></g>
+        <g text-anchor="middle">
+          <text transform="rotate(-45)"><tspan x="122" y="-4">I'm good</tspan><tspan x="122" y="16">enough</tspan></text>
+          <text transform="rotate(45)"><tspan x="122" y="-4">I'm doing</tspan><tspan x="122" y="16">great</tspan></text>
+          <text transform="rotate(135)"><tspan x="122" y="-4">I'm resisting</tspan><tspan x="122" y="16">distractions</tspan></text>
+          <text transform="rotate(225)"><tspan x="122" y="6">I'm a hero</tspan></text>
+        </g>
+      </svg>
+      <div class="gloss"></div>
+      <div class="pointer" id="pointer" aria-hidden="true">
+        <svg viewBox="0 0 60 80">
+          <defs><linearGradient id="g-ptr" x1="0" x2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#b9b6ae"/></linearGradient></defs>
+          <path d="M30 78 L6 26 A26 26 0 1 1 54 26 Z" fill="url(#g-ptr)" stroke="#0b0b0e" stroke-width="3" stroke-linejoin="round"/>
+          <circle cx="30" cy="22" r="8" fill="#0b0b0e"/>
+        </svg>
+      </div>
+      <button class="hub idle" id="spin" type="button">SPIN</button>
+    </div>
+  </div>
+
+  <div class="result" id="result" aria-live="polite"><span class="hint">Tap spin and see what you get.</span></div>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+  // Clockwise from the top, matching the slice paths above.
+  const SLICES = [
+    { label: "I'm good enough",            css: '--c-green' },
+    { label: "I'm doing great",            css: '--c-red' },
+    { label: "I'm resisting distractions", css: '--c-blue' },
+    { label: "I'm a hero",                 css: '--c-yellow' },
+  ];
+  const PEGS = 16, BULBS = 20, SPIN_MS = 5200;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  const wheel = document.getElementById('wheel');
+  const btn = document.getElementById('spin');
+  const result = document.getElementById('result');
+  const pointer = document.getElementById('pointer');
+  const slices = wheel.querySelectorAll('.slice');
+
+  // pegs on the wheel edge, one per pointer tick
+  const pegs = document.getElementById('pegs');
+  for (let i = 0; i < PEGS; i++) {
+    const a = (i / PEGS) * 2 * Math.PI;
+    pegs.insertAdjacentHTML('beforeend', `<circle cx="${Math.sin(a) * 188}" cy="${-Math.cos(a) * 188}" r="5"/>`);
+  }
+  // marquee bulbs on the rim
+  const rim = document.getElementById('rim');
+  const bulbs = [];
+  for (let i = 0; i < BULBS; i++) {
+    const a = (i / BULBS) * 2 * Math.PI;
+    const b = document.createElement('i');
+    b.className = 'bulb';
+    rim.appendChild(b);
+    bulbs.push({ el: b, a });
+  }
+  // keep bulbs on the rim at any size
+  function placeBulbs() {
+    const R = rim.clientWidth * 0.473;
+    bulbs.forEach(({ el, a }) => el.style.transform = `translate(${Math.sin(a) * R}px, ${-Math.cos(a) * R}px)`);
+  }
+  placeBulbs();
+  addEventListener('resize', placeBulbs);
+
+  let marquee = null;
+  function lights(mode) {
+    clearInterval(marquee);
+    let step = 0;
+    if (mode === 'chase') {
+      marquee = setInterval(() => { step++; bulbs.forEach((b, i) => b.el.classList.toggle('off', (i + step) % 3 !== 0)); }, 90);
+    } else if (mode === 'flash') {
+      marquee = setInterval(() => { step++; bulbs.forEach(b => b.el.classList.toggle('off', step % 2 === 0)); if (step > 9) lights('idle'); }, 160);
+    } else {
+      marquee = setInterval(() => { step++; bulbs.forEach((b, i) => b.el.classList.toggle('off', (i + step) % 2 === 0)); }, 700);
+    }
+  }
+  lights('idle');
+
+  // ---- spin ----
+  let rotation = 0;
+  const easeOut = t => 1 - Math.pow(1 - t, 4);
+
+  btn.addEventListener('click', () => {
+    btn.disabled = true;
+    btn.classList.remove('idle');
+    wheel.classList.remove('settled');
+    slices.forEach(s => s.classList.remove('win'));
+    result.innerHTML = '';
+    document.documentElement.style.setProperty('--glow', 'var(--accent)');
+    lights('chase');
+
+    const pick = Math.floor(Math.random() * SLICES.length);
+    // land inside the slice, away from its edges
+    const target = pick * 90 + 15 + Math.random() * 60;
+    const from = rotation;
+    const to = from + 360 * 6 + ((360 - target) - (from % 360) + 720) % 360;
+    const dur = reduced ? 1200 : SPIN_MS;
+    const t0 = performance.now();
+    let lastPeg = Math.floor(from / (360 / PEGS));
+
+    (function frame(now) {
+      const t = Math.min(1, (now - t0) / dur);
+      rotation = from + (to - from) * easeOut(t);
+      wheel.style.transform = `rotate(${rotation}deg)`;
+      const peg = Math.floor(rotation / (360 / PEGS));
+      if (peg !== lastPeg && !reduced) {
+        lastPeg = peg;
+        pointer.classList.remove('tick'); void pointer.offsetWidth; pointer.classList.add('tick');
+      }
+      if (t < 1) requestAnimationFrame(frame);
+      else land(pick);
+    })(t0);
+  });
+
+  function land(pick) {
+    const s = SLICES[pick];
+    slices[pick].classList.add('win');
+    wheel.classList.add('settled');
+    document.documentElement.style.setProperty('--glow', `var(${s.css})`);
+    result.innerHTML = `<span class="pill" style="--rc:var(${s.css})">${s.label}</span>`;
+    lights('flash');
+    if (!reduced) confetti(css(s.css));
+    btn.disabled = false;
+    btn.textContent = 'AGAIN';
+    btn.classList.add('idle');
+  }
+
+  // ---- confetti ----
+  const cv = document.getElementById('confetti');
+  const ctx = cv.getContext('2d');
+  let parts = [], running = false;
+
+  function confetti(winColor) {
+    const dpr = devicePixelRatio || 1;
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const palette = [winColor, winColor, css('--c-red'), css('--c-yellow'), css('--c-blue'), css('--c-green'), '#f3f1ec'];
+    const box = document.querySelector('.stage').getBoundingClientRect();
+    const cx = box.left + box.width / 2, cy = box.top + box.height / 2;
+    // one burst from the wheel, two cannons from the bottom corners
+    const shots = [
+      { x: cx, y: cy, n: 110, ang: -Math.PI / 2, spread: Math.PI * 1.1, v: 13 },
+      { x: 0, y: innerHeight, n: 70, ang: -Math.PI / 3, spread: 0.6, v: 19 },
+      { x: innerWidth, y: innerHeight, n: 70, ang: -Math.PI * 2 / 3, spread: 0.6, v: 19 },
+    ];
+    shots.forEach(s => {
+      for (let i = 0; i < s.n; i++) {
+        const a = s.ang + (Math.random() - .5) * s.spread;
+        const v = s.v * (0.55 + Math.random() * 0.6);
+        parts.push({
+          x: s.x, y: s.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v,
+          w: 6 + Math.random() * 6, h: 4 + Math.random() * 8,
+          rot: Math.random() * Math.PI, vr: (Math.random() - .5) * 0.35,
+          flip: Math.random() * Math.PI, vf: 0.08 + Math.random() * 0.15,
+          round: Math.random() < 0.25,
+          c: palette[Math.floor(Math.random() * palette.length)],
+        });
+      }
+    });
+    if (!running) { running = true; requestAnimationFrame(draw); }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    parts.forEach(p => {
+      p.vy += 0.32; p.vx *= 0.985; p.vy *= 0.985;
+      p.x += p.vx + Math.sin(p.flip) * 0.6; p.y += p.vy;
+      p.rot += p.vr; p.flip += p.vf;
+      ctx.save();
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(1, Math.cos(p.flip));
+      ctx.fillStyle = p.c;
+      if (p.round) { ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2); ctx.fill(); }
+      else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    parts = parts.filter(p => p.y < innerHeight + 40);
+    if (parts.length) requestAnimationFrame(draw);
+    else { running = false; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+  }
+</script>
+</body>
+</html>
