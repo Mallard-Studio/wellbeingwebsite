@@ -1,4 +1,7 @@
 ---
+4/10/2026 (6)
+QR code for `/moodmeter/v2/` at `assets/qr-moodmeter.png` + `.svg`, same style as the wheel QR, both decode-checked. [assets/]
+---
 4/10/2026 (5)
 `/moodmeter/v2/`: axes removed, he disliked them. Replaced by a mid-level explanation: after zooming out, the stage just done gets a white frame, all squares dim, an arrow draws toward the next block and a pill names the direction ("More energy", "Less energy", "Happier", "Less happy", or two joined by a dot for the diagonal move). Holds about 1.7s, then the task cue and the zoom in. ES and AR drafted. [moodmeter/v2/index.html]
 ---
