@@ -217,3 +217,45 @@ Mobile is checked by loading the page in an iframe at 390px and 360px wide. Chro
 ## Open items
 
 Tracked in `BACKLOG.md` as items 7 and 8: the function is undeployed, and the page collects submissions while being unlinked and not `noindex`.
+
+---
+
+## Variant: `/moodmeter/v2/`
+
+Built 2026-10-03, reshaped the same day to his five-stage game. Same `DATA` and fonts. Same colours except red, which is the Android `mood_red` #ff0606 at his ask.
+
+| Stage | Shows | Pick |
+|---|---|---|
+| 1 | four colours: grrrr red, yaaay yellow, blah blue, hmmm green | 1 |
+| 2 | the 3x3 block next to the centre, `abs(x)` 1-3, `abs(y)` 1-3 | 3 |
+| 3 | out on energy, `abs(x)` 1-3, `abs(y)` 4-6 | 2 |
+| 4 | back in, out on pleasantness, `abs(x)` 4-6, `abs(y)` 1-3 | 2 |
+| 5 | far corner, `abs(x)` 4-6, `abs(y)` 4-6 | 2 |
+
+**Zoom.** All 36 cells live in one board. Picking a colour flies a copy of the tile, emoji and word included, over the board in 380ms; the 36 stay hidden until it lands, then it fades and the board cracks into 36 squares, then zooms onto stage 2's block. Between stages it zooms out to the 36, then into the next block. Cells rest in full colour; a chosen cell fades and gets a tick. The title stays on every stage, small.
+
+**End.** Nav, title and count go. The board zooms out to all 36 with the picks marked, showing names instead of emoji (object emoji like a chain or a syringe read as fake feelings). Tapping one shows its name and meaning above the grid, then fades over 3.5s; picks do not change. Below: "You just made emotional intelligence easier for humanity." large, the booth line, Try again, Home.
+
+**Submitting is off** for review: `SUBMIT = false` near the top of the script sends Send straight to the end screen.
+
+3+2+2+2 = 9, sent at stage 5 as `{ "quadrant": "red", "picks": [9] }` to the same endpoint. Then the thank-you lines, the booth line (H4-P205), Try again and Home. Back and the phone's back gesture step through the stages; after a send the stage history is unwound so Back leaves the page.
+
+**Limit:** ten sends per network per UTC day, fields `day` and `dayCount` in `moodMeterIpQuota/{ipHash}` next to v1's `count`. A 429 shows "Limit reached" and no booth line.
+
+**Open:** his notice still says "Two submissions per network".
+
+---
+
+## Similar feelings (`/moodmeter/v2/`)
+
+Added 2026-10-04 at his ask. Picking a feeling greys out and strikes through its near-twins on every stage; tapping one shows a toast, "You already selected a similar emotion" over the twin's name in capitals. Unpicking frees them. A stage never drops below the number of picks it still needs: if it would, its twins stay open. Every link is equal weight. **Draft, for his review:**
+
+- **red:** Uneasy / Apprehensive; Uneasy / Concerned; Concerned / Worried; Concerned / Troubled; Worried / Troubled; Worried / Anxious; Apprehensive / Worried; Apprehensive / Anxious; Nervous / Jittery; Nervous / Anxious; Jittery / Restless; Tense / Stressed; Tense / Pressured; Stressed / Pressured; Stressed / Overwhelmed; Peeved / Irritated; Peeved / Annoyed; Irritated / Annoyed; Annoyed / Frustrated; Angry / Furious; Angry / Irate; Furious / Livid; Furious / Enraged; Livid / Enraged; Irate / Livid; Irate / Furious; Scared / Frightened; Frightened / Terrified; Terrified / Panicked; Envious / Jealous; Contempt / Repulsed
+- **yellow:** Pleased / Pleasant; Pleased / Delighted; Upbeat / Alive; Cheerful / Upbeat; Cheerful / Happy; Delighted / Happy; Happy / Joyful; Joyful / Elated; Elated / Ecstatic; Thrilled / Ecstatic; Thrilled / Excited; Exhilarated / Thrilled; Excited / Eager; Excited / Enthusiastic; Enthusiastic / Eager; Energized / Alive; Hopeful / Optimistic; Wishful / Hopeful; Accomplished / Successful; Accomplished / Productive; Accomplished / Proud; Successful / Proud; Confident / Empowered; Motivated / Determined; Motivated / Inspired; Focused / Engaged; Awe / Amazed; Surprised / Amazed
+- **blue:** Down / Sad; Down / Glum; Depressed / Miserable; Hopeless / Despair; Helpless / Hopeless; Trapped / Helpless; Tired / Fatigued; Fatigued / Exhausted; Exhausted / Spent; Spent / Burned Out; Exhausted / Burned Out; Bored / Meh; Meh / Apathetic; Apathetic / Disengaged; Bored / Disengaged; Numb / Apathetic; Disheartened / Discouraged; Disappointed / Disheartened; Forlorn / Lonely; Lonely / Disconnected; Excluded / Alienated; Disconnected / Alienated; Ashamed / Humiliated; Ashamed / Guilty; Insecure / Vulnerable; Pessimistic / Glum
+- **green:** Calm / Peaceful; Calm / Tranquil; Peaceful / Tranquil; Tranquil / Serene; Peaceful / Serene; Relaxed / Chill; Chill / Mellow; Relaxed / Mellow; At ease / Comfortable; At ease / Relaxed; Carefree / Chill; Safe / Secure; Thankful / Grateful; Grateful / Blessed; Appreciated / Valued; Valued / Respected; Understood / Accepted; Supported / Loved; Connected / Included; Included / Accepted; Sympathetic / Compassionate; Empathetic / Compassionate; Empathetic / Sympathetic; Content / Satisfied; Fulfilled / Satisfied; Content / Fulfilled
+
+Also fixed in v2's copy of `DATA`: Serene carried Shocked's definition ("experiencing extreme horror, disgust, and surprise"); it now reads "deeply calm and untroubled, completely at peace" from the translations sheet. **v1 `/moodmeter/` still has the wrong line.**
+
+
+**Between stages (2026-10-04).** Axes were tried and dropped. After the zoom out, the finished block keeps a white frame, the squares dim, an arrow draws from it toward the next block, and a pill says which way: up "More energy", down "Less energy", right "Happier", left "Less happy", read off screen direction so it holds for every colour. The diagonal move (stage 3 to 4) shows two joined by a dot.

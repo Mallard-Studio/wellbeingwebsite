@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#151117">
+<title>Your most common emotions</title>
+<meta name="description" content="Pick your colour of the mood meter, then the nine feelings in it you would actually use.">
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Young+Serif&family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:       oklch(0.14 0.014 300);
+    --surface:  oklch(0.20 0.016 300);
+    --line:     oklch(0.30 0.014 300);
+    --ink:      oklch(0.96 0.008 85);
+    --ink-2:    oklch(0.78 0.012 300);
+    --ink-3:    oklch(0.60 0.014 300);
+    --on-mood:  oklch(0.17 0.02 300);
+
+    --red:    #ff0606; /* mood_red, the Android app's own */
+    --yellow: oklch(85.961% 0.16344 90.256);
+    --blue:   oklch(62.448% 0.19639 269.544);
+    --green:  oklch(79.284% 0.22547 145.429);
+
+    --s-xs: 4px; --s-sm: 8px; --s-md: 12px; --s-lg: 16px;
+    --s-xl: 24px; --s-2xl: 32px; --s-3xl: 48px; --s-4xl: 64px;
+
+    --ios: cubic-bezier(0.32, 0.72, 0, 1);
+    --out: cubic-bezier(0.22, 1, 0.36, 1);
+    --col: 560px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%; overflow-x:clip}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Comfortaa', 'Almarai', system-ui, sans-serif; font-size:15px; line-height:1.5;
+    -webkit-font-smoothing:antialiased; min-height:100dvh;
+  }
+  button{font:inherit; color:inherit}
+  [hidden]{display:none !important}
+  [data-c="red"]{--zc:var(--red)}
+  [data-c="yellow"]{--zc:var(--yellow)}
+  [data-c="blue"]{--zc:var(--blue)}
+  [data-c="green"]{--zc:var(--green)}
+
+  .view{
+    max-width:var(--col); margin:0 auto; min-height:100dvh;
+    padding: calc(env(safe-area-inset-top) + var(--s-3xl)) max(20px, env(safe-area-inset-left)) 0;
+  }
+  h1, h2{font-family:'Young Serif', 'Almarai', Georgia, serif; font-weight:400; margin:0; letter-spacing:-.02em}
+
+  /* ---- stage 1: choose a colour ---- */
+  #home{display:flex; flex-direction:column}
+  #home h1{font-size:clamp(34px, 9vw, 46px); line-height:1.04; max-width:13ch; margin-bottom:var(--s-2xl)}
+
+  /* The four tiles are the mood meter itself: energy up, pleasant right. */
+  .meter{display:grid; grid-template-columns:1fr 1fr; gap:var(--s-md); width:100%; max-width:max(300px, 58dvh)}
+  .quad{
+    position:relative; aspect-ratio:1 / 1; border:0; border-radius:28px;
+    background:var(--zc); color:var(--on-mood); cursor:pointer;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; gap:var(--s-sm);
+    padding:var(--s-lg); text-align:center;
+    transition:transform .35s var(--ios), opacity .3s var(--out);
+  }
+  .quad:active{transform:scale(.96)}
+  .quad:focus-visible{outline:3px solid var(--ink); outline-offset:3px}
+  .quad .em{font-size:clamp(40px, 12vw, 52px); line-height:1}
+  .quad .word{font-family:'Young Serif', 'Almarai', Georgia, serif; font-size:clamp(22px, 6.4vw, 30px); line-height:1.1}
+
+  .fine{
+    margin-top:auto; padding:var(--s-4xl) 0 calc(var(--s-xl) + env(safe-area-inset-bottom));
+    color:var(--ink-3); font-size:12px; line-height:1.6;
+  }
+  .fine p{margin:0}
+
+  /* ---- the game: stages 2 to 5 and the end ---- */
+  #game{padding-top:0; padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+  #game.ended{padding-bottom:calc(var(--s-xl) + env(safe-area-inset-bottom))}
+  .nav{
+    position:sticky; top:0; z-index:10;
+    display:grid; grid-template-columns:44px 1fr 44px; align-items:center;
+    margin:0 calc(-1 * max(20px, env(safe-area-inset-left)));
+    padding: env(safe-area-inset-top) max(8px, env(safe-area-inset-left)) 0;
+    height:calc(56px + env(safe-area-inset-top));
+    background:color-mix(in oklab, var(--bg) 80%, transparent);
+    -webkit-backdrop-filter:saturate(1.6) blur(20px); backdrop-filter:saturate(1.6) blur(20px);
+  }
+  .back{
+    width:44px; height:44px; border:0; background:none; border-radius:50%;
+    display:grid; place-items:center; cursor:pointer; color:var(--ink);
+    transition:opacity .2s;
+  }
+  .back svg{width:22px; height:22px}
+  [dir="rtl"] .back svg{transform:scaleX(-1)}
+
+  /* Arabic glyphs are missing from Comfortaa and Young Serif, so they fall
+     through to Almarai, chosen for easy reading; Google only sends those subsets when
+     Arabic text is on screen. The meter and the board keep their own
+     direction in every language: pleasant is always on the right. */
+  .meter, .vp{direction:ltr}
+  /* negative tracking pulls joined Arabic letters apart; Arabic also wants taller lines */
+  :lang(ar) h1, :lang(ar) h2{letter-spacing:0; line-height:1.3}
+  :lang(ar) body{line-height:1.7}
+  .langrow{display:flex; align-items:center; justify-content:flex-end; gap:var(--s-sm); margin:calc(-1 * var(--s-xl)) 0 var(--s-xl)}
+  .langrow span{font-size:12px; line-height:1.3; color:var(--ink-3); text-align:end}
+  .lang{display:flex; flex:none; gap:2px; padding:2px; background:var(--surface); border-radius:999px}
+  .lang button{border:0; background:none; color:var(--ink-2); font-size:13px; font-weight:600; cursor:pointer;
+               min-width:52px; height:32px; padding:0 var(--s-md); border-radius:999px;
+               transition:background .25s var(--out), color .25s var(--out)}
+  .lang button[aria-pressed="true"]{background:var(--ink); color:var(--on-mood)}
+  .lang button:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+  .back:focus-visible{outline:2px solid var(--ink)}
+  .ended .back{opacity:0; pointer-events:none}
+  .steps{display:flex; gap:6px; justify-self:center; width:min(180px, 50vw)}
+  .steps i{flex:1; height:4px; border-radius:2px; background:var(--line); transition:background .4s var(--out)}
+  .steps i.on{background:var(--zc)}
+
+  .kicker{font-family:'Young Serif', 'Almarai', Georgia, serif; font-size:17px; line-height:1.3; color:var(--ink-2); margin:var(--s-xs) 0 0}
+  .head{display:flex; align-items:baseline; justify-content:space-between; gap:var(--s-lg); margin:var(--s-sm) 0 var(--s-lg)}
+  .head h2{font-size:clamp(32px, 8.4vw, 40px); line-height:1.05}
+  .count{font-family:'Young Serif', 'Almarai', Georgia, serif; font-size:24px; color:var(--ink-3); white-space:nowrap; transition:opacity .2s}
+  .count b{font-weight:400; color:var(--zc)}
+  .count.bump{animation:bump .4s var(--out)}
+  @keyframes bump{30%{transform:translateX(-5px)}60%{transform:translateX(4px)}}
+  .ended .count{opacity:0}
+  .fade{transition:opacity .3s var(--out)}
+  .fade.out{opacity:0}
+
+  /* The whole 6x6 quadrant lives in one board. A stage is the board zoomed
+     onto one 3x3 block of it; between stages it zooms back out to all 36. */
+  .vp{position:relative; width:100%; aspect-ratio:1 / 1; overflow:hidden; margin:0 auto;
+      max-width:min(100%, calc(100dvh - 420px)); min-width:min(100%, 300px)}
+  .board{
+    position:absolute; inset:0; transform-origin:0 0;
+    display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); grid-template-rows:repeat(6, minmax(0,1fr)); gap:4px;
+    transition:transform .62s var(--ios);
+  }
+  .board.snap{transition:none}
+  .cell{
+    position:relative; min-width:0; min-height:0; border:0; border-radius:9px; padding:3px 2px;
+    cursor:pointer; overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    background:var(--zc); color:var(--on-mood);
+    transition:background .22s var(--out), color .22s var(--out), filter .2s;
+  }
+  .cell:focus-visible{outline:1px solid var(--ink); outline-offset:1px}
+  /* sizes are for the 36 view; zoomed to a stage they read about twice as big (name ~17px) */
+  .cell .em{font-size:15px; line-height:1}
+  .cell .nm{font-size:8.4px; line-height:1.12; font-weight:700; text-align:center; max-width:100%; overflow-wrap:break-word;
+            transition:opacity .3s var(--out)}
+  .cell .tick{
+    position:absolute; top:4px; right:4px; width:11px; height:11px; border-radius:50%;
+    background:var(--zc); color:var(--on-mood); display:grid; place-items:center;
+    transform:scale(0); transition:transform .4s var(--ios);
+  }
+  .cell .tick svg{width:6px; height:6px}
+  /* chosen fades back into the page, the rest stay full colour */
+  .cell[aria-pressed="true"]{background:color-mix(in oklab, var(--zc) 26%, var(--bg)); color:var(--ink)}
+  .cell[aria-pressed="true"] .tick{transform:scale(1)}
+  .cell.off{pointer-events:none}
+  .board.full .cell:not(.off)[aria-pressed="false"]{filter:saturate(.55) brightness(.8)}
+  .board.wide .cell .nm{opacity:0}
+  /* too close to something already picked: still tappable, but it only says why */
+  .cell.near{background:color-mix(in oklab, var(--zc) 14%, var(--surface)); color:var(--ink-3)}
+  .cell.near .em{opacity:.35}
+  .cell.near .nm{text-decoration:line-through; text-decoration-thickness:.08em}
+  .board.moving .cell{pointer-events:none}
+  .cell.reject{animation:reject .34s var(--out)}
+  @keyframes reject{25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}
+  @media (hover:hover){ .cell:hover{filter:brightness(1.07)} }
+  .board.crack .cell{animation:crack .45s var(--ios) backwards; animation-delay:var(--d)}
+  @keyframes crack{from{transform:scale(1.14)}}
+
+  /* the colour tile flying from stage 1 into the board */
+  .flyer{position:fixed; z-index:20; margin:0; pointer-events:none; transform-origin:0 0}
+  .board.hush{opacity:0}
+
+  .dock{
+    position:fixed; left:0; right:0; bottom:0; z-index:10;
+    padding:var(--s-md) max(20px, env(safe-area-inset-left)) calc(var(--s-lg) + env(safe-area-inset-bottom));
+    background:color-mix(in oklab, var(--bg) 82%, transparent);
+    -webkit-backdrop-filter:saturate(1.6) blur(20px); backdrop-filter:saturate(1.6) blur(20px);
+  }
+  .ended .dock{display:none}
+  .dock-in{max-width:calc(var(--col) - 40px); margin:0 auto}
+  /* the space between the grid and the button is where a tapped feeling explains itself */
+  .define{min-height:120px; margin-top:var(--s-xl)}
+  .define b{display:block; font-family:'Young Serif', 'Almarai', Georgia, serif; font-weight:400; color:var(--ink); font-size:clamp(24px, 6.8vw, 30px); line-height:1.15; margin-bottom:var(--s-sm)}
+  .define span{font-size:17px; line-height:1.5; color:var(--ink-2)}
+  .define.in{animation:defIn .35s var(--out)}
+  @keyframes defIn{from{opacity:0; transform:translateY(6px)}}
+  .ended .define{display:none}
+
+  .go{
+    display:flex; align-items:center; justify-content:center; text-decoration:none;
+    width:100%; height:54px; border:0; border-radius:999px; cursor:pointer;
+    font-weight:700; font-size:16px;
+    background:var(--zc, var(--ink)); color:var(--on-mood);
+    transition:background .25s var(--out), color .25s var(--out), transform .3s var(--ios);
+  }
+  .go:active{transform:scale(.98)}
+  .go:focus-visible{outline:2px solid var(--ink); outline-offset:3px}
+  .go[disabled]{background:var(--surface); color:var(--ink-2); cursor:default; transform:none}
+  .go.ghost{background:none; color:var(--ink-2)}
+
+  /* ---- the end ---- */
+  .end{text-align:center; padding-top:var(--s-xl)}
+  .end p{margin:0 auto; max-width:30ch; color:var(--ink-2); font-size:16px}
+  .end .big{font-family:'Young Serif', 'Almarai', Georgia, serif; font-size:clamp(21px, 6vw, 30px); line-height:1.25; color:var(--ink); max-width:none; white-space:pre-line}
+
+  /* The task for each stage, drawn big in outline over the grid while it zooms. */
+  .cue{position:absolute; inset:0; z-index:2; display:grid; place-items:center; pointer-events:none; opacity:0;
+       font-family:'Young Serif', 'Almarai', Georgia, serif; font-size:clamp(64px, 22vw, 116px); line-height:1; white-space:nowrap;
+       color:oklch(0.12 0.02 300); -webkit-text-stroke:2.5px var(--ink); paint-order:stroke fill; filter:drop-shadow(0 2px 10px oklch(0.1 0.02 300 / .7))}
+  /* Between stages: the stage just done keeps a frame, everything dims, and an
+     arrow with a few words points at where the next stage sits. */
+  .guide{position:absolute; inset:0; z-index:1; pointer-events:none}
+  .guide .frame{position:absolute; border:2.5px solid var(--ink); border-radius:12px; opacity:0;
+                transition:opacity .3s var(--out)}
+  .guide svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible}
+  .guide line{stroke:var(--ink); stroke-width:3.5; stroke-linecap:round; stroke-dasharray:var(--len); stroke-dashoffset:var(--len);
+              filter:drop-shadow(0 1px 4px oklch(0.1 0.02 300 / .6))}
+  .guide path{fill:var(--ink); opacity:0; filter:drop-shadow(0 1px 4px oklch(0.1 0.02 300 / .6))}
+  .guide .say{position:absolute; transform:translate(-50%, -50%) scale(.9); opacity:0; white-space:nowrap;
+              background:var(--ink); color:var(--on-mood); font-weight:700; font-size:15px;
+              padding:8px 16px; border-radius:999px; box-shadow:0 6px 18px oklch(0.08 0.02 300 / .55)}
+  .guide.on .frame{opacity:1}
+  .guide.go line{transition:stroke-dashoffset .55s var(--out); stroke-dashoffset:0}
+  .guide.go path{transition:opacity .2s .45s; opacity:1}
+  .guide.go .say{transition:opacity .3s .35s var(--out), transform .4s .35s var(--ios); opacity:1; transform:translate(-50%, -50%)}
+  .board.dim .cell{filter:brightness(.62) saturate(.8)}
+  .cue.play{animation:cue 1.5s var(--out) both}
+  @keyframes cue{0%{opacity:0; transform:scale(.7)} 22%{opacity:1; transform:scale(1)} 70%{opacity:1; transform:scale(1.04)} 100%{opacity:0; transform:scale(1.18)}}
+  @media (prefers-reduced-motion: reduce){ .cue{display:none} }
+
+  /* The end is the 36 alone. Nav, title and count step aside; the strip above
+     the grid only holds a feeling the reader taps, and lets it go slowly. */
+  #game.ended{padding-top:calc(env(safe-area-inset-top) + var(--s-xl))}
+  .ended .nav, .ended .kicker, .ended .head{display:none}
+  .note{display:none; height:76px; margin-bottom:var(--s-md); opacity:0; transition:opacity 3.5s ease-in}
+  .ended .note{display:block}
+  .note.on{opacity:1; transition:opacity .25s var(--out)}
+  .note b{display:block; font-family:'Young Serif', 'Almarai', Georgia, serif; font-weight:400; font-size:20px; line-height:1.25; color:var(--ink)}
+  .note span{font-size:14px; line-height:1.45; color:var(--ink-2)}
+  /* on the overview the names carry it; a chain or a syringe on its own does not read as a feeling */
+  .ended .board .cell .em{display:none}
+  .ended .board.wide .cell .nm{opacity:1; font-size:8.6px; line-height:1.15}
+  .end .booth{margin-top:var(--s-md); color:var(--ink)}
+  .end .booth b{font-weight:700; color:var(--zc); white-space:nowrap}
+  .end .acts{display:grid; gap:var(--s-sm); margin-top:var(--s-2xl)}
+  .end.show{animation:rise .6s var(--out) backwards .2s}
+  @keyframes rise{from{opacity:0; transform:translateY(12px)}}
+
+  /* says why a crossed-out feeling cannot be picked, then slides away */
+  .toast{
+    position:fixed; left:50%; top:calc(env(safe-area-inset-top) + 14px); z-index:30;
+    width:max-content; max-width:calc(100vw - 40px);
+    transform:translate(-50%, -150%); opacity:0; pointer-events:none;
+    background:var(--ink); color:var(--on-mood); text-align:center;
+    padding:12px 22px; border-radius:22px; box-shadow:0 8px 24px oklch(0.08 0.02 300 / .5);
+    transition:transform .5s var(--ios), opacity .3s var(--out);
+  }
+  .toast.on{transform:translate(-50%, 0); opacity:1}
+  .toast span{display:block; font-size:13px; line-height:1.4}
+  .toast b{display:block; margin-top:2px; font-size:16px; font-weight:700; letter-spacing:.04em; text-transform:uppercase}
+  :lang(ar) .toast b{letter-spacing:0}
+  .pop-in{animation:popIn .48s var(--ios)}
+  @keyframes popIn{from{transform:translateX(-18%); opacity:0}}
+  .chrome-in{animation:chromeIn .5s var(--out) backwards .25s}
+  @keyframes chromeIn{from{opacity:0}}
+
+  @media (min-width:900px){ .view{padding-top:var(--s-4xl)} #game{padding-top:0} }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-delay:0ms !important; transition-duration:.001ms !important}
+  }
+</style>
+</head>
+<body>
+
+<main class="view" id="home">
+  <div class="langrow">
+  <span id="langLabel" data-t="langLabel">Choose your comfort language</span>
+  <div class="lang" id="lang" role="group" aria-labelledby="langLabel">
+    <button type="button" data-l="en" lang="en">EN</button>
+    <button type="button" data-l="es" lang="es">ES</button>
+    <button type="button" data-l="ar" lang="ar">عربي</button>
+  </div>
+  </div>
+  <h1 data-t="title">Choose your most common emotions</h1>
+  <div class="meter" id="meter"></div>
+  <footer class="fine">
+    <p data-t="notice">The data will be shared with the Digital Wellbeing team, and it may be shared publicly, but your identity will remain absolutely anonymous. Two submissions per network.</p>
+  </footer>
+</main>
+
+<main class="view" id="game" hidden>
+  <nav class="nav chrome">
+    <button class="back" id="back" type="button" aria-label="Back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="steps" id="steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <span></span>
+  </nav>
+  <p class="kicker chrome" data-t="title">Choose your most common emotions</p>
+  <div class="head chrome">
+    <h2 class="fade" id="title">Pick 3</h2>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="note" id="note" aria-live="polite"></div>
+  <div class="vp" id="vp"><div class="board" id="board"></div><div class="guide" id="guide" aria-hidden="true"><div class="frame"></div><svg><line/><path/></svg><div class="say"></div></div><div class="cue" id="cue" aria-hidden="true"></div></div>
+  <div class="define" id="define" aria-live="polite"></div>
+  <section class="end" id="end" hidden>
+    <p class="big" id="endLine">You just made emotional intelligence easier for humanity.</p>
+    <p class="booth" id="booth" data-t="booth">Collect your sticker at our booth <b>H4-P205</b>.</p>
+    <div class="acts">
+      <button class="go" id="again" type="button" data-t="again">Try again</button>
+      <a class="go ghost" href="/" data-t="home">Home</a>
+    </div>
+  </section>
+  <div class="dock chrome">
+    <div class="dock-in">
+      <button class="go" id="go" type="button" disabled>Next</button>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const DATA = [{"n":"Enraged","e":"☠️","x":-6,"y":6,"c":"red","b":1,"d":"made furious by something. filled with extreme anger"},{"n":"Terrified","e":"🥶","x":-5,"y":6,"c":"red","b":0,"d":"consumed by fear"},{"n":"Panicked","e":"😵","x":-4,"y":6,"c":"red","b":0,"d":"feeling frantic and overcome by fear"},{"n":"Shocked","e":"😨","x":-3,"y":6,"c":"red","b":0,"d":"experiencing extreme horror, disgust, and surprise"},{"n":"Impassioned","e":"🤦","x":-2,"y":6,"c":"red","b":0,"d":"filled with lots on emotion"},{"n":"Hyper","e":"🤸‍♀️","x":-1,"y":6,"c":"red","b":0,"d":"feeling energetic and like you want to move around"},{"n":"Surprised","e":"😮","x":1,"y":6,"c":"yellow","b":0,"d":"caught off guard by something unexpected or unusual"},{"n":"Awe","e":"😯","x":2,"y":6,"c":"yellow","b":0,"d":"feeling like you are in the presence of something vast"},{"n":"Exhilarated","e":"😃","x":3,"y":6,"c":"yellow","b":0,"d":"in high spirits; cheerful and invigorated"},{"n":"Thrilled","e":"🤩","x":4,"y":6,"c":"yellow","b":1,"d":"feeling very excited all of a sudden"},{"n":"Elated","e":"🥳","x":5,"y":6,"c":"yellow","b":0,"d":"very joyful, proud, or enthusiastic"},{"n":"Ecstatic","e":"🤣","x":6,"y":6,"c":"yellow","b":1,"d":"feeling the greatest amount of joy or happiness"},{"n":"Livid","e":"😡","x":-6,"y":5,"c":"red","b":0,"d":"feeling furious about something or someone"},{"n":"Irate","e":"🤬","x":-5,"y":5,"c":"red","b":0,"d":"feeling like your anger is almost out of control"},{"n":"Overwhelmed","e":"😖","x":-4,"y":5,"c":"red","b":0,"d":"feeling like you have been taken over by strong feelings"},{"n":"Stressed","e":"😣","x":-3,"y":5,"c":"red","b":1,"d":"Strained from too many demands and too few resources"},{"n":"Annoyed","e":"😠","x":-2,"y":5,"c":"red","b":1,"d":"bothered by something displeasing or uncomfortable"},{"n":"Pressured","e":"🗜","x":-1,"y":5,"c":"red","b":0,"d":"feeling as if an important outcome depends on you"},{"n":"Excited","e":"🤩","x":1,"y":5,"c":"yellow","b":1,"d":"enthusiastic about something in the future"},{"n":"Determined","e":"🧐","x":2,"y":5,"c":"yellow","b":1,"d":"knowing your goal and insisting on achieving it"},{"n":"Successful","e":"🏆","x":3,"y":5,"c":"yellow","b":0,"d":"feeling like you've achieved something important to you"},{"n":"Amazed","e":"🤯","x":4,"y":5,"c":"yellow","b":0,"d":"feeling lost in wonder about a particular event"},{"n":"Inspired","e":"💡","x":5,"y":5,"c":"yellow","b":0,"d":"affected powerfully in a way that motivates you"},{"n":"Empowered","e":"💪","x":6,"y":5,"c":"yellow","b":0,"d":"feeling stronger or more confident due to someone or something that happened"},{"n":"Furious","e":"😤","x":-6,"y":4,"c":"red","b":0,"d":"full of extreme or wild anger"},{"n":"Frightened","e":"😱","x":-5,"y":4,"c":"red","b":0,"d":"afraid or fearful"},{"n":"Anxious","e":"😥","x":-4,"y":4,"c":"red","b":0,"d":"worried and uneasy about an uncertain outcome"},{"n":"Apprehensive","e":"😟","x":-3,"y":4,"c":"red","b":0,"d":"unease and worry about something that might happen"},{"n":"Irritated","e":"😠","x":-2,"y":4,"c":"red","b":0,"d":"slightly angry with or annoyed by an action or event"},{"n":"Restless","e":"🫨","x":-1,"y":4,"c":"red","b":0,"d":"unable to relax due to anxiety or boredom"},{"n":"Energized","e":"⚡","x":1,"y":4,"c":"yellow","b":0,"d":"feeling like you are wide awake and ready to get up and go"},{"n":"Eager","e":"😃","x":2,"y":4,"c":"yellow","b":0,"d":"impatiently wanting to do or get something"},{"n":"Enthusiastic","e":"🤩","x":3,"y":4,"c":"yellow","b":0,"d":"highly interested in an idea or activity"},{"n":"Joyful","e":"🥳","x":4,"y":4,"c":"yellow","b":0,"d":"feeling pleasure and in high spirits"},{"n":"Productive","e":"📈","x":5,"y":4,"c":"yellow","b":0,"d":"feeling like you are accomplished your tasks or achieving your goals"},{"n":"Proud","e":"😎","x":6,"y":4,"c":"yellow","b":1,"d":"pleased with your own achievements or those of someone close to you"},{"n":"Jealous","e":"😒","x":-6,"y":3,"c":"red","b":1,"d":"Threatened that you're losing something to someone else"},{"n":"Scared","e":"😨","x":-5,"y":3,"c":"red","b":1,"d":"feeling threat or danger, whether physical or mental"},{"n":"Angry","e":"😡","x":-4,"y":3,"c":"red","b":1,"d":"strongly bothered about a perceived injustice"},{"n":"Jittery","e":"🫨","x":-3,"y":3,"c":"red","b":0,"d":"feeling on edge and jumpy"},{"n":"FOMO","e":"😬","x":-2,"y":3,"c":"red","b":0,"d":"fear of missing out"},{"n":"Confused","e":"😵‍💫","x":-1,"y":3,"c":"red","b":1,"d":"feeling unable to make sense of something"},{"n":"Cheerful","e":"😀","x":1,"y":3,"c":"yellow","b":0,"d":"full of happy feelings"},{"n":"Curious","e":"🤓","x":2,"y":3,"c":"yellow","b":0,"d":"interested in learning something"},{"n":"Upbeat","e":"🎶","x":3,"y":3,"c":"yellow","b":0,"d":"feeling energy and bubbly"},{"n":"Happy","e":"😄","x":4,"y":3,"c":"yellow","b":1,"d":"very pleased and filled with joy"},{"n":"Motivated","e":"💪","x":5,"y":3,"c":"yellow","b":0,"d":"enthusiastic about doing something"},{"n":"Optimistic","e":"🌞","x":6,"y":3,"c":"yellow","b":0,"d":"hopeful and confident about the future"},{"n":"Envious","e":"😒","x":-6,"y":2,"c":"red","b":0,"d":"feeling of desire for something that someone else has"},{"n":"Repulsed","e":"🤢","x":-5,"y":2,"c":"red","b":0,"d":"nauseated by someone or something"},{"n":"Frustrated","e":"😤","x":-4,"y":2,"c":"red","b":0,"d":"upset because you cannot do something you want to do"},{"n":"Embarrassed","e":"🫣","x":-3,"y":2,"c":"red","b":1,"d":"Self conscious and uncomfortable about how you think others are perceiving you"},{"n":"Concerned","e":"😟","x":-2,"y":2,"c":"red","b":0,"d":"wondering if someone or something is ok"},{"n":"Tense","e":"🫨","x":-1,"y":2,"c":"red","b":0,"d":"unable to relax"},{"n":"Pleasant","e":"🤩","x":1,"y":2,"c":"yellow","b":0,"d":"feeling mostly positive"},{"n":"Focused","e":"🔎","x":2,"y":2,"c":"yellow","b":0,"d":"engaged in only one idea or activity"},{"n":"Alive","e":"🌱","x":3,"y":2,"c":"yellow","b":0,"d":"filled with energy and vitality"},{"n":"Confident","e":"😏","x":4,"y":2,"c":"yellow","b":1,"d":"feeling sure of yourself"},{"n":"Engaged","e":"🔗","x":5,"y":2,"c":"yellow","b":0,"d":"paying full attention or participating fully in something"},{"n":"Challenged","e":"⚔️","x":6,"y":2,"c":"yellow","b":0,"d":"feeling pushed to reach a higher goal"},{"n":"Contempt","e":"👎","x":-6,"y":1,"c":"red","b":0,"d":"feeling a combination of anger and disgust"},{"n":"Troubled","e":"😰","x":-5,"y":1,"c":"red","b":0,"d":"feeling worried about a problem or conflict"},{"n":"Worried","e":"😟","x":-4,"y":1,"c":"red","b":0,"d":"troubled about actual or potential problems"},{"n":"Nervous","e":"😥","x":-3,"y":1,"c":"red","b":1,"d":"jumpy and worried about uncertain event"},{"n":"Peeved","e":"🙁","x":-2,"y":1,"c":"red","b":0,"d":"slightly irritated about something"},{"n":"Uneasy","e":"😬","x":-1,"y":1,"c":"red","b":0,"d":"vague sense that something is wrong"},{"n":"Pleased","e":"😌","x":1,"y":1,"c":"yellow","b":0,"d":"feeling content and happy about particular situation or person"},{"n":"Playful","e":"😜","x":2,"y":1,"c":"yellow","b":1,"d":"feeling happy and lighthearted"},{"n":"Delighted","e":"🙂","x":3,"y":1,"c":"yellow","b":0,"d":"feeling lifted by joy"},{"n":"Wishful","e":"✨","x":4,"y":1,"c":"yellow","b":0,"d":"having or showing a wish longing"},{"n":"Hopeful","e":"🤞","x":5,"y":1,"c":"yellow","b":0,"d":"optimistic that something good will happen"},{"n":"Accomplished","e":"🏅","x":6,"y":1,"c":"yellow","b":1,"d":"feeling effective and successful"},{"n":"Disgusted","e":"🤢","x":-6,"y":-1,"c":"blue","b":0,"d":"feeling a strong dislike of someone or something"},{"n":"Trapped","e":"🔒","x":-5,"y":-1,"c":"blue","b":0,"d":"feeling like there's no way out"},{"n":"Insecure","e":"🫥","x":-4,"y":-1,"c":"blue","b":0,"d":"feeling uncertain and unconfident about yourself"},{"n":"Disheartened","e":"💔","x":-3,"y":-1,"c":"blue","b":0,"d":"loss of resolve or determination"},{"n":"Down","e":"👎","x":-2,"y":-1,"c":"blue","b":0,"d":"feeling sad and like you have little energy"},{"n":"Bored","e":"🙄","x":-1,"y":-1,"c":"blue","b":1,"d":"lacking interest in something or someone"},{"n":"Calm","e":"😌","x":1,"y":-1,"c":"green","b":1,"d":"feeling free of stress, agitation, and worry"},{"n":"At ease","e":"☺️","x":2,"y":-1,"c":"green","b":0,"d":"feeling content and comfortable"},{"n":"Understood","e":"🤝","x":3,"y":-1,"c":"green","b":0,"d":"feeling that someone get you"},{"n":"Respected","e":"🫡","x":4,"y":-1,"c":"green","b":1,"d":"feeling like people think highly of you"},{"n":"Fulfilled","e":"💪","x":5,"y":-1,"c":"green","b":0,"d":"feeling like you have accomplished important personal goals"},{"n":"Blissful","e":"😇","x":6,"y":-1,"c":"green","b":0,"d":"feeling full of joy"},{"n":"Humiliated","e":"😟","x":-6,"y":-2,"c":"blue","b":0,"d":"feeling exposed and foolish in front of others"},{"n":"Ashamed","e":"🫣","x":-5,"y":-2,"c":"blue","b":1,"d":"feeling lower self worth as a result of who you are or what you did"},{"n":"Lost","e":"🤷‍♂️","x":-4,"y":-2,"c":"blue","b":0,"d":"feeling uncomfortably alone and lacking direction"},{"n":"Disappointed","e":"😥","x":-3,"y":-2,"c":"blue","b":0,"d":"sad because your expectations were not met "},{"n":"Meh","e":"😐","x":-2,"y":-2,"c":"blue","b":1,"d":"feeling uninspired or blah"},{"n":"Tired","e":"😪","x":-1,"y":-2,"c":"blue","b":1,"d":"feeling like you need to rest"},{"n":"Good","e":"🙂","x":1,"y":-2,"c":"green","b":1,"d":"feeling positive, like things are just fine"},{"n":"Thoughtful","e":"🤔","x":2,"y":-2,"c":"green","b":0,"d":"being considerate or reflective about  oneself, or something"},{"n":"Appreciated","e":"🙏","x":3,"y":-2,"c":"green","b":0,"d":"feeling recognized and worthy"},{"n":"Supported","e":"🫶","x":4,"y":-2,"c":"green","b":0,"d":"feeling like someone is there for you"},{"n":"Loved","e":"❤️‍🔥","x":5,"y":-2,"c":"green","b":1,"d":"feeling like someone cares deeply for you"},{"n":"Connected","e":"🛜","x":6,"y":-2,"c":"green","b":0,"d":"feeling close to someone or part of a community"},{"n":"Pessimistic","e":"🐦‍⬛","x":-6,"y":-3,"c":"blue","b":0,"d":"having a negative outlook and expecting the worst to happen"},{"n":"Vulnerable","e":"🤕","x":-5,"y":-3,"c":"blue","b":0,"d":"feeling like you could easily be emotionally or mentally hurt"},{"n":"Disconnected","e":"⛓️‍💥","x":-4,"y":-3,"c":"blue","b":0,"d":"feeling separate from others"},{"n":"Forlorn","e":"😞","x":-3,"y":-3,"c":"blue","b":0,"d":"feeling both sad and alone"},{"n":"Sad","e":"😢","x":-2,"y":-3,"c":"blue","b":1,"d":"feeling unhappy about something"},{"n":"Fatigued","e":"😰","x":-1,"y":-3,"c":"blue","b":0,"d":"feeling physically drained"},{"n":"Relaxed","e":"🧘","x":1,"y":-3,"c":"green","b":1,"d":"feeling casual and restful in body and mind"},{"n":"Chill","e":"😎","x":2,"y":-3,"c":"green","b":0,"d":"feeling relaxed and easygoing"},{"n":"Compassionate","e":"🙂‍↕️","x":3,"y":-3,"c":"green","b":0,"d":"showing care and concern for someone"},{"n":"Included","e":"👨‍👩‍👧‍👧","x":4,"y":-3,"c":"green","b":0,"d":"feeling like you're part of a group"},{"n":"Valued","e":"🤑","x":5,"y":-3,"c":"green","b":0,"d":"feeling like you matter"},{"n":"Grateful","e":"🙏","x":6,"y":-3,"c":"green","b":1,"d":"appreciative of something or someone"},{"n":"Guilty","e":"😣","x":-6,"y":-4,"c":"blue","b":1,"d":"feeling responsible for a specific wrongdoing"},{"n":"Numb","e":"💉","x":-5,"y":-4,"c":"blue","b":0,"d":"negative mood and loss of sensitivity to feelings"},{"n":"Excluded","e":"🚫","x":-4,"y":-4,"c":"blue","b":0,"d":"feeling left out or unwanted from a desired group"},{"n":"Spent","e":"💸","x":-3,"y":-4,"c":"blue","b":0,"d":"feeling extremely exhausted, both in body and mind"},{"n":"Discouraged","e":"😥","x":-2,"y":-4,"c":"blue","b":0,"d":"feeling a loss of confidence and enthusiasm"},{"n":"Disengaged","e":"⛓️‍💥","x":-1,"y":-4,"c":"blue","b":0,"d":"feeling like you cannot focus, disinterested"},{"n":"Sympathetic","e":"🥺","x":1,"y":-4,"c":"green","b":0,"d":"feeling sorry or sorrowful for someone else"},{"n":"Comfortable","e":"😌","x":2,"y":-4,"c":"green","b":0,"d":"feeling reassured both in mind and body"},{"n":"Empathetic","e":"🤗","x":3,"y":-4,"c":"green","b":0,"d":"understanding and temporarily sharing the feelings of someone else, whether positive or negative"},{"n":"Content","e":"😌","x":4,"y":-4,"c":"green","b":0,"d":"feeling complete and like you are enough"},{"n":"Accepted","e":"🫡","x":5,"y":-4,"c":"green","b":0,"d":"feeling acknowledged and seen"},{"n":"Moved","e":"🥹","x":6,"y":-4,"c":"green","b":0,"d":"a sudden feeling that happens after seeing something inspirational or sad"},{"n":"Depressed","e":"😒","x":-6,"y":-5,"c":"blue","b":0,"d":"extremely unhappy and dispirited"},{"n":"Hopeless","e":"😣","x":-5,"y":-5,"c":"blue","b":0,"d":"feeling completely defeated and in despair about the future"},{"n":"Alienated","e":"👽","x":-4,"y":-5,"c":"blue","b":1,"d":"feeling like you have been made a stranger to others, like they have no feelings or affection"},{"n":"Nostalgic","e":"🥹","x":-3,"y":-5,"c":"blue","b":0,"d":"a sentimental longing for the happiness felt in the past"},{"n":"Lonely","e":"🥺","x":-2,"y":-5,"c":"blue","b":0,"d":"feeling sad because you are alone or disconnected"},{"n":"Apathetic","e":"😑","x":-1,"y":-5,"c":"blue","b":1,"d":"lacking enthusiasm or interest"},{"n":"Mellow","e":"🍉","x":1,"y":-5,"c":"green","b":0,"d":"relaxed and laid back; easygoing"},{"n":"Peaceful","e":"🕊️","x":2,"y":-5,"c":"green","b":1,"d":"quiet and calm; free from disturbance"},{"n":"Balanced","e":"⚖️","x":3,"y":-5,"c":"green","b":0,"d":"feeling stable and satisfied"},{"n":"Safe","e":"🧿","x":4,"y":-5,"c":"green","b":0,"d":"feeling protected from danger"},{"n":"Secure","e":"🛡","x":5,"y":-5,"c":"green","b":0,"d":"feeling safe and protected"},{"n":"Blessed","e":"😇","x":6,"y":-5,"c":"green","b":0,"d":"feeling thankful and fortunate for what you have"},{"n":"Miserable","e":"😭","x":-6,"y":-6,"c":"blue","b":0,"d":"feeling absolutely awful"},{"n":"Despair","e":"😖","x":-5,"y":-6,"c":"blue","b":0,"d":"a feeling of complete hopelessness"},{"n":"Glum","e":"🫩","x":-4,"y":-6,"c":"blue","b":0,"d":"feeling displeased; pessimistic, about future events"},{"n":"Burned Out","e":"🔥","x":-3,"y":-6,"c":"blue","b":0,"d":"feeling exhausted from ongoing stress"},{"n":"Exhausted","e":"😩","x":-2,"y":-6,"c":"blue","b":0,"d":"feeling depleted of all energy"},{"n":"Helpless","e":"😶","x":-1,"y":-6,"c":"blue","b":1,"d":"feeling like there's nothing you can do"},{"n":"Carefree","e":"😎","x":1,"y":-6,"c":"green","b":0,"d":"feeling free of worry and lighthearted"},{"n":"Tranquil","e":"🧘","x":2,"y":-6,"c":"green","b":0,"d":"peaceful, free from tension"},{"n":"Thankful","e":"🙌","x":3,"y":-6,"c":"green","b":0,"d":"feeling pleased or appreciative"},{"n":"Relieved","e":"😮‍💨","x":4,"y":-6,"c":"green","b":1,"d":"feeling at ease after an unpleasant feeling goes away"},{"n":"Satisfied","e":"☺️","x":5,"y":-6,"c":"green","b":1,"d":"pleased with what you have or with something you did"},{"n":"Serene","e":"🌝","x":6,"y":-6,"c":"green","b":0,"d":"deeply calm and untroubled, completely at peace"}];
+
+// Feeling names and meanings in Arabic and Spanish, from the emotions-translations
+// sheet in Drive. The English name stays the key and is what gets submitted.
+const I18N = {"ar":{"Enraged":["ثائر","مليء بالغضب الشديد بسبب شيء ما"],"Terrified":["مروّع","خوف يسيطر عليك تمامًا"],"Panicked":["مذعور","خوف مفاجئ يفقدك السيطرة"],"Shocked":["مصدوم","رعب واشمئزاز مفاجئ في آن واحد"],"Impassioned":["مشحون","مشحون بمشاعر قوية"],"Hyper":["مفرط","طاقة زائدة تدفعك للحركة"],"Surprised":["مندهش","شيء غير متوقع فاجئك"],"Awe":["رهبة","إحساس بالضآلة أمام شيء عظيم"],"Exhilarated":["منتعش","معنويات عالية ونشاط متجدد"],"Thrilled":["متشوق","شعور مفاجئ بالإثارة الشديدة"],"Elated":["مبتهج","فرح شديد واعتزاز"],"Ecstatic":["منتشي","شعور بأقصى درجات الفرح أو السعادة"],"Livid":["مستشيط","غضب شديد من شخص أو موقف"],"Irate":["غيظ","غضب يكاد يخرج عن السيطرة"],"Overwhelmed":["مغمور","مشاعر قوية تفوق قدرتك على الاحتمال"],"Stressed":["متوتر","مرهق ذهنيًا أو عاطفيًا لكثرة المتطلبات وقلة الموارد"],"Annoyed":["متضايق","منزعج من شيء مزعج أو غير مريح"],"Pressured":["مضغوط","تشعر أن الأمور تتوقف عليك"],"Excited":["متحمس","مترقب لشيء في المستقبل"],"Determined":["عازم","معرفة ما تريده والاصرارعلى تحقيقه"],"Successful":["ناجح","حققت شيئًا مهمًا بالنسبة لك"],"Amazed":["متعجب","دهشة كبيرة من شيء حدث"],"Inspired":["ملهم","شيء أثّر فيك ودفعك للتحرك"],"Empowered":["قادر","أقوى وأكثر ثقة بفضل شخص أو موقف"],"Furious":["محتد","غضب شديد وجامح"],"Frightened":["مرعوب","خائف وفزع"],"Anxious":["قلق","قلق وانزعاج من نتيجة غير مؤكدة"],"Apprehensive":["متأهب","توجّس وقلق مما قد يحدث"],"Irritated":["منزعج","انزعاج خفيف من تصرف أو موقف"],"Restless":["مضطرب","لا تستطيع الاسترخاء بسبب القلق أو الملل"],"Energized":["نشط","تشعر بالتركيز وجاهز للانطلاق"],"Eager":["متلهف","تريد شيئًا بفارغ الصبر"],"Enthusiastic":["شغوف","اهتمام كبير بفكرة أو نشاط"],"Joyful":["فرح","متعة ومعنويات مرتفعة"],"Productive":["منتج","تنجز مهامك وتقترب من أهدافك"],"Proud":["فخور","مسرور بإنجازاتك أو إنجازات أحبائك"],"Jealous":["غيور","شعور بالتهديد من فقدان شيء لصالح شخص آخر"],"Scared":["خائف","شعور بالتهديد أو الخطر جسدياً أو نفسياً"],"Angry":["غاضب","منزعج بشدة من ظلم مُدرَك"],"Jittery":["هائج","متوتر وعلى وشك الانفجار"],"FOMO":["فومو","خوف من تفويت شيء يحدث"],"Confused":["مشوش","شعور بعدم القدرة على فهم شيء ما"],"Cheerful":["مرح","مليء بالمشاعر السعيدة"],"Curious":["فضول","رغبة في معرفة شيء جديد"],"Upbeat":["مستبشر","نشاط وخفة روح"],"Happy":["سعيد","مسرور جداً ومليء بالفرح"],"Motivated":["محفز","متحمس لفعل شيء"],"Optimistic":["متفائل","واثق ومتفائل بالقادم"],"Envious":["حاسد","تريد ما عند غيرك"],"Repulsed":["نفور","اشمئزاز من شخص أو شيء"],"Frustrated":["محبط","ضيق لأنك لا تستطيع فعل ما تريد"],"Embarrassed":["محرج","شعور بالحرج وعدم الارتياح بسبب تصور لنظرة الآخرين لك"],"Concerned":["مهتم","تتساءل إن كان شيء أو شخص بخير"],"Tense":["مشدود","لا تستطيع الاسترخاء"],"Pleasant":["لطيف","شعور إيجابي في مجمله"],"Focused":["منتبه","منشغل بفكرة أو نشاط واحد فقط"],"Alive":["حيوي","مليء بالطاقة والحيوية"],"Confident":["واثق","شعور بالثقة بالنفس"],"Engaged":["منخرط","انتباه كامل ومشاركة تامة"],"Challenged":["تحدي","مدفوع لبلوغ هدف أعلى"],"Contempt":["احتقار","مزيج من الغضب والاشمئزاز"],"Troubled":["مهموم","قلق بسبب مشكلة أو خلاف"],"Worried":["متخوّف","منشغل البال بمشكلات قائمة أو محتملة"],"Nervous":["عصبي","قلق ومتوتر بشأن المستقبل وعدم اليقين"],"Peeved":["مستاء","انزعاج بسيط من شيء"],"Uneasy":["مرتبك","إحساس غامض بأن شيئًا ما ليس على ما يرام"],"Pleased":["مسرور","رضا وسعادة بموقف أو شخص"],"Playful":["لعوب","شعور بالخفة و المرح"],"Delighted":["مبتهج","فرح يرفع معنوياتك"],"Wishful":["راغب","تتمنى شيئًا وتشتاق إليه"],"Hopeful":["آمل","تتوقع حدوث خير"],"Accomplished":["متحقق","شعور بالفاعلية والنجاح"],"Disgusted":["مشمئز","نفور شديد من شخص أو شيء"],"Trapped":["عالق","تشعر أن لا مخرج"],"Insecure":["هش","شك في نفسك وقلة ثقة"],"Disheartened":["مكسور","فقدت العزيمة والإصرار"],"Down":["متضايق","حزن وقلة طاقة"],"Bored":["ملل","افتقار الاهتمام بشيء أو شخص ما"],"Calm":["هادئ","شعور بالتحرر من الضغط والاضطراب والقلق"],"At ease":["سهل","رضا وراحة"],"Understood":["مفهوم","تشعر أن أحدًا يفهمك"],"Respected":["محترم","شعور بأن الناس يقدرونك"],"Fulfilled":["كامل","حققت أهدافًا شخصية مهمة"],"Blissful":["منعم","مليء بالفرح"],"Humiliated":["مذلول","تشعر بالانكشاف والحرج أمام الآخرين"],"Ashamed":["عار","شعور بانخفاض قيمة الذات نتيجة لما أنت عليه أو ما فعلته"],"Lost":["حائر","وحدة مزعجة وفقدان للاتجاه"],"Disappointed":["مخيب","حزن لأن توقعاتك لم تتحقق"],"Meh":["لامبالاه","شعور بانعدام الإلهام أو الحماس"],"Tired":["متعب","شعور بالحاجة إلى الراحة"],"Good":["بخير","شعور إيجابي وكأن الأمورعلى ما يرام"],"Thoughtful":["متأمل","تأمل واهتمام بنفسك أو بشيء ما"],"Appreciated":["تقدير","تشعر بالتقدير وأنك تستحق"],"Supported":["مدعوم","تشعر أن أحدًا بجانبك"],"Loved":["محبوب","شعور بأن هناك من يهتم بك بحق"],"Connected":["متصل","قريب من أحد أو جزء من مجتمع"],"Pessimistic":["متشائم","نظرة سوداوية وتوقع للأسوأ"],"Vulnerable":["ضعيف","تشعر أنك قابل للأذى بسهولة"],"Disconnected":["منعزل","منفصل عن الآخرين"],"Forlorn":["مخذول","حزين ووحيد في آن واحد"],"Sad":["حزين","شعور بعدم السعادة بسبب شيء ما"],"Fatigued":["مجهد","إرهاق جسدي"],"Relaxed":["مسترخ","شعور بالاسترخاء والراحة قلبا و قالبا"],"Chill":["رايق","مسترخٍ وهادئ الطباع"],"Compassionate":["مودة","تهتم بأحد وتشفق عليه"],"Included":["محتوى","تشعر أنك جزء من المجموعة"],"Valued":["ذو قيمة","تشعر أن لك قيمة"],"Grateful":["ممتن","شاكر لشيء أو شخص ما"],"Guilty":["مذنب","شعور بالمسؤولية عن خطأ معين"],"Numb":["مخدر","مزاج سيئ وفقدان الإحساس بالمشاعر"],"Excluded":["منبوذ","مستبعد أو غير مرغوب في مجموعة تريدها"],"Spent":["مستنزف","إرهاق شديد في الجسد والعقل"],"Discouraged":["مثبط","فقدت الثقة والحماس"],"Disengaged":["منفصل","لا تستطيع التركيز وفقدت الاهتمام"],"Sympathetic":["متعاطف","تشعر بالأسى لأجل شخص آخر"],"Comfortable":["مرتاح","طمأنينة في العقل والجسد"],"Empathetic":["متفهم","تفهم مشاعر غيرك وتشاركه إياها"],"Content":["قناعة","تشعر بالاكتفاء وأنك كافٍ"],"Accepted":["مقبول","تشعر أنك مقبول وموجود"],"Moved":["متأثر","تأثر مفاجئ بعد مشهد ملهم أو حزين"],"Depressed":["مكتئب","تعاسة شديدة وانطفاء"],"Hopeless":["قانط","هزيمة تامة ويأس من المستقبل"],"Alienated":["اغتراب","شعور بأنك أصبحت غريباً عن الآخرين كأنهم لا يكترثون بك"],"Nostalgic":["شجن","حنين لسعادة الماضي"],"Lonely":["وحيد","حزن بسبب الوحدة أو الانفصال"],"Apathetic":["منطفئ","افتقار الحماس أو الاهتمام"],"Mellow":["سلس","استرخاء وهدوء طبع"],"Peaceful":["سلام","هادئ وساكن؛ دون خلل أو ارتباك"],"Balanced":["متوازن","استقرار ورضا"],"Safe":["مطمئن","محمي من الخطر"],"Secure":["آمن","آمن ومحمي"],"Blessed":["مبروك","امتنان وشعور بالحظ لما لديك"],"Miserable":["بائس","شعور سيئ للغاية"],"Despair":["يائس","يأس كامل"],"Glum":["متجهم","استياء وتشاؤم مما هو قادم"],"Burned Out":["منهك","إنهاك من ضغط متواصل"],"Exhausted":["مرهق","استنزاف كامل للطاقة"],"Helpless":["عاجز","شعور بأنه لا شيء بوسعك فعله"],"Carefree":["غير مهموم","بلا هموم وخفيف الروح"],"Tranquil":["رائق","سلام وخلو من التوتر"],"Thankful":["شاكر","رضا وامتنان"],"Relieved":["فرج","شعور بالارتياح بعد زوال شعور مزعج"],"Satisfied":["راض","راضٍ عما لديك أو عما فعلته"],"Serene":["هدوء","هدوء عميق وسلام داخلي تام"]},"es":{"Enraged":["Enfurecido","enfurecido por algo lleno de ira extrema"],"Terrified":["Aterrorizado","consumido por el miedo"],"Panicked":["En pánico","sentirse frenético y abrumado por el miedo"],"Shocked":["Atónito","experimentar un horror, un asco y una sorpresa extremo"],"Impassioned":["Apasionado","lleno de muchas emociones"],"Hyper":["Hiperactivo","sentirse con energía y con ganas de moverse"],"Surprised":["Sorprendido","ser tomado por sorpresa por algo inesperado o inusual"],"Awe":["Asombro","sentirse como si estuvieras ante algo inmenso"],"Exhilarated":["Eufórico","de muy buen humor; alegre y lleno de energía"],"Thrilled":["Emocionado","sentir mucha emoción de repente"],"Elated":["Pletórico","muy alegre, orgulloso o entusiasmado"],"Ecstatic":["Alborozado","sentir la mayor alegría o felicidad"],"Livid":["Rabioso","sentirte furioso por algo o alguien"],"Irate":["Sulfurado","sentir que tu ira está a punto de salirse de control"],"Overwhelmed":["Abrumado","sentir que te han invadido emociones intensas"],"Stressed":["Estresado","Agotado por demasiadas exigencias y muy pocos recursos"],"Annoyed":["Molesto","sentirse molesto por algo desagradable o incómodo"],"Pressured":["Presionado","sentir como si un resultado importante dependiera de ti"],"Excited":["Emocionado","entusiasmado con algo que va a suceder en el futuro"],"Determined":["Decidido","saber cuál es tu objetivo e insistir en alcanzarlo"],"Successful":["Exitoso","sentir que has logrado algo importante para ti"],"Amazed":["Asombrado","sentirse perdido ante un acontecimiento maravilloso en concreto"],"Inspired":["Inspirado","sentirse profundamente conmovido de una forma que te motiva"],"Empowered":["Empoderado","sentirte más fuerte o con más confianza gracias a alguien o a algo que ha ocurrido"],"Furious":["Furioso","lleno de una ira extrema o desenfrenada"],"Frightened":["Atemorizado","asustado o temeroso"],"Anxious":["Ansioso","estar preocupado e inquieto por un resultado incierto"],"Apprehensive":["Aprehensivo","inquietud y preocupación por algo que podría suceder"],"Irritated":["Irritado","estar ligeramente enfadado o molesto por una acción o un suceso"],"Restless":["Inquieto","incapaz de relajarte debido a la ansiedad o al aburrimiento"],"Energized":["Con energía","sentirte completamente despierto y listo para levantarte y ponerte en marcha"],"Eager":["Deseoso","desear con impaciencia hacer o conseguir algo"],"Enthusiastic":["Entusiasta","muy interesado en una idea o actividad"],"Joyful":["Risueño","sentir placer y estar de muy buen humor"],"Productive":["Productivo","sentir que has cumplido tus tareas o alcanzado tus objetivos"],"Proud":["Orgulloso","satisfecho con tus propios logros o con los de alguien cercano a ti"],"Jealous":["Celoso","Amenazado por la idea de que estás perdiendo algo a favor de otra persona"],"Scared":["Asustado","sentir amenaza o peligro, ya sea físico o mental"],"Angry":["Enfadado","sentirse profundamente molesto por una injusticia percibida"],"Jittery":["Alterado","sentirte nervioso y tenso"],"FOMO":["FOMO","miedo a perderse algo"],"Confused":["Confuso","sentirse incapaz de entender algo"],"Cheerful":["Alegre","lleno de sentimientos de felicidad"],"Curious":["Curioso","estar interesado en aprender algo"],"Upbeat":["Vitalista","sentirte con energía y lleno de vida"],"Happy":["Feliz","muy contento y lleno de alegría"],"Motivated":["Motivado","entusiasmado por hacer algo"],"Optimistic":["Optimista","esperanzado y seguro respecto al futuro"],"Envious":["Envidioso","sentimiento de deseo por algo que tiene otra persona"],"Repulsed":["Repugnado","sentir náuseas por alguien o algo"],"Frustrated":["Frustrado","molesto porque no puedes hacer algo que te gustaría hacer"],"Embarrassed":["Avergonzado","Cohibido e incómodo por cómo crees que te perciben los demás"],"Concerned":["Interesado","preguntarse si alguien o algo está bien"],"Tense":["Tenso","incapaz de relajarte"],"Pleasant":["Agradable","sentirse mayoritariamente positivo"],"Focused":["Concentrado","centrado únicamente en una idea o actividad"],"Alive":["Vivo","lleno de energía y vitalidad"],"Confident":["Seguro de sí mismo","sentirse seguro de uno mismo"],"Engaged":["Involucrado","prestar toda tu atención o participar plenamente en algo"],"Challenged":["Desafiado","sentirse impulsado a alcanzar una meta más alta"],"Contempt":["Desprecio","sentir una mezcla de ira y asco"],"Troubled":["Perturbado","sentir preocupación por un problema o un conflicto"],"Worried":["Preocupado","preocupado por problemas reales o potenciales"],"Nervous":["Nervioso","nervioso y preocupado por un acontecimiento incierto"],"Peeved":["Mosca","ligeramente irritado por algo"],"Uneasy":["Intranquilo","una vaga sensación de que algo va mal"],"Pleased":["Agradado","sentirse satisfecho y feliz por una situación o persona en concreto"],"Playful":["Juguetón","sentirse feliz y despreocupado"],"Delighted":["Encantado","sentirse animado por la alegría"],"Wishful":["Ilusionado","tener o mostrar un deseo o anhelo"],"Hopeful":["Con esperanza","optimista, pensando que algo bueno va a pasar"],"Accomplished":["Exitoso","sentirse eficaz y con éxitos"],"Disgusted":["Asqueado","sentir un fuerte rechazo hacia alguien o algo"],"Trapped":["Atrapado","sentir que no hay salida"],"Insecure":["Inseguro","sentirse inseguro y sin confianza en uno mismo"],"Disheartened":["Desalentado","pérdida de resolución o determinación"],"Down":["Decaído","sentirte triste y con poca energía"],"Bored":["Aburrido","carecer de interés por algo o alguien"],"Calm":["Plácido","sentirse libre de estrés, agitación y preocupación"],"At ease":["Complacido","sentirse satisfecho y a gusto"],"Understood":["Comprendido","sentir que alguien te entiende"],"Respected":["Respetado","sentir que la gente te tiene en alta estima"],"Fulfilled":["Realizado","con la sensación de haber alcanzado importantes metas personales"],"Blissful":["Dichoso","sentirse lleno de alegría"],"Humiliated":["Humillado","sentirse expuesto y en ridículo delante de los demás"],"Ashamed":["Avergonzado","sentirse menos como consecuencia de quién eres o algo que has hecho"],"Lost":["Perdido","sentirte incómodamente solo y sin rumbo"],"Disappointed":["Decepcionado","triste porque no se han cumplido tus expectativas"],"Meh":["Regular","sentirte sin inspiración o apático"],"Tired":["Cansado","sentir que necesitas descansar"],"Good":["Bien","con una actitud positiva, como si todo fuera bien"],"Thoughtful":["Pensativo","considerar o reflexionar sobre ti mismo u otra cosa"],"Appreciated":["Apreciado","sentirse reconocido y valioso"],"Supported":["Apoyado","sentir que alguien está ahí para ti"],"Loved":["Amado","sentir que alguien se preocupa profundamente por ti"],"Connected":["Conectado","sentirse cercano a alguien o parte de una comunidad"],"Pessimistic":["Pesimista","tener una perspectiva negativa y esperar que ocurra lo peor"],"Vulnerable":["Vulnerable","sentir que podrías resultar herido emocional o mentalmente con facilidad"],"Disconnected":["Desconectado","sentirte alejado de los demás"],"Forlorn":["Desolado","sentirse a la vez triste y solo"],"Sad":["Triste","sentirte infeliz por algo"],"Fatigued":["Fatigado","sentirse físicamente agotado"],"Relaxed":["Relajado","sentirte relajado y tranquilo en cuerpo y mente"],"Chill":["Tranqui","sentirse relajado y tranquilo"],"Compassionate":["Compasivo","mostrar interés y preocupación por alguien"],"Included":["Incluido","sentir que formas parte de un grupo"],"Valued":["Valorado","sentir que importas"],"Grateful":["Agradecido","agradecido por algo o alguien"],"Guilty":["Culpable","sintiéndote responsable de una mala acción concreta"],"Numb":["Entumecido","estado de ánimo negativo y pérdida de sensibilidad hacia los sentimientos"],"Excluded":["Excluido","sentirse excluido o rechazado por un grupo al que se desea pertenecer"],"Spent":["Desgastado","sentirse extremadamente agotado, tanto física como mentalmente"],"Discouraged":["Desanimado","sentir una pérdida de confianza y entusiasmo"],"Disengaged":["Desvinculado","sentir que no puedes concentrarte, desinterés"],"Sympathetic":["Comprensivo","sentir pena o tristeza por otra persona"],"Comfortable":["Cómodo","sentirse tranquilo tanto en la mente como en el cuerpo"],"Empathetic":["Empático","comprender y compartir temporalmente los sentimientos de otra persona, ya sean positivos o negativos"],"Content":["Gozoso","sentirse pleno y como si uno fuera suficiente"],"Accepted":["Aceptado","sentirse reconocido y visto"],"Moved":["Conmovido","una sensación repentina que surge tras ver algo inspirador o triste"],"Depressed":["Deprimido","estar extremadamente infeliz y desanimado"],"Hopeless":["Desesperanzado","sentirse completamente derrotado y desesperado ante el futuro"],"Alienated":["Alejado","sentir que los demás te han convertido en un extraño, como si no tuvieran sentimientos ni afecto"],"Nostalgic":["Nostálgico","añorar la felicidad sentida en el pasado"],"Lonely":["Solitario","sentirte triste porque estás solo o desconectado"],"Apathetic":["Apático","carecer de entusiasmo o interés"],"Mellow":["Apacible","relajado y tranquilo; despreocupado"],"Peaceful":["Sereno","tranquilo y sereno; libre de perturbaciones"],"Balanced":["Equilibrado","sentirse estable y satisfecho"],"Safe":["A salvo","sentirte protegido del peligro"],"Secure":["Seguro","sentirse seguro y protegido"],"Blessed":["Bendecido","sentirse agradecido y afortunado por lo que tienes"],"Miserable":["Miserable","sentirse fatal"],"Despair":["Desesperación","una sensación de desesperanza total"],"Glum":["Apesadumbrado","descontento; pesimista respecto a lo que pueda pasar en el futuro"],"Burned Out":["Quemado","sentirse agotado por el estrés continuo"],"Exhausted":["Agotado","sentirse sin energía alguna"],"Helpless":["Desamparado","con la sensación de que no hay nada que puedas hacer"],"Carefree":["Despreocupado","sentirse libre de preocupaciones y despreocupado"],"Tranquil":["Tranquilo","en paz, libre de tensión"],"Thankful":["Complacido","sentirte satisfecho o agradecido"],"Relieved":["Aliviado","sentirte a gusto después de que desaparezca una sensación desagradable"],"Satisfied":["Satisfecho","satisfecho con lo que tienes o con algo que has hecho"],"Serene":["Sereno","profundamente tranquilo y sereno, totalmente pacifico"]}};
+
+// Page copy. English is his; Arabic and Spanish are drafts awaiting his review.
+const UI = {
+ "en": {
+  "title": "Choose your most common emotions",
+  "langLabel": "Choose your comfort language",
+  "near": "You already selected a similar emotion",
+  "up": "More energy", "down": "Less energy", "right": "Happier", "left": "Less happy",
+  "pick": "Pick {n}",
+  "next": "Next",
+  "send": "Send",
+  "sending": "Sending",
+  "retry": "Try again",
+  "thanks": "You just made\nemotional intelligence\neasier for humanity.",
+  "booth": "Collect your sticker at our booth H4-P205.",
+  "again": "Try again",
+  "home": "Home",
+  "limit": "This network has sent ten today. Try again tomorrow.",
+  "notice": "The data will be shared with the Digital Wellbeing team, and it may be shared publicly, but your identity will remain absolutely anonymous. Two submissions per network."
+ },
+ "es": {
+  "title": "Elige tus emociones más frecuentes",
+  "langLabel": "Elige el idioma en que te sientas cómodo",
+  "near": "Ya elegiste una emoción parecida",
+  "up": "Más energía", "down": "Menos energía", "right": "Más feliz", "left": "Menos feliz",
+  "pick": "Elige {n}",
+  "next": "Siguiente",
+  "send": "Enviar",
+  "sending": "Enviando",
+  "retry": "Reintentar",
+  "thanks": "Acabas de hacer\nla inteligencia emocional\nmás fácil para la humanidad.",
+  "booth": "Recoge tu pegatina en nuestro stand H4-P205.",
+  "again": "Jugar otra vez",
+  "home": "Inicio",
+  "limit": "Esta red ya ha enviado diez hoy. Vuelve mañana.",
+  "notice": "Los datos se compartirán con el equipo de Digital Wellbeing y podrían hacerse públicos, pero tu identidad será completamente anónima. Dos envíos por red."
+ },
+ "ar": {
+  "title": "اختر مشاعرك الأكثر تكراراً",
+  "langLabel": "اختر اللغة التي ترتاح لها",
+  "near": "لقد اخترت شعوراً مشابهاً",
+  "up": "طاقة أكثر", "down": "طاقة أقل", "right": "أسعد", "left": "أقل سعادة",
+  "pick": "اختر {n}",
+  "next": "التالي",
+  "send": "إرسال",
+  "sending": "جارٍ الإرسال",
+  "retry": "حاول مجدداً",
+  "thanks": "لقد جعلت\nالذكاء العاطفي\nأسهل على البشرية.",
+  "booth": "استلم ملصقك من جناحنا H4-P205.",
+  "again": "العب مجدداً",
+  "home": "الرئيسية",
+  "limit": "أرسلت هذه الشبكة عشر مرات اليوم. حاول غداً.",
+  "notice": "ستتم مشاركة البيانات مع فريق Digital Wellbeing وقد تُنشر علناً، لكن هويتك ستبقى مجهولة تماماً. مشاركتان لكل شبكة."
+ }
+};
+
+// Submitting is off while the page is being reviewed: Send goes straight to
+// the end screen. Set to true to post to the function again.
+const SUBMIT = false;
+const ENDPOINT = "https://us-central1-gwapp-30e03.cloudfunctions.net/submitMoodBasics";
+
+// sx, sy are the quadrant's signs on the meter: x unpleasant to pleasant,
+// y low to high energy.
+const ZONES = [
+  // word: comic sounds per language. Arabic is his; Spanish uses the sounds of
+  // Spanish comics (grrr, yupi, buf, mmm).
+  { c:"red",    word:{ en:"grrrr", es:"grrrr",  ar:"جرررر" }, em:"😤", sx:-1, sy: 1 },
+  { c:"yellow", word:{ en:"yaaay", es:"¡yupi!", ar:"هيييه" }, em:"🤩", sx: 1, sy: 1 },
+  { c:"blue",   word:{ en:"blah",  es:"bufff",  ar:"آآآه" },  em:"😑", sx:-1, sy:-1 },
+  { c:"green",  word:{ en:"hmmm",  es:"mmmm",   ar:"حييح" },  em:"😌", sx: 1, sy:-1 }
+];
+// Each quadrant is 6x6, cut into four 3x3 blocks. The walk starts next to the
+// centre, goes out on energy, comes back and goes out on pleasantness, and
+// ends in the far corner. 3 + 2 + 2 + 2 = the 9 the function expects.
+const STAGES = [
+  { ax:[1,2,3], ay:[1,2,3], take:3 },
+  { ax:[1,2,3], ay:[4,5,6], take:2 },
+  { ax:[4,5,6], ay:[1,2,3], take:2 },
+  { ax:[4,5,6], ay:[4,5,6], take:2 }
+];
+const GAP = 4;
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const CALM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const at = {};
+DATA.forEach(e => at[e.x + "," + e.y] = e);
+
+let lang = "en";
+let zone = null, step = 0, picks = [], busy = false, ended = false, ending = false;
+const cellAt = {};
+
+const $ = id => document.getElementById(id);
+const home = $("home"), game = $("game"), meter = $("meter"), board = $("board"), vp = $("vp");
+const go = $("go"), count = $("count"), define = $("define"), title = $("title");
+
+// Long names cannot fit a narrow cell, and a break at the fill point reads as
+// a typo. One soft hyphen goes near the middle, where a reader expects it.
+function soften(name){
+  if (name.length < 9 || name.indexOf(" ") >= 0) return name;
+  const vowel = c => "aeiouAEIOU".indexOf(c) >= 0;
+  const mid = Math.floor(name.length / 2);
+  for (let d = 0; d < 5; d++) {
+    for (const j of [mid - d, mid + d]) {
+      if (j < 3 || j > name.length - 3) continue;
+      if (!vowel(name[j - 1]) || vowel(name[j])) continue;
+      const pair = (name[j] + name[j + 1]).toLowerCase();
+      let k;
+      if (pair === "gh" || pair === "ck") k = j + 2;
+      else if (["th","ph","sh","ch","wh"].indexOf(pair) >= 0) k = j;
+      else k = vowel(name[j + 1]) ? j : j + 1;
+      if (k < 3 || k > name.length - 3) continue;
+      return name.slice(0, k) + "­" + name.slice(k);
+    }
+  }
+  return name;
+}
+function esc(s){
+  return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+}
+function buzz(p){ if (navigator.vibrate) try { navigator.vibrate(p); } catch(e){} }
+function reflow(el, cls){ el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+const wait = ms => new Promise(r => setTimeout(r, CALM ? 0 : ms));
+
+// ---- stage 1 ---------------------------------------------------------
+
+ZONES.forEach(z => {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "quad";
+  b.dataset.c = z.c;
+  b.innerHTML = '<span class="em" aria-hidden="true">' + z.em + '</span>' +
+                '<span class="word"></span>';
+  b.addEventListener("click", () => { if (!busy) start(z.c, b); });
+  meter.appendChild(b);
+});
+
+// ---- the board -------------------------------------------------------
+
+// Rows run high energy to low and columns unpleasant to pleasant, so every
+// block sits on screen where it sits on the real meter.
+function build(){
+  board.innerHTML = "";
+  for (const k in cellAt) delete cellAt[k];
+  const xs = [1,2,3,4,5,6].map(v => v * zone.sx).sort((a, b) => a - b);
+  const ys = [1,2,3,4,5,6].map(v => v * zone.sy).sort((a, b) => b - a);
+  const cx = zone.sx < 0 ? 5 : 0, cy = zone.sy < 0 ? 0 : 5;
+  ys.forEach((y, row) => xs.forEach((x, col) => {
+    const e = at[x + "," + y], k = x + "," + y;
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "cell off";
+    b.tabIndex = -1;
+    b.setAttribute("aria-pressed", "false");
+    b.setAttribute("aria-label", nameOf(e));
+    b.style.setProperty("--d", (Math.hypot(col - cx, row - cy) * 25) + "ms");
+    b.innerHTML = '<span class="tick" aria-hidden="true">' + CHECK + '</span>' +
+                  '<span class="em" aria-hidden="true">' + e.e + '</span>' +
+                  '<span class="nm">' + esc(soften(nameOf(e))) + '</span>';
+    b.addEventListener("click", () => toggle(b, k, e));
+    b.addEventListener("pointerenter", ev => { if (ev.pointerType === "mouse" && !b.classList.contains("off")) describe(e); });
+    cellAt[k] = { el:b, row, col };
+    board.appendChild(b);
+  }));
+}
+
+function blockKeys(i){
+  const s = STAGES[i], out = [];
+  s.ay.forEach(ay => s.ax.forEach(ax => out.push((ax * zone.sx) + "," + (ay * zone.sy))));
+  return out;
+}
+
+// null shows all 36; a stage index fills the frame with that 3x3 block.
+function zoom(i){
+  if (i === null) { board.style.transform = "none"; return; }
+  const W = vp.clientWidth, c = (W - 5 * GAP) / 6;
+  const keys = blockKeys(i);
+  const col = Math.min(...keys.map(k => cellAt[k].col));
+  const row = Math.min(...keys.map(k => cellAt[k].row));
+  const s = W / (3 * c + 2 * GAP);
+  board.style.transform = "translate(" + (-col * (c + GAP) * s) + "px," + (-row * (c + GAP) * s) + "px) scale(" + s + ")";
+}
+
+function focusBlock(i){
+  const live = new Set(i === null ? [] : blockKeys(i));
+  Object.keys(cellAt).forEach(k => {
+    const on = live.has(k);
+    cellAt[k].el.classList.toggle("off", !on);
+    cellAt[k].el.tabIndex = on ? 0 : -1;
+  });
+}
+
+window.addEventListener("resize", () => {
+  if (game.hidden) return;
+  board.classList.add("snap");
+  zoom(board.classList.contains("wide") ? null : step);
+  void board.offsetWidth;
+  board.classList.remove("snap");
+});
+
+// ---- moving between stages -------------------------------------------
+
+async function start(c, tile){
+  busy = true;
+  zone = ZONES.find(z => z.c === c);
+  picks = STAGES.map(() => new Set());
+  step = 0; ended = false;
+  [document.body, game].forEach(el => el.dataset.c = c);
+  game.classList.remove("ended");
+  $("note").classList.remove("on");
+  $("end").hidden = true;
+  define.innerHTML = "";
+  build();
+
+  const from = tile.getBoundingClientRect();
+  home.hidden = true;
+  game.hidden = false;
+  window.scrollTo(0, 0);
+  board.classList.add("snap", "wide", "moving", "hush");
+  zoom(null);
+  void board.offsetWidth;
+  board.classList.remove("snap");
+  game.querySelectorAll(".chrome").forEach(el => reflow(el, "chrome-in"));
+  setHead();
+  history.pushState({ step: 0 }, "");
+
+  // A copy of the chosen tile, emoji and word included, grows to cover the
+  // board. The 36 stay hidden until it has landed, then show through as it
+  // fades, cracking apart from the centre of the meter.
+  const to = vp.getBoundingClientRect();
+  const fly = tile.cloneNode(true);
+  fly.classList.add("flyer");
+  Object.assign(fly.style, { left: from.left + "px", top: from.top + "px", width: from.width + "px", height: from.height + "px" });
+  document.body.appendChild(fly);
+  const k = to.width / from.width;
+  if (!CALM) {
+    await fly.animate([
+      { transform: "none" },
+      { transform: "translate(" + (to.left - from.left) + "px," + (to.top - from.top) + "px) scale(" + k + ")", borderRadius: (9 / k) + "px" }
+    ], { duration: 380, easing: "cubic-bezier(0.32, 0.72, 0, 1)", fill: "forwards" }).finished;
+  }
+  board.classList.remove("hush");
+  cue();
+  reflow(board, "crack");
+  if (!CALM) await fly.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-out", fill: "forwards" }).finished;
+  fly.remove();
+  await wait(380);
+  board.classList.remove("crack");
+
+  focusBlock(0);
+  board.classList.remove("wide");
+  zoom(0);
+  await wait(640);
+  board.classList.remove("moving");
+  busy = false;
+  paint();
+}
+
+// zoom out to the 36, then back in on the next block
+// The 3x3 block of a stage in the zoomed-out board, in board pixels.
+function blockBox(i){
+  const W = vp.clientWidth, c = (W - 5 * GAP) / 6, keys = blockKeys(i);
+  const col = Math.min(...keys.map(k => cellAt[k].col)), row = Math.min(...keys.map(k => cellAt[k].row));
+  return { x: col * (c + GAP), y: row * (c + GAP), w: 3 * c + 2 * GAP, col, row };
+}
+
+// "More energy", "Less happy", or both, read off where the next block sits
+// on screen: up is more energy, right is more pleasant, on every colour.
+function heading(from, to){
+  const a = blockBox(from), b = blockBox(to), out = [];
+  if (b.col !== a.col) out.push(T(b.col > a.col ? "right" : "left"));
+  if (b.row !== a.row) out.push(T(b.row < a.row ? "up" : "down"));
+  return out.join(" · ");
+}
+
+async function explain(from, to){
+  const g = $("guide"), a = blockBox(from), b = blockBox(to);
+  const f = g.querySelector(".frame"), pad = 3;
+  Object.assign(f.style, { left: (a.x - pad) + "px", top: (a.y - pad) + "px", width: (a.w + 2 * pad) + "px", height: (a.w + 2 * pad) + "px" });
+  // arrow from the edge of the old block toward the middle of the new one
+  const ax = a.x + a.w / 2, ay = a.y + a.w / 2, bx = b.x + b.w / 2, by = b.y + b.w / 2;
+  const d = Math.hypot(bx - ax, by - ay), ux = (bx - ax) / d, uy = (by - ay) / d;
+  const x1 = ax + ux * a.w * 0.36, y1 = ay + uy * a.w * 0.36, x2 = bx - ux * b.w * 0.12, y2 = by - uy * b.w * 0.12;
+  const line = g.querySelector("line"), len = Math.hypot(x2 - x1, y2 - y1);
+  line.setAttribute("x1", x1); line.setAttribute("y1", y1); line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+  line.style.setProperty("--len", len);
+  const px = -uy, py = ux, h = 13;
+  g.querySelector("path").setAttribute("d", "M" + (x2 + ux * 4) + " " + (y2 + uy * 4) +
+    "L" + (x2 - ux * h + px * h * .6) + " " + (y2 - uy * h + py * h * .6) +
+    "L" + (x2 - ux * h - px * h * .6) + " " + (y2 - uy * h - py * h * .6) + "Z");
+  const say = g.querySelector(".say");
+  say.textContent = heading(from, to);
+  // keep the words inside the board even when the arrow runs along an edge
+  const W = vp.clientWidth, hw = say.offsetWidth / 2 + 6, hh = say.offsetHeight / 2 + 6;
+  say.style.left = Math.min(Math.max((x1 + x2) / 2, hw), W - hw) + "px";
+  say.style.top = Math.min(Math.max((y1 + y2) / 2, hh), W - hh) + "px";
+  g.classList.add("on");
+  board.classList.add("dim");
+  await wait(250);
+  g.classList.add("go");
+  await wait(1700);
+  g.classList.remove("on", "go");
+  board.classList.remove("dim");
+  await wait(200);
+}
+
+async function move(to){
+  busy = true;
+  const from = step;
+  board.classList.add("moving", "wide");
+  focusBlock(null);
+  zoom(null);
+  title.classList.add("out");
+  define.innerHTML = "";
+  go.disabled = true;
+  await wait(560);
+  await explain(from, to);
+  step = to;
+  setHead();
+  title.classList.remove("out");
+  cue(to);
+  await wait(220);
+  focusBlock(step);
+  board.classList.remove("wide");
+  zoom(step);
+  await wait(640);
+  board.classList.remove("moving");
+  busy = false;
+  paint();
+}
+
+function cue(i){
+  const el = $("cue");
+  el.textContent = T("pick").replace("{n}", STAGES[i === undefined ? step : i].take);
+  reflow(el, "play");
+}
+
+function setHead(){
+  title.textContent = T("pick").replace("{n}", STAGES[step].take);
+  [...$("steps").children].forEach((i, n) => i.classList.toggle("on", n <= step));
+  paint();
+}
+
+let toastTimer;
+function toast(line, name){
+  const t = $("toast");
+  t.innerHTML = '<span>' + esc(line) + '</span><b>' + esc(name) + '</b>';
+  t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 2600);
+}
+
+function describe(e){
+  define.innerHTML = '<b>' + esc(nameOf(e)) + '</b><span>' + esc(descOf(e)) + '</span>';
+  reflow(define, "in");
+}
+
+function toggle(btn, k, e){
+  if (ended) { if (!busy) note(e); return; }
+  if (busy) return;
+  const set = picks[step], take = STAGES[step].take;
+  if (btn.classList.contains("near")) {
+    reflow(btn, "reject");
+    buzz([12, 40, 12]);
+    describe(e);
+    toast(T("near"), btn.dataset.near.split("|").map(n => nameOf(at[NAMEKEY[n]])).join(", "));
+    return;
+  }
+  if (set.has(k)) {
+    set.delete(k);
+    btn.setAttribute("aria-pressed", "false");
+    buzz(6);
+  } else if (set.size >= take) {
+    reflow(btn, "reject");
+    reflow(count, "bump");
+    buzz([12, 40, 12]);
+  } else {
+    set.add(k);
+    btn.setAttribute("aria-pressed", "true");
+    buzz(8);
+  }
+  describe(e);
+  paint();
+}
+
+// Feelings that mean nearly the same thing, so one pick rules out its twins on
+// every stage. Pairs are the English names; a pick blocks each partner that is
+// not itself picked. Draft for his review.
+const SIM = [["Uneasy", "Apprehensive"], ["Uneasy", "Concerned"], ["Concerned", "Worried"], ["Concerned", "Troubled"], ["Worried", "Troubled"], ["Worried", "Anxious"], ["Apprehensive", "Worried"], ["Apprehensive", "Anxious"], ["Nervous", "Jittery"], ["Nervous", "Anxious"], ["Jittery", "Restless"], ["Tense", "Stressed"], ["Tense", "Pressured"], ["Stressed", "Pressured"], ["Stressed", "Overwhelmed"], ["Peeved", "Irritated"], ["Peeved", "Annoyed"], ["Irritated", "Annoyed"], ["Annoyed", "Frustrated"], ["Angry", "Furious"], ["Angry", "Irate"], ["Furious", "Livid"], ["Furious", "Enraged"], ["Livid", "Enraged"], ["Irate", "Livid"], ["Irate", "Furious"], ["Scared", "Frightened"], ["Frightened", "Terrified"], ["Terrified", "Panicked"], ["Envious", "Jealous"], ["Contempt", "Repulsed"], ["Pleased", "Pleasant"], ["Pleased", "Delighted"], ["Upbeat", "Alive"], ["Cheerful", "Upbeat"], ["Cheerful", "Happy"], ["Delighted", "Happy"], ["Happy", "Joyful"], ["Joyful", "Elated"], ["Elated", "Ecstatic"], ["Thrilled", "Ecstatic"], ["Thrilled", "Excited"], ["Exhilarated", "Thrilled"], ["Excited", "Eager"], ["Excited", "Enthusiastic"], ["Enthusiastic", "Eager"], ["Energized", "Alive"], ["Hopeful", "Optimistic"], ["Wishful", "Hopeful"], ["Accomplished", "Successful"], ["Accomplished", "Productive"], ["Accomplished", "Proud"], ["Successful", "Proud"], ["Confident", "Empowered"], ["Motivated", "Determined"], ["Motivated", "Inspired"], ["Focused", "Engaged"], ["Awe", "Amazed"], ["Surprised", "Amazed"], ["Down", "Sad"], ["Down", "Glum"], ["Depressed", "Miserable"], ["Hopeless", "Despair"], ["Helpless", "Hopeless"], ["Trapped", "Helpless"], ["Tired", "Fatigued"], ["Fatigued", "Exhausted"], ["Exhausted", "Spent"], ["Spent", "Burned Out"], ["Exhausted", "Burned Out"], ["Bored", "Meh"], ["Meh", "Apathetic"], ["Apathetic", "Disengaged"], ["Bored", "Disengaged"], ["Numb", "Apathetic"], ["Disheartened", "Discouraged"], ["Disappointed", "Disheartened"], ["Forlorn", "Lonely"], ["Lonely", "Disconnected"], ["Excluded", "Alienated"], ["Disconnected", "Alienated"], ["Ashamed", "Humiliated"], ["Ashamed", "Guilty"], ["Insecure", "Vulnerable"], ["Pessimistic", "Glum"], ["Calm", "Peaceful"], ["Calm", "Tranquil"], ["Peaceful", "Tranquil"], ["Tranquil", "Serene"], ["Peaceful", "Serene"], ["Relaxed", "Chill"], ["Chill", "Mellow"], ["Relaxed", "Mellow"], ["At ease", "Comfortable"], ["At ease", "Relaxed"], ["Carefree", "Chill"], ["Safe", "Secure"], ["Thankful", "Grateful"], ["Grateful", "Blessed"], ["Appreciated", "Valued"], ["Valued", "Respected"], ["Understood", "Accepted"], ["Supported", "Loved"], ["Connected", "Included"], ["Included", "Accepted"], ["Sympathetic", "Compassionate"], ["Empathetic", "Compassionate"], ["Empathetic", "Sympathetic"], ["Content", "Satisfied"], ["Fulfilled", "Satisfied"], ["Content", "Fulfilled"]];
+const NAMEKEY = {};
+DATA.forEach(e => NAMEKEY[e.n] = e.x + "," + e.y);
+const TWINS = {};
+SIM.forEach(([a, b]) => { (TWINS[a] = TWINS[a] || []).push(b); (TWINS[b] = TWINS[b] || []).push(a); });
+
+function markNear(){
+  const chosen = new Set(picks.flatMap(set => [...set]));
+  const by = {};
+  chosen.forEach(k => (TWINS[at[k].n] || []).forEach(t => {
+    const tk = NAMEKEY[t];
+    if (cellAt[tk] && !chosen.has(tk)) (by[tk] = by[tk] || []).push(at[k].n);
+  }));
+  // never leave a stage with fewer open feelings than it still asks for
+  const live = blockKeys(step);
+  const open = live.filter(k => !by[k] && !picks[step].has(k)).length;
+  const lift = open < STAGES[step].take - picks[step].size;
+  Object.keys(cellAt).forEach(k => {
+    const el = cellAt[k].el, near = !!by[k] && !(lift && live.includes(k));
+    el.classList.toggle("near", near);
+    if (near) el.dataset.near = by[k].join("|"); else delete el.dataset.near;
+    el.setAttribute("aria-disabled", String(near));
+  });
+}
+
+function paint(){
+  markNear();
+  const n = picks[step].size, take = STAGES[step].take;
+  count.innerHTML = '<b>' + n + '</b>/' + take;
+  board.classList.toggle("full", n >= take);
+  go.disabled = busy || n < take;
+  go.textContent = T(step === STAGES.length - 1 ? "send" : "next");
+}
+
+go.addEventListener("click", () => {
+  if (busy) return;
+  if (step < STAGES.length - 1) {
+    history.pushState({ step: step + 1 }, "");
+    buzz(8);
+    move(step + 1);
+  } else {
+    send();
+  }
+});
+
+// The chevron and the phone's own back gesture both go through history.
+$("back").addEventListener("click", () => { if (!busy) history.back(); });
+window.addEventListener("popstate", ev => {
+  if (ending) { ending = false; return; }
+  if (game.hidden || ended) return;
+  const st = ev.state && ev.state.step;
+  if (typeof st === "number") move(st);
+  else { game.hidden = true; home.hidden = false; reflow(home, "pop-in"); window.scrollTo(0, 0); }
+});
+
+// ---- send and the end ------------------------------------------------
+
+async function send(){
+  if (!SUBMIT) return finish(true);
+  const payload = picks.flatMap(set => [...set]).map(k => { const e = at[k]; return { x:e.x, y:e.y, n:e.n }; });
+  go.disabled = true;
+  go.textContent = T("sending");
+  try {
+    const r = await fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quadrant: zone.c, picks: payload })
+    });
+    if (r.status === 429) return finish(false);
+    if (!r.ok) throw new Error(r.status);
+    finish(true);
+  } catch (err) {
+    go.disabled = false;
+    go.textContent = T("retry");
+    buzz([12, 40, 12]);
+  }
+}
+
+async function finish(ok){
+  busy = true;
+  ended = true;
+  buzz([10, 60, 18]);
+  focusBlock(null);
+  board.classList.add("moving", "wide");
+  zoom(null);
+  game.classList.add("ended");
+  $("endLine").textContent = T(ok ? "thanks" : "limit");
+  $("booth").hidden = !ok;
+  const end = $("end");
+  end.hidden = false;
+  reflow(end, "show");
+  // Unwind the stage entries, so Back from here leaves the page instead of
+  // walking into stages that are already done.
+  ending = true;
+  history.go(-(step + 1));
+  await wait(640);
+  // every cell answers a tap from here, but only to say what it means
+  Object.values(cellAt).forEach(c => { c.el.classList.remove("off"); c.el.tabIndex = 0; });
+  board.classList.remove("moving");
+  busy = false;
+}
+
+let noteTimer;
+function note(e){
+  const n = $("note");
+  n.innerHTML = '<b>' + esc(nameOf(e)) + '</b><span>' + esc(descOf(e)) + '</span>';
+  n.classList.add("on");
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => n.classList.remove("on"), 2500);
+}
+
+$("again").addEventListener("click", () => {
+  game.hidden = true;
+  home.hidden = false;
+  reflow(home, "pop-in");
+  window.scrollTo(0, 0);
+});
+
+// ---- language ---------------------------------------------------------
+
+function nameOf(e){ return lang === "en" ? e.n : I18N[lang][e.n][0]; }
+function descOf(e){ return lang === "en" ? (e.d || "") : I18N[lang][e.n][1]; }
+function T(key){ return (UI[lang] || UI.en)[key]; }
+
+function setLang(l){
+  lang = UI[l] ? l : "en";
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll("[data-t]").forEach(el => {
+    const v = T(el.dataset.t);
+    if (el.dataset.t === "booth") el.innerHTML = esc(v).replace("H4-P205", "<b>H4-P205</b>");
+    else el.textContent = v;
+  });
+  ZONES.forEach(z => meter.querySelector('[data-c="' + z.c + '"] .word').textContent = z.word[lang]);
+  document.querySelectorAll("#lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.l === lang)));
+  try { localStorage.setItem("gw_moodmeter_lang", lang); } catch(e){}
+}
+document.querySelectorAll("#lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.l)));
+
+let saved = null;
+try { saved = localStorage.getItem("gw_moodmeter_lang"); } catch(e){}
+setLang(saved || (navigator.language || "en").slice(0, 2));
+
+history.replaceState({}, "");
+</script>
+</body>
+</html>

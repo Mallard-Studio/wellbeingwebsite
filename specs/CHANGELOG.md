@@ -1,4 +1,46 @@
 ---
+4/10/2026 (5)
+`/moodmeter/v2/`: axes removed, he disliked them. Replaced by a mid-level explanation: after zooming out, the stage just done gets a white frame, all squares dim, an arrow draws toward the next block and a pill names the direction ("More energy", "Less energy", "Happier", "Less happy", or two joined by a dot for the diagonal move). Holds about 1.7s, then the task cue and the zoom in. ES and AR drafted. [moodmeter/v2/index.html]
+---
+4/10/2026 (4)
+`/moodmeter/v2/`: axes, his ask, placed per impeccable progressive disclosure. Stage 1: cross in the gaps of the four colours with Higher/Lower energy and More/Less pleasant at the ends, always on. Game: axes run along the two board edges that meet the meter centre, shown only while zoomed out (intro, between stages, end), hidden while picking; the axis the next move follows lights up. Board shrinks 30px when zoomed out to make room. Labels in ES and AR drafted. [moodmeter/v2/index.html]
+---
+4/10/2026 (3)
+`/moodmeter/v2/`: tapping a crossed-out feeling shows a toast, "You already selected a similar emotion" over the picked twin in capitals, hides after 2.6s (ES and AR drafted). [moodmeter/v2/index.html]
+---
+4/10/2026 (2)
+`/moodmeter/v2/`: stage cue now black fill with white outline. Similar feelings linked (111 pairs, draft): a pick greys out its twins on every stage, never starving a stage. Serene definition fixed in v2 (was Shocked's). [moodmeter/v2/index.html, specs/moodmeter-page.md]
+---
+4/10/2026 (1)
+`/moodmeter/v2/`: end line set on three lines as he broke it (ES and AR broken the same way); each stage now flashes its task ("Pick 3", "Pick 2") in big outline type over the grid while it zooms, 1.5s, hidden under reduced motion. [moodmeter/v2/index.html]
+---
+3/10/2026 (9)
+`/moodmeter/v2/`: feeling names in the 9 squares bigger and bolder (~13px to ~17px on screen), emoji a touch smaller to make room; his ask, hard to read without glasses. [moodmeter/v2/index.html]
+---
+3/10/2026 (8)
+`/moodmeter/v2/`: small "Choose your comfort language" label beside the switch (ES and AR drafted). Arabic font switched to Almarai after he found Readex Pro / Reem Kufi hard to read; no negative tracking and taller lines in Arabic. [moodmeter/v2/index.html]
+---
+3/10/2026 (7)
+`/moodmeter/v2/`: stage 1 sounds per language. Arabic his: جرررر, هيييه, آآآه, حييح. Spanish from Spanish comics: grrrr, ¡yupi!, bufff, mmmm. [moodmeter/v2/index.html]
+---
+3/10/2026 (6)
+`/moodmeter/v2/`: EN / ES / عربي switch on stage 1, his ask. All 144 feeling names and meanings in Arabic and Spanish from the Drive sheet emotions-translations.xlsx (full coverage). Page copy in ES and AR drafted by Claude, awaiting his review. Arabic flips the page to RTL but the meter and board keep pleasant on the right; Arabic falls back to Readex Pro / Reem Kufi. Choice remembered per browser; first visit follows the phone language. Submissions still send the English name. [moodmeter/v2/index.html]
+---
+3/10/2026 (5)
+`/moodmeter/v2/`, his asks: end screen stripped to the 36 plus a bigger "You just made..." line, booth and buttons (title, step bars, Thank you and the verdict removed); overview shows names not emoji, since object emoji read as fake feelings; tapping a feeling there shows its name and meaning above the grid and fades out over 3.5s, no selection change. Stage 1 tiles centre the emoji and word. Stages 2-5: name and meaning moved from the dock into the space under the grid, larger. [moodmeter/v2/index.html]
+---
+3/10/2026 (4)
+`/moodmeter/v2/`: red is now the app's `mood_red` #ff0606, his ask (v1 page keeps his oklch red). Intro fly-in faster (380ms), carries the tile's emoji and word as it grows, and the 36 squares stay hidden until it lands. [moodmeter/v2/index.html]
+---
+3/10/2026 (3)
+`/moodmeter/v2/` zoom version, his ask: one 6x6 board per colour, tile flies in and cracks into 36, zooms out and in between stages; cells saturated at rest, faded when chosen; small title kept on every stage; end shows the 36 with picks and a concentrated/distributed verdict; sticker dropped. Submitting switched off (`SUBMIT = false`). Function: one-colour sends now 10 per network per UTC day instead of 2 per colour. [specs/moodmeter-page.md, moodmeter/v2/index.html, functions/moodmeter.js]
+---
+3/10/2026 (2)
+`/moodmeter/v2/` reshaped to his five-stage game: pick a colour (grrrr, blah, yaaay, hmmm), then four 3x3 blocks walking out from the centre, pick 3, 2, 2, 2, then thank-you screen with sticker, booth H4-P205, Try again, Home. Payload and function unchanged from (1). [specs/moodmeter-page.md, moodmeter/v2/index.html]
+---
+3/10/2026 (1)
+`/moodmeter/v2/` built, his ask: mobile-first variant where the visitor picks one colour, fills its 9, and sends just those 9, so nobody faces 36 at once. iOS feel: four mood tiles as the home screen, push screen with back chevron, sticky blurred nav and dock, full-width send pill, toast on send, Android back gesture handled. His v1 headline and notice reused verbatim; notice moved to the bottom. `functions/moodmeter.js` in the Android repo now also accepts `{quadrant, picks[9]}` and limits each colour to two sends per network (v1's 36-pick path and its `count` quota unchanged). Not deployed, not committed.
+---
 3/10/2026 (1)
 `/wheel/` spinning prize wheel added, his ask. Four slices: I'm good enough (green), I'm doing great (red), I'm resisting distractions (blue), I'm a hero (yellow). Uses the landing page tokens (`--c-*`, Comfortaa, JetBrains Mono). Random pick, CSS spin, result pill. Unlinked, not `noindex`. Not committed, not pushed.
 Same day, (2): 3D look (tilted stage, thick base, rim with marquee bulbs, gloss, raised hub, pegs that tick the pointer), confetti on stop in the winner's colour, winning slice glows and the rest dim. JS-driven spin so the pointer ticks. `/impeccable` was asked for but is not installed here, so not used.
