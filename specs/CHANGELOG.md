@@ -1,4 +1,7 @@
 ---
+4/10/2026 (7)
+`/moodmeter/v2/` sending switched on (`SUBMIT = true`) after `submitMoodBasics` was deployed. Each send now carries the crossed-out twins and which pick blocked them, `lang`, `simVersion`, `page` and a `test` flag (true on localhost). One test send verified end to end with the export script. [moodmeter/v2/index.html]
+---
 4/10/2026 (6)
 QR code for `/moodmeter/v2/` at `assets/qr-moodmeter.png` + `.svg`, same style as the wheel QR, both decode-checked. [assets/]
 ---

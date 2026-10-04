@@ -391,9 +391,8 @@ const UI = {
  }
 };
 
-// Submitting is off while the page is being reviewed: Send goes straight to
-// the end screen. Set to true to post to the function again.
-const SUBMIT = false;
+// Set to false to skip posting while reviewing: Send then goes straight to the end.
+const SUBMIT = true;
 const ENDPOINT = "https://us-central1-gwapp-30e03.cloudfunctions.net/submitMoodBasics";
 
 // sx, sy are the quadrant's signs on the meter: x unpleasant to pleasant,
@@ -722,6 +721,8 @@ function toggle(btn, k, e){
 // Feelings that mean nearly the same thing, so one pick rules out its twins on
 // every stage. Pairs are the English names; a pick blocks each partner that is
 // not itself picked. Draft for his review.
+// Bump when the pairs change, so answers can be grouped by the list in force.
+const SIM_VERSION = "2026-10-04";
 const SIM = [["Uneasy", "Apprehensive"], ["Uneasy", "Concerned"], ["Concerned", "Worried"], ["Concerned", "Troubled"], ["Worried", "Troubled"], ["Worried", "Anxious"], ["Apprehensive", "Worried"], ["Apprehensive", "Anxious"], ["Nervous", "Jittery"], ["Nervous", "Anxious"], ["Jittery", "Restless"], ["Tense", "Stressed"], ["Tense", "Pressured"], ["Stressed", "Pressured"], ["Stressed", "Overwhelmed"], ["Peeved", "Irritated"], ["Peeved", "Annoyed"], ["Irritated", "Annoyed"], ["Annoyed", "Frustrated"], ["Angry", "Furious"], ["Angry", "Irate"], ["Furious", "Livid"], ["Furious", "Enraged"], ["Livid", "Enraged"], ["Irate", "Livid"], ["Irate", "Furious"], ["Scared", "Frightened"], ["Frightened", "Terrified"], ["Terrified", "Panicked"], ["Envious", "Jealous"], ["Contempt", "Repulsed"], ["Pleased", "Pleasant"], ["Pleased", "Delighted"], ["Upbeat", "Alive"], ["Cheerful", "Upbeat"], ["Cheerful", "Happy"], ["Delighted", "Happy"], ["Happy", "Joyful"], ["Joyful", "Elated"], ["Elated", "Ecstatic"], ["Thrilled", "Ecstatic"], ["Thrilled", "Excited"], ["Exhilarated", "Thrilled"], ["Excited", "Eager"], ["Excited", "Enthusiastic"], ["Enthusiastic", "Eager"], ["Energized", "Alive"], ["Hopeful", "Optimistic"], ["Wishful", "Hopeful"], ["Accomplished", "Successful"], ["Accomplished", "Productive"], ["Accomplished", "Proud"], ["Successful", "Proud"], ["Confident", "Empowered"], ["Motivated", "Determined"], ["Motivated", "Inspired"], ["Focused", "Engaged"], ["Awe", "Amazed"], ["Surprised", "Amazed"], ["Down", "Sad"], ["Down", "Glum"], ["Depressed", "Miserable"], ["Hopeless", "Despair"], ["Helpless", "Hopeless"], ["Trapped", "Helpless"], ["Tired", "Fatigued"], ["Fatigued", "Exhausted"], ["Exhausted", "Spent"], ["Spent", "Burned Out"], ["Exhausted", "Burned Out"], ["Bored", "Meh"], ["Meh", "Apathetic"], ["Apathetic", "Disengaged"], ["Bored", "Disengaged"], ["Numb", "Apathetic"], ["Disheartened", "Discouraged"], ["Disappointed", "Disheartened"], ["Forlorn", "Lonely"], ["Lonely", "Disconnected"], ["Excluded", "Alienated"], ["Disconnected", "Alienated"], ["Ashamed", "Humiliated"], ["Ashamed", "Guilty"], ["Insecure", "Vulnerable"], ["Pessimistic", "Glum"], ["Calm", "Peaceful"], ["Calm", "Tranquil"], ["Peaceful", "Tranquil"], ["Tranquil", "Serene"], ["Peaceful", "Serene"], ["Relaxed", "Chill"], ["Chill", "Mellow"], ["Relaxed", "Mellow"], ["At ease", "Comfortable"], ["At ease", "Relaxed"], ["Carefree", "Chill"], ["Safe", "Secure"], ["Thankful", "Grateful"], ["Grateful", "Blessed"], ["Appreciated", "Valued"], ["Valued", "Respected"], ["Understood", "Accepted"], ["Supported", "Loved"], ["Connected", "Included"], ["Included", "Accepted"], ["Sympathetic", "Compassionate"], ["Empathetic", "Compassionate"], ["Empathetic", "Sympathetic"], ["Content", "Satisfied"], ["Fulfilled", "Satisfied"], ["Content", "Fulfilled"]];
 const NAMEKEY = {};
 DATA.forEach(e => NAMEKEY[e.n] = e.x + "," + e.y);
@@ -779,17 +780,34 @@ window.addEventListener("popstate", ev => {
 
 // ---- send and the end ------------------------------------------------
 
+// Everything the analysis needs: the 9 in pick order, what was crossed out
+// and by which pick, the language, and which pair list was in force.
+function payloadNow(){
+  const chosen = picks.flatMap(set => [...set]);
+  const blocked = [];
+  Object.keys(cellAt).forEach(k => {
+    const el = cellAt[k].el;
+    if (el.classList.contains("near")) blocked.push({ x: at[k].x, y: at[k].y, n: at[k].n, by: el.dataset.near });
+  });
+  return {
+    quadrant: zone.c,
+    picks: chosen.map(k => ({ x: at[k].x, y: at[k].y, n: at[k].n })),
+    blocked, lang, simVersion: SIM_VERSION, page: "v2",
+    test: /^(localhost|127\.0\.0\.1)$/.test(location.hostname)
+  };
+}
+
+function post(body){
+  return fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+}
+
 async function send(){
   if (!SUBMIT) return finish(true);
-  const payload = picks.flatMap(set => [...set]).map(k => { const e = at[k]; return { x:e.x, y:e.y, n:e.n }; });
+  const body = payloadNow();
   go.disabled = true;
   go.textContent = T("sending");
   try {
-    const r = await fetch(ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quadrant: zone.c, picks: payload })
-    });
+    const r = await post(body);
     if (r.status === 429) return finish(false);
     if (!r.ok) throw new Error(r.status);
     finish(true);
