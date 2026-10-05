@@ -88,7 +88,7 @@ Responses > Get email notifications for new responses is on, and it notifies the
 
 ## 7. The mood meter page has no backend until the function is deployed
 
-**Raised 2026-09-10 by the work itself. Open. Needs Anas, not code.**
+**Raised 2026-09-10 by the work itself. Closed 2026-10-04: deployed, v2 verified live 2026-10-05.** The salt question below is still open.
 
 `moodmeter/index.html` posts to `https://us-central1-gwapp-30e03.cloudfunctions.net/submitMoodBasics`, which does not exist yet. The source is written and wired in, `functions/moodmeter.js` plus one line in `functions/index.js` in the Android repo, but nothing has been deployed. Until it is, every visitor who fills the board gets "That did not send. Check your connection and try again."
 

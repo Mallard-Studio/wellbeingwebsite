@@ -1,4 +1,7 @@
 ---
+5/10/2026 (1)
+`submitMoodBasics` deployed and v2 verified live: a full game on the live page saved to Firestore with picks, stages, order and 12 blocked twins (test-flagged). Fallback CSV now joins two blockers with `+` so its `|` split stays clean; redeployed with `--force`, which set the artifact cleanup policy. Spec gained a "v2 data" section (payload, Firestore shape, fallback, export command, the two test ids); backlog 7 closed. [specs/moodmeter-page.md, specs/BACKLOG.md]
+---
 4/10/2026 (7)
 `/moodmeter/v2/` sending switched on (`SUBMIT = true`) after `submitMoodBasics` was deployed. Each send now carries the crossed-out twins and which pick blocked them, `lang`, `simVersion`, `page` and a `test` flag (true on localhost). One test send verified end to end with the export script. [moodmeter/v2/index.html]
 ---

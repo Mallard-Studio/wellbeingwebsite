@@ -5,7 +5,7 @@ Public tool that asks visitors which nine feelings in each quadrant of the mood 
 **Location:** `moodmeter/index.html` (repo root level folder, same shape as `axis-checkin/` and `delete_my_data/`).
 **URL:** `https://digitalwellbeing.xyz/moodmeter/`
 **Access:** nothing on the site links to it. The URL is the only route in. Not `noindex`, see backlog item 8.
-**Backend:** one Cloud Function in the Android repo, `dev/gamerswellbeing/functions/moodmeter.js`. **Not deployed yet**, see backlog item 7.
+**Backend:** one Cloud Function in the Android repo, `dev/gamerswellbeing/functions/moodmeter.js`. **Deployed 2026-10-04**, serving both `/moodmeter/` and `/moodmeter/v2/`.
 
 Self-contained file on the `investors.html` pattern: its own `<style>` block, no shared stylesheet. Two external requests, both to Google Fonts. No analytics, no third-party scripts.
 
@@ -189,7 +189,7 @@ Optionally set a real salt first, which invalidates every quota row already writ
 firebase functions:secrets:set MOODMETER_IP_SALT
 ```
 
-Until the deploy runs the page is fully usable and the send fails with "That did not send. Check your connection and try again."
+First deployed 2026-10-04. **If the CLI says "credentials are no longer valid"**, the login has expired: run `firebase login --reauth` in your own PowerShell window (it needs a browser, so it cannot run from Claude's `!` prompt), then deploy. The admin service-account key in `specs/firebase-service-account-private-key/` can read Firestore and Storage but **cannot deploy**: it lacks the Service Account User role (`iam.serviceAccounts.ActAs`). Add `--force` to set the artifact cleanup policy, which is now set.
 
 ---
 
@@ -210,7 +210,7 @@ Mobile is checked by loading the page in an iframe at 390px and 360px wide. Chro
 
 **Verified:** the four quadrant fills and label contrast, measured not eyeballed. The full board at 1520px and the tab layout at 390px and 360px. The refusal of a tenth pick. Per-quadrant and global clear. The send-failed path. The 429 panel and the success panel, both driven through a stubbed `fetch`. Payload validation against short, duplicate, zero-coordinate and skewed-quadrant sets, run directly against the function's own source. CORS accepting the two site origins and localhost and rejecting everything else.
 
-**Not verified:** anything that needs the function to be live. No real submission has been made, no document has been written, and the IP quota has never counted a real address.
+**Verified live 2026-10-05** for v2: a full game on `digitalwellbeing.xyz/moodmeter/v2/` wrote a Firestore document (test-flagged). **Not verified:** a v1 36-pick send against the live function.
 
 ---
 
@@ -236,9 +236,9 @@ Built 2026-10-03, reshaped the same day to his five-stage game. Same `DATA` and 
 
 **End.** Nav, title and count go. The board zooms out to all 36 with the picks marked, showing names instead of emoji (object emoji like a chain or a syringe read as fake feelings). Tapping one shows its name and meaning above the grid, then fades over 3.5s; picks do not change. Below: "You just made emotional intelligence easier for humanity." large, the booth line, Try again, Home.
 
-**Submitting is off** for review: `SUBMIT = false` near the top of the script sends Send straight to the end screen.
+**Submitting is on** since 2026-10-04. `SUBMIT = false` near the top of the script skips the post and goes straight to the end screen, for review.
 
-3+2+2+2 = 9, sent at stage 5 as `{ "quadrant": "red", "picks": [9] }` to the same endpoint. Then the thank-you lines, the booth line (H4-P205), Try again and Home. Back and the phone's back gesture step through the stages; after a send the stage history is unwound so Back leaves the page.
+3+2+2+2 = 9, sent at stage 5 to the same endpoint (payload below). Then the thank-you lines, the booth line (H4-P205), Try again and Home. Back and the phone's back gesture step through the stages; after a send the stage history is unwound so Back leaves the page.
 
 **Limit:** ten sends per network per UTC day, fields `day` and `dayCount` in `moodMeterIpQuota/{ipHash}` next to v1's `count`. A 429 shows "Limit reached" and no booth line.
 
@@ -259,3 +259,33 @@ Also fixed in v2's copy of `DATA`: Serene carried Shocked's definition ("experie
 
 
 **Between stages (2026-10-04).** Axes were tried and dropped. After the zoom out, the finished block keeps a white frame, the squares dim, an arrow draws from it toward the next block, and a pill says which way: up "More energy", down "Less energy", right "Happier", left "Less happy", read off screen direction so it holds for every colour. The diagonal move (stage 3 to 4) shows two joined by a dot.
+
+---
+
+## v2 data: what is saved and how to get it
+
+Survey goal: find the feelings people use most per colour, then use the similar-feeling pairs to merge near-twins into a final agreed set.
+
+**Payload** from `/moodmeter/v2/`:
+
+```
+{ "quadrant": "green", "picks": [ {x, y, n} x9, in pick order ],
+  "blocked": [ {x, y, n, by} ], "lang": "en|es|ar", "simVersion": "2026-10-04",
+  "page": "v2", "test": true on localhost }
+```
+
+`blocked` is every feeling crossed out at send time and the pick(s) that blocked it, `by` joined with `|` when two picks block it. Without it a crossed-out twin would look unpopular when it was only unavailable.
+
+**Firestore** `moodMeterSubmissions/{id}`: `picks[]` of `{x, y, n, c, s, o}` (`s` stage 0-3, `o` order), `quadrant`, `blocked`, `lang`, `simVersion`, `page`, `test`, `ipHash`, `createdAt`, `userAgent`, `country` (always empty on 2nd-gen functions).
+
+**Fallback.** If the Firestore transaction throws, the function adds one line to a single Storage file, `gs://gwapp-30e03.firebasestorage.app/moodmeter-fallback.csv` (read, append, save only if unchanged, retry on clash), and still answers 200. No daily limit on that path. Inside the file `by` uses `+` instead of `|`.
+
+**Export**, from the Android repo:
+
+```
+node scripts/pull-moodmeter/export.js out.csv [--with-tests]
+```
+
+One CSV, one row per feeling, Firestore and the fallback file together. Columns: `id, source, createdAt, page, quadrant, lang, test, simVersion, ipHash, country, kind (pick|blocked), name, x, y, stage, order, blockedBy`. Test sends are left out unless `--with-tests`.
+
+**Test data in Firestore:** two test-flagged sends, `uKerpi3qVAax5GV8jW2j` (curl, 2026-10-04) and `LWm0mTHx4elVvrkC4nQY` (live page, 2026-10-05). Excluded by default.
