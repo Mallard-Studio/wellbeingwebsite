@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Wellbeing wings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08080a; --ink:#f3f1ec; --ink-2:#c9c6bf; --ink-3:#84827c;
+    --accent:#4361ff;
+    /* sampled from assets/logo.png, outer corner of each wing */
+    --w-red:#ff0606; --w-yellow:#ffca29; --w-blue:#6262ff; --w-green:#81cf5f;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; height:100%; background:var(--bg); color:var(--ink);
+    font-family:'Comfortaa',system-ui,sans-serif; -webkit-font-smoothing:antialiased; overflow:hidden; }
+  #stage{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:#000; }
+  #out{ max-width:100%; max-height:100%; }
+  video{ display:none; }
+
+  #intro{ position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:20px; padding:24px 16px; text-align:center; background:var(--bg); z-index:5; }
+  #intro img{ width:96px; height:96px; }
+  #intro h1{ margin:0; font-size:28px; font-weight:600; }
+  #intro p{ margin:0; color:var(--ink-2); max-width:320px; line-height:1.5; }
+  #intro .note{ color:var(--ink-3); font-size:13px; }
+  .btn{ appearance:none; border:0; border-radius:100px; background:var(--accent); color:#fff;
+    font:600 16px 'Comfortaa',system-ui,sans-serif; padding:16px 28px; cursor:pointer; }
+  .btn:disabled{ opacity:.6; }
+
+  #bar{ position:fixed; left:0; right:0; bottom:0; display:none; align-items:center; justify-content:center; gap:28px;
+    padding:16px 16px calc(20px + env(safe-area-inset-bottom)); z-index:4; }
+  #shutter{ width:72px; height:72px; border-radius:50%; border:4px solid #fff; background:rgba(255,255,255,.25); cursor:pointer; }
+  #shutter:active{ background:rgba(255,255,255,.6); }
+  .icon{ width:48px; height:48px; border-radius:50%; border:0; background:rgba(0,0,0,.45); color:#fff; font-size:20px; cursor:pointer; }
+  #hint{ position:fixed; top:calc(16px + env(safe-area-inset-top)); left:16px; right:16px; text-align:center;
+    color:var(--ink); font-size:14px; text-shadow:0 1px 4px #000; z-index:4; display:none; }
+  #flash{ position:fixed; inset:0; background:#fff; opacity:0; pointer-events:none; transition:opacity .25s; z-index:6; }
+
+
+  #review{ position:fixed; inset:0; background:var(--bg); z-index:8; display:none; flex-direction:column; align-items:center;
+    justify-content:center; gap:16px; padding:16px 16px calc(20px + env(safe-area-inset-bottom)); }
+  #review .media{ flex:1; min-height:0; width:100%; display:flex; align-items:center; justify-content:center; }
+  #review img, #review video{ max-width:100%; max-height:100%; border-radius:12px; }
+  #review p{ margin:0; color:var(--ink-2); font-size:14px; text-align:center; }
+  #review .row{ display:flex; gap:12px; }
+  .btn.ghost{ background:rgba(255,255,255,.1); }
+  #busy{ position:fixed; inset:0; z-index:9; display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    background:rgba(8,8,10,.85); padding:16px; text-align:center; }
+  #busy p{ margin:0; color:var(--ink); font-size:16px; }
+  #busy .track{ width:220px; height:6px; border-radius:3px; background:rgba(255,255,255,.15); overflow:hidden; }
+  #busy .fill{ height:100%; width:0; background:linear-gradient(90deg,#ff4f4f,#ffd84d,#74d178,#5b6dff); transition:width .2s; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="out"></canvas></div>
+<video id="cam" playsinline muted autoplay></video>
+
+<div id="intro">
+  <img src="../assets/logo.webp" alt="">
+  <h1>Try your wings</h1>
+  <p>Stand back so your shoulders are in the frame.</p>
+  <button class="btn" id="start">Open camera</button>
+  <p class="note" id="status">The camera stays on your phone. Nothing gets uploaded.</p>
+</div>
+
+<div id="hint">Step back until your shoulders are in view</div>
+<div id="bar">
+  <button class="icon" id="flip" aria-label="Switch camera">&#x21C4;</button>
+  <button id="shutter" aria-label="Take photo"></button>
+  <span style="width:48px"></span>
+</div>
+<div id="review">
+  <div class="media" id="media"></div>
+  <p id="saved"></p>
+  <div class="row">
+    <button class="btn ghost" id="done">Back</button>
+    <button class="btn" id="save">Save</button>
+  </div>
+</div>
+<div id="busy"><p id="busy-text">Making your photo...</p><div class="track"><div class="fill" id="busy-fill"></div></div></div>
+<div id="flash"></div>
+
+<script type="module" src="wings.js"></script>
+</body>
+</html>
