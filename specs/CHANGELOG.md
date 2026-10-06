@@ -1,4 +1,7 @@
 ---
+6/10/2026 (2)
+`/wheel/`: tiny faint reset button (↻, 20px at 45% opacity, bottom right corner; 14px at 25% was invisible on his screen) shows after a spin. Tap puts the wheel back to its idle view: straight quarters, SPIN, hint text, idle lights. Hidden during a spin and on the idle view. His ask, the idle view looks better. [wheel/]
+---
 6/10/2026 (1)
 `/wings/` finished and published: camera page that puts the logo as wings behind the person, "Wellbeing / hero" above the head, photo only (video dropped on his call). Last fixes: background blur now cuts the person out first, so no blurred ghost around the legs; wing veins removed; fps debug readout removed. Tested headless with both test photos, no errors. `noindex`, not linked from any page. Test photos (`wings/_*.jpg`) left uncommitted, they show real people. QR at `assets/qr-wings.png` + `.svg`, decode-checked. [wings/, assets/]
 ---
