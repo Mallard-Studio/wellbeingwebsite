@@ -1193,6 +1193,13 @@
 <div class="install-bar">
   <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.gw.gamerswellbeing&amp;referrer=utm_source%3Dweb%26utm_medium%3Dsite&amp;hl=ar">حمل التطبيق <span class="arrow">&#8592;</span></a>
 </div>
+<script>
+// iPhone and iPad visitors go to the App Store; everyone else keeps the Google Play link.
+(function(){
+  var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if(ios) document.querySelector('.install-bar a').href = 'https://apps.apple.com/us/app/wellbeing-digital-wellbeing/id6816406698';
+})();
+</script>
 
 
 <!-- Arabic font picker. Dev tool: only shows on ?fonts=1, localhost or file://. -->

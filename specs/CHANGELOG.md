@@ -1,4 +1,7 @@
 ---
+8/11/2026 (5)
+Phone bottom bar "Get the app": iPhone/iPad (incl. iPadOS that reports as Mac) now go to the App Store; everyone else keeps Google Play. Tiny inline script, Play link stays in the HTML as the default. Tested with iPhone, iPad, Android and Mac user agents. [index.html, ar/index.html]
+---
 8/11/2026 (4)
 Phones (≤600px): hero social buttons 46px → 34px; header social buttons now show on scroll (were hidden on phones), 28px, right side beside the menu button. Desktop unchanged. English page only, Arabic has no social buttons. [index.html]
 ---
