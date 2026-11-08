@@ -1,6 +1,6 @@
 ---
 8/11/2026 (1)
-`/scrollometer/privacy/`: Scrollometer privacy policy page, styled like `privacy-policy.html`. Wording kept as written; contact info@digitalwellbeingapp.com; `[DATE OF RELEASE]` still a placeholder. [scrollometer/privacy/]
+`/scrollometer/privacy/`: Scrollometer privacy policy page, styled like `privacy-policy.html`. Wording kept as written; contact info@digitalwellbeingapp.com; effective date November 8, 2026. [scrollometer/privacy/]
 ---
 6/10/2026 (2)
 `/wheel/`: tiny faint reset button (↻, 20px at 45% opacity, bottom right corner; 14px at 25% was invisible on his screen) shows after a spin. Tap puts the wheel back to its idle view: straight quarters, SPIN, hint text, idle lights. Hidden during a spin and on the idle view. His ask, the idle view looks better. [wheel/]
