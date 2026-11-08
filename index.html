@@ -155,9 +155,10 @@
   .socials{ position:absolute; top:22px; right:28px; display:flex; align-items:center; gap:12px; }
   .socials .label{ font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color: var(--ink-2); margin-right:4px; }
   @media(max-width: 600px){
-    .socials{ gap:10px; }
+    .socials{ gap:8px; }
     .socials .label{ display:none; }
-    .socials .sm{ width:46px; height:46px; }
+    .socials .sm{ width:34px; height:34px; }
+    .socials .sm svg{ width:17px; height:17px; }
   }
 
   /* header copy: fades in once the hero row has scrolled away */
@@ -172,8 +173,14 @@
   .nav-socials .sm.tt{ box-shadow: 0 4px 12px rgba(37,244,238,.12), inset 0 1px 0 rgba(255,255,255,.25); }
   .nav-socials .sm svg{ width:16px; height:16px; }
   .nav-socials .sm.tt svg{ filter: drop-shadow(-1px -1px 0 #25f4ee) drop-shadow(1px 1px 0 #fe2c55); }
-  /* no room beside the menu links here, and on phones they move into the menu */
-  @media(min-width: 821px) and (max-width: 1099px), (max-width: 600px){ .nav-socials{ display:none; } }
+  /* no room beside the menu links here */
+  @media(min-width: 821px) and (max-width: 1099px){ .nav-socials{ display:none; } }
+  /* phones: smaller, pushed right next to the menu button */
+  @media(max-width: 600px){
+    .nav-socials{ gap:6px; margin-left:auto; margin-right:10px; }
+    .nav-socials .sm{ width:28px; height:28px; }
+    .nav-socials .sm svg{ width:14px; height:14px; }
+  }
   .menu-socials{ display:none; }
   @media(max-width: 600px){
     nav.menu.mobile-menu .menu-socials{ display:flex; gap:12px; padding-top:16px; border-top:1px solid var(--line); }
@@ -612,7 +619,6 @@
   }
   @media(max-width: 560px){
     .brand .name{ display:none; }
-    header.nav .row .btn.primary{ padding:10px 16px; font-size:14px; white-space:nowrap; }
     .hero{ min-height:auto; padding-top:40px; padding-bottom:56px; }
   }
 
@@ -803,10 +809,6 @@
       <a class="sm li" href="https://www.linkedin.com/company/digital-wellbeing-llc/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg aria-hidden="true"><use href="#i-li"/></svg></a>
     </div>
     <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu" type="button"><span></span><span></span><span></span></button>
-    <a class="btn primary" href="https://play.google.com/store/apps/details?id=com.gw.gamerswellbeing&amp;referrer=utm_source%3Dweb%26utm_medium%3Dsite">
-      <span style="">Get the app</span>
-      <span class="arrow" style="">→</span>
-    </a>
   </div>
 </header>
 

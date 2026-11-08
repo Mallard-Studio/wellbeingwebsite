@@ -1,4 +1,10 @@
 ---
+8/11/2026 (4)
+Phones (≤600px): hero social buttons 46px → 34px; header social buttons now show on scroll (were hidden on phones), 28px, right side beside the menu button. Desktop unchanged. English page only, Arabic has no social buttons. [index.html]
+---
+8/11/2026 (3)
+Top-right "Get the app" nav button removed (and its phone-size CSS), his call; store badges in hero and `#download` cover installs. [index.html, ar/index.html]
+---
 8/11/2026 (2)
 `#download`: official "Download on the App Store" badge beside the Play badge, links to the App Store listing. App is live on iOS. Badge is Apple's official SVG saved to `assets/appstore-badge.svg` (Apple's embed URL host no longer resolves, so the hotlink showed nothing). App Store QR `assets/qr-appstore.png` beside the Play QR (desktop only), each labelled with its store; decode-checked. iOS waitlist removed (form, script, CSS); sub-line now "Android and iOS today". Hero: "Get the app" button + Play QR replaced by the two store badges. Floating nav QR (shown while scrolling) removed with its CSS and observer, his call. [index.html, ar/index.html, assets/]
 ---
