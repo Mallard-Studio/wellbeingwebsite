@@ -1,4 +1,7 @@
 ---
+8/11/2026 (2)
+`#download`: official "Download on the App Store" badge beside the Play badge, links to the App Store listing. App is live on iOS. Badge is Apple's official SVG saved to `assets/appstore-badge.svg` (Apple's embed URL host no longer resolves, so the hotlink showed nothing). App Store QR `assets/qr-appstore.png` beside the Play QR (desktop only), each labelled with its store; decode-checked. iOS waitlist removed (form, script, CSS); sub-line now "Android and iOS today". Hero: "Get the app" button + Play QR replaced by the two store badges. Floating nav QR (shown while scrolling) removed with its CSS and observer, his call. [index.html, ar/index.html, assets/]
+---
 8/11/2026 (1)
 `/scrollometer/privacy/`: Scrollometer privacy policy page, styled like `privacy-policy.html`. Wording kept as written; contact info@digitalwellbeingapp.com; effective date November 8, 2026. [scrollometer/privacy/]
 ---
